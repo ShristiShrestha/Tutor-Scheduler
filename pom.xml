@@ -13,6 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>online-scheduler-api</name>
 	<description>CSC 7135 - Group project, 2023 Spring</description>
+	<packaging>jar</packaging>
 	<properties>
 		<java.version>11</java.version>
 		<swagger.version>2.9.2</swagger.version>
@@ -73,6 +74,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<mainClass>com.fours.onlineschedulerapi.OnlineSchedulerApiApplication</mainClass>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
