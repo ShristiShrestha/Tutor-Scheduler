@@ -1,5 +1,9 @@
 *.idea
-target/
-logs/
-mvnw
-mvnw.cmd
+server/target/
+server/logs/
+server/mvnw
+server/mvnw.cmd
+server/*.idea
+.DS_STORE
+server/*.iml
+logs
