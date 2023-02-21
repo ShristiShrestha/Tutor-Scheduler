@@ -2,6 +2,7 @@ package com.fours.onlineschedulerapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -16,6 +17,7 @@ import java.util.Objects;
 @Table(name = "tutors")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Tutor {
 
     @Id
@@ -29,6 +31,7 @@ public class Tutor {
     @LazyCollection(LazyCollectionOption.TRUE)
     private User user;
 
+    @Column(columnDefinition = "float default 0.0")
     private float rating;
 
     @JsonIgnore
@@ -36,6 +39,11 @@ public class Tutor {
 
     @Transient
     private List<String> expertiseList = new ArrayList<>();
+
+    public Tutor(User user, String expertise) {
+        this.user = user;
+        this.expertise = expertise;
+    }
 
     public List<String> getExpertiseList() {
         List<String> expertiseList = new ArrayList<>();

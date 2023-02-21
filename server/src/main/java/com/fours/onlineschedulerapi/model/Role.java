@@ -1,7 +1,6 @@
 package com.fours.onlineschedulerapi.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -9,13 +8,13 @@ import javax.persistence.*;
 @Table(name = "roles")
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String name;
-    public Integer getId() {
-        return id;
-    }
 }

@@ -33,12 +33,16 @@ public class AuthController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        token, userDetails.getUsername(), userDetails.getAuthorities()
+                )
+        );
     }
 
     @GetMapping(value = "/check")
     public ResponseEntity<?> checkAuthentication() {
 
-        return ResponseEntity.ok(new JwtResponse("Authentication works!"));
+        return ResponseEntity.ok("Authentication works!");
     }
 }

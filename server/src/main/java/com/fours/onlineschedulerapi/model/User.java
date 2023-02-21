@@ -25,13 +25,14 @@ public class User {
     @Email
     @Column(unique = true)
     private String email;
+
     private String password;
 
     @Column(name = "is_tutor", columnDefinition = "boolean default false")
-    private boolean isTutor;
+    private Boolean isTutor;
 
     @Column(name = "is_enabled", columnDefinition = "boolean default true")
-    private boolean isEnabled;
+    private Boolean isEnabled = true;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
@@ -44,4 +45,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Tutor tutor;
+
+    @Transient
+    private String expertise;
 }
