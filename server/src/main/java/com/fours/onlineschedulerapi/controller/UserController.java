@@ -29,4 +29,11 @@ public class UserController {
 
         return ResponseEntity.ok("User deleted successfully.");
     }
+
+    @PutMapping()
+    public ResponseEntity<?> update(@RequestBody User user) throws EntityExistsException {
+        UserDto updatedUser = userService.update(user);
+
+        return ResponseEntity.ok(updatedUser);
+    }
 }

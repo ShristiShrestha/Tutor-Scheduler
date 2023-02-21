@@ -9,7 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -89,6 +91,58 @@ public class UserService {
                         user.getRoles()
                 );
             }
+        }
+    }
+
+    public UserDto update(User user) {
+        Long id = user.getId();
+
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if (userOptional.isEmpty()) {
+            throw new EntityNotFoundException("User with provided id doesn't exist.");
+        } else {
+            User userToUpdate = userOptional.get();
+            Boolean isTutor = userToUpdate.getIsTutor();
+
+            this.setFieldsToUpdate(user, userToUpdate);
+
+            if (isTutor) {
+                Tutor tutor = userToUpdate.getTutor();
+                tutor.setExpertise(userToUpdate.getExpertise());
+            }
+
+            userRepository.save(userToUpdate);
+
+            if (isTutor) {
+
+                return new TutorDto(
+                        userToUpdate,
+                        userToUpdate.getTutor().getRating(),
+                        userToUpdate.getTutor().getExpertiseList()
+                );
+            } else {
+
+                return new UserDto(
+                        userToUpdate.getName(),
+                        userToUpdate.getEmail(),
+                        userToUpdate.getIsTutor(),
+                        userToUpdate.getRoles()
+                );
+            }
+        }
+    }
+
+    private void setFieldsToUpdate(User user, User userToUpdate) {
+        String name = user.getName();
+        String expertise = user.getExpertise();
+
+        if (Objects.nonNull(name) && !name.trim().isEmpty()) {
+            userToUpdate.setName(name);
+        }
+
+        if (Objects.nonNull(expertise) && !expertise.trim().isEmpty()) {
+            userToUpdate.setExpertise(expertise);
         }
     }
 
