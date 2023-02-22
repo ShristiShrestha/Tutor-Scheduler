@@ -1,6 +1,8 @@
 package com.fours.onlineschedulerapi.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
@@ -13,6 +15,8 @@ import javax.validation.constraints.NotNull;
 @Table(name = "users")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -45,7 +49,4 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Tutor tutor;
-
-    @Transient
-    private String expertise;
 }

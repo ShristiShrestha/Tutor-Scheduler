@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -52,8 +49,7 @@ public class UserService {
             String roleString = isTutor ? TUTOR : STUDENT;
 
             if (isTutor) {
-                Tutor tutor = new Tutor(user, user.getExpertise());
-                user.setTutor(tutor);
+                user.getTutor().setUser(user);
             }
 
             Optional<Role> role = roleRepository.findByName(roleString);
@@ -85,6 +81,7 @@ public class UserService {
             } else {
 
                 return new UserDto(
+                        user.getId(),
                         user.getName(),
                         user.getEmail(),
                         user.getIsTutor(),
@@ -107,11 +104,6 @@ public class UserService {
 
             this.setFieldsToUpdate(user, userToUpdate);
 
-            if (isTutor) {
-                Tutor tutor = userToUpdate.getTutor();
-                tutor.setExpertise(userToUpdate.getExpertise());
-            }
-
             userRepository.save(userToUpdate);
 
             if (isTutor) {
@@ -124,6 +116,7 @@ public class UserService {
             } else {
 
                 return new UserDto(
+                        userToUpdate.getId(),
                         userToUpdate.getName(),
                         userToUpdate.getEmail(),
                         userToUpdate.getIsTutor(),
@@ -135,14 +128,17 @@ public class UserService {
 
     private void setFieldsToUpdate(User user, User userToUpdate) {
         String name = user.getName();
-        String expertise = user.getExpertise();
 
         if (Objects.nonNull(name) && !name.trim().isEmpty()) {
             userToUpdate.setName(name);
         }
 
-        if (Objects.nonNull(expertise) && !expertise.trim().isEmpty()) {
-            userToUpdate.setExpertise(expertise);
+        if (userToUpdate.getIsTutor()) {
+            List<String> expertise = user.getTutor().getExpertiseList();
+
+            if (Objects.nonNull(expertise)) {
+                userToUpdate.getTutor().setExpertiseList(expertise);
+            }
         }
     }
 

@@ -40,23 +40,20 @@ public class Tutor {
     @Transient
     private List<String> expertiseList = new ArrayList<>();
 
-    public Tutor(User user, String expertise) {
-        this.user = user;
-        this.expertise = expertise;
-    }
-
-    public List<String> getExpertiseList() {
+    public void setExpertise(String expertise) {
         List<String> expertiseList = new ArrayList<>();
+        this.expertise = expertise;
 
         if (!this.expertise.isEmpty()) {
             expertiseList.addAll(Arrays.asList(expertise.split(",")));
         }
 
+        this.expertiseList.clear();
         this.expertiseList.addAll(expertiseList);
-        return this.expertiseList;
     }
 
-    public void setExpertise() {
+    public void setExpertiseList(List<String> expertiseList) {
+        this.expertiseList = expertiseList;
         StringBuilder expertise = new StringBuilder();
 
         if (Objects.nonNull(this.expertiseList) && !this.expertiseList.isEmpty()) {

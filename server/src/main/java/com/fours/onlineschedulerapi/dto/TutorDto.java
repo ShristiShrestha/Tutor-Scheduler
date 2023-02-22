@@ -18,7 +18,7 @@ public class TutorDto extends UserDto {
     private List<String> expertise = new ArrayList<>();
 
     public TutorDto(User user, float rating, List<String> expertise) {
-        super(user.getName(), user.getEmail(), user.getIsTutor(), user.getRoles());
+        super(user.getId(), user.getName(), user.getEmail(), user.getIsTutor(), user.getRoles());
         this.rating = rating;
         this.expertise = expertise;
     }
