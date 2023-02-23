@@ -40,6 +40,9 @@ public class Tutor {
     @Transient
     private List<String> expertiseList = new ArrayList<>();
 
+    @Column(name = "rated_by", columnDefinition = "integer default 0")
+    private Integer ratedBy = 0;
+
     public void setExpertise(String expertise) {
         this.expertise = expertise;
     }
