@@ -41,15 +41,7 @@ public class Tutor {
     private List<String> expertiseList = new ArrayList<>();
 
     public void setExpertise(String expertise) {
-        List<String> expertiseList = new ArrayList<>();
         this.expertise = expertise;
-
-        if (!this.expertise.isEmpty()) {
-            expertiseList.addAll(Arrays.asList(expertise.split(",")));
-        }
-
-        this.expertiseList.clear();
-        this.expertiseList.addAll(expertiseList);
     }
 
     public void setExpertiseList(List<String> expertiseList) {
@@ -67,5 +59,13 @@ public class Tutor {
         }
 
         this.expertise = expertise.toString();
+    }
+
+    public List<String> getExpertiseList() {
+        if (this.expertiseList.isEmpty() && Objects.nonNull(this.expertise) && !this.expertise.isEmpty()) {
+            this.expertiseList.addAll(Arrays.asList(expertise.split(",")));
+        }
+
+        return this.expertiseList;
     }
 }

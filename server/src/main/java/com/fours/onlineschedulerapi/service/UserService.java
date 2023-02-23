@@ -1,16 +1,17 @@
 package com.fours.onlineschedulerapi.service;
 
-import com.fours.onlineschedulerapi.dto.TutorDto;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.model.*;
 import com.fours.onlineschedulerapi.repository.RoleRepository;
 import com.fours.onlineschedulerapi.repository.UserRepository;
+import com.fours.onlineschedulerapi.utils.UserUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -71,23 +72,7 @@ public class UserService {
 
             userRepository.save(user);
 
-            if (isTutor) {
-
-                return new TutorDto(
-                        user,
-                        user.getTutor().getRating(),
-                        user.getTutor().getExpertiseList()
-                );
-            } else {
-
-                return new UserDto(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getIsTutor(),
-                        user.getRoles()
-                );
-            }
+            return new UserDto(user);
         }
     }
 
@@ -100,29 +85,12 @@ public class UserService {
             throw new EntityNotFoundException("User with provided id doesn't exist.");
         } else {
             User userToUpdate = userOptional.get();
-            Boolean isTutor = userToUpdate.getIsTutor();
 
             this.setFieldsToUpdate(user, userToUpdate);
 
             userRepository.save(userToUpdate);
 
-            if (isTutor) {
-
-                return new TutorDto(
-                        userToUpdate,
-                        userToUpdate.getTutor().getRating(),
-                        userToUpdate.getTutor().getExpertiseList()
-                );
-            } else {
-
-                return new UserDto(
-                        userToUpdate.getId(),
-                        userToUpdate.getName(),
-                        userToUpdate.getEmail(),
-                        userToUpdate.getIsTutor(),
-                        userToUpdate.getRoles()
-                );
-            }
+            return new UserDto(user);
         }
     }
 
@@ -144,5 +112,49 @@ public class UserService {
 
     public void delete(long id) {
         userRepository.updateIsEnabled(id, false);
+    }
+
+    public List<UserDto> getAll(
+            Optional<String> sortBy,
+            Optional<String> filterKey,
+            Optional<String> filterValue,
+            Optional<String> role
+    ) {
+        List<UserDto> userDto = new ArrayList<>();
+        List<User> users = (List<User>) userRepository.findAll();
+
+        if (!users.isEmpty()) {
+            //Filter by role; either tutor, student or coordinator
+            if (role.isPresent()) {
+                String roleValue = role.get();
+
+                users = users.stream()
+                        .filter(user -> user.getRoles().stream()
+                                .map(Role::getName)
+                                .collect(Collectors.toList())
+                                .contains(roleValue.toUpperCase()))
+                        .collect(Collectors.toList());
+            }
+
+            //Convert to dto
+            userDto.addAll(
+                    users.stream()
+                            .map(UserDto::new)
+                            .collect(Collectors.toList())
+            );
+
+            //Filter based on filter key and value
+            if (filterKey.isPresent() && filterValue.isPresent()) {
+                String fKey = filterKey.get();
+                String fValue = filterValue.get();
+
+                userDto = UserUtils.filter(fKey, fValue, userDto);
+            }
+
+            if (sortBy.isPresent())
+                UserUtils.sort(sortBy.get(), userDto);
+        }
+
+        return userDto;
     }
 }

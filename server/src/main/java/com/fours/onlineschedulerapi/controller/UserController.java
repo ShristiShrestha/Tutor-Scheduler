@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -48,5 +49,15 @@ public class UserController {
         UserDto updatedUser = userService.update(user);
 
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> getAll(
+            @RequestParam("sortBy") Optional<String> sortBy,
+            @RequestParam("filterKey") Optional<String> filterKey,
+            @RequestParam("filterValue") Optional<String> filterValue,
+            @RequestParam("role") Optional<String> role
+    ) {
+        return ResponseEntity.ok(userService.getAll(sortBy, filterKey, filterValue, role));
     }
 }
