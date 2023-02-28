@@ -3,6 +3,7 @@ package com.fours.onlineschedulerapi.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fours.onlineschedulerapi.constants.AppointmentConstant;
+import com.fours.onlineschedulerapi.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,10 +65,10 @@ public class Appointment {
     private Float rating = 0F;
 
     @Transient
-    private User tutor;
+    private UserDto tutor;
 
     @Transient
-    private User student;
+    private UserDto student;
 
     public void setTutoringOnList(List<String> tutoringOnList) {
         this.tutoringOnList = tutoringOnList;
