@@ -1,5 +1,6 @@
 package com.fours.onlineschedulerapi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fours.onlineschedulerapi.constants.AppointmentConstant;
 import lombok.AllArgsConstructor;
@@ -46,6 +47,7 @@ public class Appointment {
     private String tutoringOnString;
 
     @Column(name = "scheduled_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = AppointmentConstant.SCHEDULED_AT_FORMAT)
     private Date scheduledAt;
 
     @Column(name = "client_received_at")
@@ -59,7 +61,13 @@ public class Appointment {
     @UpdateTimestamp
     private Date updatedAt;
 
-    private Float rating;
+    private Float rating = 0F;
+
+    @Transient
+    private User tutor;
+
+    @Transient
+    private User student;
 
     public void setTutoringOnList(List<String> tutoringOnList) {
         this.tutoringOnList = tutoringOnList;
