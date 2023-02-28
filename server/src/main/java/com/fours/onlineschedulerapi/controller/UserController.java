@@ -2,6 +2,7 @@ package com.fours.onlineschedulerapi.controller;
 
 import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.dto.UserDto;
+import com.fours.onlineschedulerapi.service.AppointmentService;
 import com.fours.onlineschedulerapi.service.AuthenticatedUserService;
 import com.fours.onlineschedulerapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class UserController {
 
     @Autowired
     private AuthenticatedUserService authenticatedUserService;
+
+    @Autowired
+    private AppointmentService appointmentService;
 
     @PostMapping(value = "/signup")
     public ResponseEntity<?> save(@RequestBody User user) throws EntityExistsException {
@@ -59,5 +63,18 @@ public class UserController {
             @RequestParam("role") Optional<String> role
     ) {
         return ResponseEntity.ok(userService.getAll(sortBy, filterKey, filterValue, role));
+    }
+
+    @GetMapping("/{id}/appointment")
+    public ResponseEntity<?> getAll(
+            @RequestParam("status") Optional<String> status,
+            @RequestParam("upcoming") Optional<Boolean> upcoming,
+            @PathVariable("id") Long id,
+            @RequestParam("sortBy") Optional<String> sortBy
+    ) {
+
+        return ResponseEntity.ok(
+                appointmentService.getByTutorId(id, status, upcoming, sortBy)
+        );
     }
 }

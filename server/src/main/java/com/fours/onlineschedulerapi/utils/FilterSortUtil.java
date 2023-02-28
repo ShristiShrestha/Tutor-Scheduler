@@ -1,6 +1,7 @@
 package com.fours.onlineschedulerapi.utils;
 
 import com.fours.onlineschedulerapi.dto.UserDto;
+import com.fours.onlineschedulerapi.model.Appointment;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,9 +9,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UserUtils {
+public class FilterSortUtil {
 
-    public static List<UserDto> filter(String filterKey, String filterValue, List<UserDto> users) {
+    public static List<UserDto> filterUsers(String filterKey, String filterValue, List<UserDto> users) {
         switch (filterKey.toLowerCase()) {
             case "name":
                 return users.stream()
@@ -33,7 +34,7 @@ public class UserUtils {
         }
     }
 
-    public static void sort(String sortBy, List<UserDto> users) {
+    public static void sortUsers(String sortBy, List<UserDto> users) {
         switch (sortBy.toLowerCase()) {
             case "name":
                 users.sort(Comparator.comparing(userDto -> userDto.getName().toLowerCase()));
@@ -46,6 +47,24 @@ public class UserUtils {
                 return;
             case "-rating":
                 users.sort(Comparator.comparing(UserDto::getRating, Comparator.reverseOrder()));
+                return;
+            default:
+        }
+    }
+
+    public static void sortAppointments(String sortBy, List<Appointment> appointments) {
+        switch (sortBy.toLowerCase()) {
+            case "createdAt":
+                appointments.sort(Comparator.comparing(Appointment::getCreatedAt));
+                return;
+            case "scheduledAt":
+                appointments.sort(Comparator.comparing(Appointment::getScheduledAt));
+                return;
+            case "-createdAt":
+                appointments.sort(Comparator.comparing(Appointment::getCreatedAt, Comparator.reverseOrder()));
+                return;
+            case "-scheduledAt":
+                appointments.sort(Comparator.comparing(Appointment::getScheduledAt, Comparator.reverseOrder()));
                 return;
             default:
         }

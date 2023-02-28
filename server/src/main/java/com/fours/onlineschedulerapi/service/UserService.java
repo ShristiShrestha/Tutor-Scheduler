@@ -4,7 +4,7 @@ import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.model.*;
 import com.fours.onlineschedulerapi.repository.RoleRepository;
 import com.fours.onlineschedulerapi.repository.UserRepository;
-import com.fours.onlineschedulerapi.utils.UserUtils;
+import com.fours.onlineschedulerapi.utils.FilterSortUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -148,11 +148,11 @@ public class UserService {
                 String fKey = filterKey.get();
                 String fValue = filterValue.get();
 
-                userDto = UserUtils.filter(fKey, fValue, userDto);
+                userDto = FilterSortUtil.filterUsers(fKey, fValue, userDto);
             }
 
             if (sortBy.isPresent())
-                UserUtils.sort(sortBy.get(), userDto);
+                FilterSortUtil.sortUsers(sortBy.get(), userDto);
         }
 
         return userDto;

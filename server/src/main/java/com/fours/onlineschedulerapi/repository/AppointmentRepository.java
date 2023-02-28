@@ -16,4 +16,6 @@ public interface AppointmentRepository extends CrudRepository<Appointment, Long>
     Optional<Appointment> findByStudentIdAndScheduledAtAndStatus(Long studentId, Date scheduledAt, String status);
 
     List<Appointment> findAllByOrderByScheduledAtAsc();
+
+    List<Appointment> findByTutorId(Long tutorId);
 }

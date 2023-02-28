@@ -8,14 +8,12 @@ import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.repository.AppointmentRepository;
 import com.fours.onlineschedulerapi.repository.UserRepository;
 import com.fours.onlineschedulerapi.utils.DateUtil;
+import com.fours.onlineschedulerapi.utils.FilterSortUtil;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -176,5 +174,57 @@ public class AppointmentService {
         );
 
         return appointment;
+    }
+
+    public List<Appointment> getByTutorId(
+            Long tutorId,
+            Optional<String> status,
+            Optional<Boolean> upcoming,
+            Optional<String> sortBy
+    ) {
+        List<Appointment> appointments = appointmentRepository.findByTutorId(tutorId);
+
+        if (status.isPresent() && !status.get().isEmpty()) {
+            appointments = appointments.stream()
+                    .filter(appointment -> appointment.getStatus().equalsIgnoreCase(status.get()))
+                    .collect(Collectors.toList());
+        }
+
+        if (upcoming.isPresent() && upcoming.get()) {
+            Date now = Date.from(Instant.now());
+
+            appointments = appointments.stream()
+                    .filter(appointment -> appointment.getScheduledAt().after(now))
+                    .collect(Collectors.toList());
+        }
+
+        //Collect student ids and fetch user details from database
+        Set<Long> studentIds = appointments.stream()
+                .map(Appointment::getStudentId)
+                .collect(Collectors.toSet());
+
+        //Set student details to appointments
+        if (!studentIds.isEmpty()) {
+            List<User> users = userRepository.findByIdIn(studentIds);
+
+            appointments.forEach(appointment -> {
+                appointment.setStudent(
+                        new UserDto(
+                                users.stream()
+                                        .filter(user -> user.getId().equals(appointment.getStudentId()))
+                                        .collect(Collectors.toList())
+                                        .get(0)
+                        )
+                );
+            });
+        }
+
+        if (sortBy.isPresent() && !sortBy.get().isEmpty()) {
+            String sortVal = sortBy.get();
+
+            FilterSortUtil.sortAppointments(sortVal, appointments);
+        }
+
+        return appointments;
     }
 }
