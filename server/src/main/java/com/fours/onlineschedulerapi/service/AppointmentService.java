@@ -3,6 +3,7 @@ package com.fours.onlineschedulerapi.service;
 import com.fours.onlineschedulerapi.constants.AppointmentConstant;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
+import com.fours.onlineschedulerapi.exception.NotAuthorizedException;
 import com.fours.onlineschedulerapi.model.Appointment;
 import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.repository.AppointmentRepository;
@@ -12,6 +13,7 @@ import com.fours.onlineschedulerapi.utils.FilterSortUtil;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,38 +25,56 @@ public class AppointmentService {
 
     private UserRepository userRepository;
 
+    private AuthenticatedUserService authenticatedUserService;
+
     public AppointmentService(
             AppointmentRepository appointmentRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            AuthenticatedUserService authenticatedUserService
     ) {
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     public Appointment save(Appointment appointment) throws BadRequestException {
-        this.validateAppointments(appointment);
+        this.validateAppointments(
+                appointment.getTutorId(),
+                appointment.getStudentId(),
+                appointment.getScheduledAt()
+        );
 
         appointmentRepository.save(appointment);
 
         return appointment;
     }
 
-    private void validateAppointments(Appointment appointment) throws BadRequestException {
-        Optional<Appointment> conflictingTutorAppointment = appointmentRepository.findByTutorIdAndScheduledAtAndStatus(
-                appointment.getTutorId(), appointment.getScheduledAt(), AppointmentConstant.ACCEPTED
+    private void validateAppointments(
+            Long tutorId,
+            Long studentId,
+            Date scheduledAt
+    ) throws BadRequestException {
+
+        List<Appointment> conflictingTutorAppointment = appointmentRepository.findByTutorIdAndScheduledAtAndStatus(
+                tutorId, scheduledAt, AppointmentConstant.ACCEPTED
         );
 
-        if (conflictingTutorAppointment.isPresent()) {
+        if (!conflictingTutorAppointment.isEmpty())
             throw new BadRequestException("Tutor has an appointment scheduled at this timeslot.");
-        }
 
-        Optional<Appointment> conflictingStudentAppointment = appointmentRepository.findByStudentIdAndScheduledAtAndStatus(
-                appointment.getTutorId(), appointment.getScheduledAt(), AppointmentConstant.ACCEPTED
+        List<Appointment> conflictingStudentAppointment = appointmentRepository.findByStudentIdAndScheduledAtAndStatus(
+                studentId, scheduledAt, AppointmentConstant.ACCEPTED
         );
 
-        if (conflictingStudentAppointment.isPresent()) {
-            throw new BadRequestException("You already have an appointment scheduled at this timeslot.");
-        }
+        if (!conflictingStudentAppointment.isEmpty())
+            throw new BadRequestException("Student already has an accepted appointment at this time slot.");
+
+        Boolean doesPendingAppointmentExist = !appointmentRepository
+                .findByTutorIdAndStudentIdAndScheduledAtAndStatus(tutorId, studentId, scheduledAt, AppointmentConstant.PENDING)
+                .isEmpty();
+
+        if (doesPendingAppointmentExist)
+            throw new BadRequestException("Student already has an pending appointment with the same instructor at this time slot.");
     }
 
     public List<Appointment> getAll(
@@ -226,5 +246,102 @@ public class AppointmentService {
         }
 
         return appointments;
+    }
+
+    @Transactional
+    public Appointment update(Appointment appointment) throws BadRequestException, NotAuthorizedException {
+        Long appointmentId = appointment.getId();
+
+        //Get appointment to update from database
+        Appointment appointmentToUpdate = appointmentRepository
+                .findById(appointmentId)
+                .orElseThrow(() -> new BadRequestException("Appointment with the provided id doesn't exist."));
+
+        //Get updated status and status message from the request
+        String status = appointment.getStatus();
+        String statusMessage = appointment.getStatusMessage();
+
+        //Get updated time slot from the request
+        Date scheduledAt = appointment.getScheduledAt();
+
+        //When tutor updates the status of the appointment.
+        if (Objects.nonNull(status) && !status.isEmpty() && !status.equalsIgnoreCase(AppointmentConstant.PENDING)) {
+
+            //Check if the status message has been provided in case of rejected appointment.
+            if (status.equalsIgnoreCase(AppointmentConstant.REJECTED)
+                    && (Objects.isNull(statusMessage) || statusMessage.isEmpty())) {
+                throw new BadRequestException("Please provide a rejection message.");
+            }
+
+            appointmentToUpdate.setStatus(status.toUpperCase());
+            appointmentToUpdate.setStatusMessage(statusMessage);
+
+            appointmentRepository.save(appointmentToUpdate);
+
+            //Reject all the pending appointments at the accepted timeslot for both tutor and student.
+            this.rejectPendingAppointmentsAtCurrentlyAcceptedTimeSlot(appointmentToUpdate);
+
+        } //When co-ordinator re-schedules the appointment
+        else if (Objects.nonNull(scheduledAt)) {
+
+            if (!authenticatedUserService.getAuthorities().contains("COORDINATOR"))
+                throw new NotAuthorizedException("You are not authorized to perform this request.");
+
+            this.validateAppointments(
+                    appointmentToUpdate.getTutorId(),
+                    appointmentToUpdate.getStudentId(),
+                    scheduledAt
+            );
+
+            appointmentToUpdate.setScheduledAt(scheduledAt);
+            appointmentToUpdate.setStatus(AppointmentConstant.PENDING);
+            appointmentToUpdate.setStatusMessage(null);
+            appointmentToUpdate.setClientReceivedAt(null);
+
+            appointmentRepository.save(appointmentToUpdate);
+
+        }
+
+        return appointmentToUpdate;
+    }
+
+    private void rejectPendingAppointmentsAtCurrentlyAcceptedTimeSlot(Appointment appointment) {
+        if (appointment.getStatus().equalsIgnoreCase(AppointmentConstant.ACCEPTED)) {
+            Long appointmentId = appointment.getId();
+            Long tutorId = appointment.getTutorId();
+            Long studentId = appointment.getStudentId();
+
+            Date scheduledAt = appointment.getScheduledAt();
+
+            List<Appointment> tutorAppointmentsToReject = appointmentRepository
+                    .findByTutorIdAndScheduledAtAndStatus(tutorId, scheduledAt, AppointmentConstant.PENDING)
+                    .stream()
+                    .filter(ap -> !ap.getId().equals(appointmentId))
+                    .collect(Collectors.toList());
+
+            List<Appointment> studentAppointmentsToReject = appointmentRepository
+                    .findByStudentIdAndScheduledAtAndStatus(studentId, scheduledAt, AppointmentConstant.PENDING)
+                    .stream()
+                    .filter(ap -> !ap.getId().equals(appointmentId))
+                    .collect(Collectors.toList());
+
+            tutorAppointmentsToReject.forEach(ap -> {
+                ap.setStatus(AppointmentConstant.REJECTED);
+                ap.setStatusMessage("This appointment was automatically canceled because " +
+                        "it conflicted with other appointments at the same time slot.");
+            });
+
+            studentAppointmentsToReject.forEach(ap -> {
+                ap.setStatus(AppointmentConstant.REJECTED);
+                ap.setStatusMessage("This appointment was automatically canceled because " +
+                        "it conflicted with other appointments at the same time slot.");
+            });
+
+            if (!tutorAppointmentsToReject.isEmpty())
+                appointmentRepository.saveAll(tutorAppointmentsToReject);
+
+            if (!studentAppointmentsToReject.isEmpty())
+                appointmentRepository.saveAll(studentAppointmentsToReject);
+        }
     }
 }

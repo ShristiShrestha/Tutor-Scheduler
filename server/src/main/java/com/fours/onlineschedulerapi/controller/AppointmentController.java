@@ -1,6 +1,7 @@
 package com.fours.onlineschedulerapi.controller;
 
 import com.fours.onlineschedulerapi.exception.BadRequestException;
+import com.fours.onlineschedulerapi.exception.NotAuthorizedException;
 import com.fours.onlineschedulerapi.model.Appointment;
 import com.fours.onlineschedulerapi.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,24 @@ public class AppointmentController {
 
             return new ResponseEntity<>(
                     e.getMessage(), HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    @PutMapping()
+    public ResponseEntity<?> update(@RequestBody Appointment appointment) {
+        try {
+
+            return ResponseEntity.ok(appointmentService.update(appointment));
+        } catch (BadRequestException e) {
+
+            return new ResponseEntity<>(
+                    e.getMessage(), HttpStatus.BAD_REQUEST
+            );
+        } catch (NotAuthorizedException e) {
+
+            return new ResponseEntity<>(
+                    e.getMessage(), HttpStatus.UNAUTHORIZED
             );
         }
     }

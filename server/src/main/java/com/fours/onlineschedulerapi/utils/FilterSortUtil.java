@@ -54,14 +54,14 @@ public class FilterSortUtil {
 
     public static void sortAppointments(String sortBy, List<Appointment> appointments) {
         switch (sortBy.toLowerCase()) {
-            case "createdAt":
-                appointments.sort(Comparator.comparing(Appointment::getCreatedAt));
+            case "updatedAt":
+                appointments.sort(Comparator.comparing(Appointment::getUpdatedAt));
                 return;
             case "scheduledAt":
                 appointments.sort(Comparator.comparing(Appointment::getScheduledAt));
                 return;
-            case "-createdAt":
-                appointments.sort(Comparator.comparing(Appointment::getCreatedAt, Comparator.reverseOrder()));
+            case "-updatedAt":
+                appointments.sort(Comparator.comparing(Appointment::getUpdatedAt, Comparator.reverseOrder()));
                 return;
             case "-scheduledAt":
                 appointments.sort(Comparator.comparing(Appointment::getScheduledAt, Comparator.reverseOrder()));

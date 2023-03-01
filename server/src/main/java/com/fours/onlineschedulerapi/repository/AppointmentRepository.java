@@ -11,11 +11,15 @@ import java.util.Optional;
 @Repository
 public interface AppointmentRepository extends CrudRepository<Appointment, Long> {
 
-    Optional<Appointment> findByTutorIdAndScheduledAtAndStatus(Long tutorId, Date scheduledAt, String status);
+    List<Appointment> findByTutorIdAndScheduledAtAndStatus(Long tutorId, Date scheduledAt, String status);
 
-    Optional<Appointment> findByStudentIdAndScheduledAtAndStatus(Long studentId, Date scheduledAt, String status);
+    List<Appointment> findByStudentIdAndScheduledAtAndStatus(Long studentId, Date scheduledAt, String status);
 
     List<Appointment> findAllByOrderByScheduledAtAsc();
 
     List<Appointment> findByTutorId(Long tutorId);
+
+    List<Appointment> findByTutorIdAndStudentIdAndScheduledAtAndStatus(
+            Long tutorId, Long studentId, Date scheduledAt, String status
+    );
 }
