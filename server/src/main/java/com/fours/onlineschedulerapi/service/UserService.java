@@ -1,6 +1,9 @@
 package com.fours.onlineschedulerapi.service;
 
+import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.dto.UserDto;
+import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.model.*;
 import com.fours.onlineschedulerapi.repository.RoleRepository;
 import com.fours.onlineschedulerapi.repository.UserRepository;
@@ -15,9 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
-    private final String TUTOR = "TUTOR";
-    private final String STUDENT = "STUDENT";
 
     private final UserRepository userRepository;
 
@@ -47,7 +47,7 @@ public class UserService {
             user.setIsEnabled(true);
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-            String roleString = isTutor ? TUTOR : STUDENT;
+            String roleString = isTutor ? RoleConstants.TUTOR : RoleConstants.STUDENT;
 
             if (isTutor) {
                 user.getTutor().setUser(user);
@@ -156,5 +156,13 @@ public class UserService {
         }
 
         return userDto;
+    }
+
+    public UserDto getById(Long id) throws BadRequestException {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new BadRequestException(Message.NON_EXISTENT_USER));
+
+        return new UserDto(user);
     }
 }

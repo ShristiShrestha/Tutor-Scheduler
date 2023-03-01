@@ -1,5 +1,8 @@
 package com.fours.onlineschedulerapi.controller;
 
+import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.RoleConstants;
+import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.service.AppointmentService;
@@ -35,14 +38,17 @@ public class UserController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) throws EntityExistsException {
-        if (authenticatedUserService.getAuthorities().contains("COORDINATOR")) {
+        if (authenticatedUserService.getAuthorities().contains(RoleConstants.COORDINATOR)) {
             userService.delete(id);
 
-            return ResponseEntity.ok("User deleted successfully.");
+            return new ResponseEntity<>(
+                    Message.USER_DELETED,
+                    HttpStatus.NO_CONTENT
+            );
         } else {
 
             return new ResponseEntity<>(
-                    "You don't have sufficient privilege to complete this request.",
+                    Message.UNAUTHORIZED,
                     HttpStatus.FORBIDDEN
             );
         }
@@ -66,7 +72,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/appointment")
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> getAppointments(
             @RequestParam("status") Optional<String> status,
             @RequestParam("upcoming") Optional<Boolean> upcoming,
             @PathVariable("id") Long id,
@@ -76,5 +82,11 @@ public class UserController {
         return ResponseEntity.ok(
                 appointmentService.getByTutorId(id, status, upcoming, sortBy)
         );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") Long id) throws BadRequestException {
+
+        return ResponseEntity.ok(userService.getById(id));
     }
 }

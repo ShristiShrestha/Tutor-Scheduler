@@ -1,6 +1,8 @@
 package com.fours.onlineschedulerapi.service;
 
 import com.fours.onlineschedulerapi.constants.AppointmentConstant;
+import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.exception.NotAuthorizedException;
@@ -178,7 +180,7 @@ public class AppointmentService {
     public Appointment getById(Long id) throws EntityNotFoundException {
         //Get appointment by id from database or throw exception if it doesn't exist
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Appointment with given id is not present."));
+                .orElseThrow(() -> new EntityNotFoundException(Message.NON_EXISTENT_APPOINTMENT));
 
         //Set student/tutor details to the appointment
         appointment.setTutor(
@@ -255,7 +257,7 @@ public class AppointmentService {
         //Get appointment to update from database
         Appointment appointmentToUpdate = appointmentRepository
                 .findById(appointmentId)
-                .orElseThrow(() -> new BadRequestException("Appointment with the provided id doesn't exist."));
+                .orElseThrow(() -> new BadRequestException(Message.NON_EXISTENT_APPOINTMENT));
 
         //Get updated status and status message from the request
         String status = appointment.getStatus();
@@ -284,8 +286,8 @@ public class AppointmentService {
         } //When co-ordinator re-schedules the appointment
         else if (Objects.nonNull(scheduledAt)) {
 
-            if (!authenticatedUserService.getAuthorities().contains("COORDINATOR"))
-                throw new NotAuthorizedException("You are not authorized to perform this request.");
+            if (!authenticatedUserService.getAuthorities().contains(RoleConstants.COORDINATOR))
+                throw new NotAuthorizedException(Message.UNAUTHORIZED);
 
             this.validateAppointments(
                     appointmentToUpdate.getTutorId(),
@@ -327,14 +329,12 @@ public class AppointmentService {
 
             tutorAppointmentsToReject.forEach(ap -> {
                 ap.setStatus(AppointmentConstant.REJECTED);
-                ap.setStatusMessage("This appointment was automatically canceled because " +
-                        "it conflicted with other appointments at the same time slot.");
+                ap.setStatusMessage(Message.SYSTEM_CANCELED_APPOINTMENT);
             });
 
             studentAppointmentsToReject.forEach(ap -> {
                 ap.setStatus(AppointmentConstant.REJECTED);
-                ap.setStatusMessage("This appointment was automatically canceled because " +
-                        "it conflicted with other appointments at the same time slot.");
+                ap.setStatusMessage(Message.SYSTEM_CANCELED_APPOINTMENT);
             });
 
             if (!tutorAppointmentsToReject.isEmpty())
@@ -343,5 +343,9 @@ public class AppointmentService {
             if (!studentAppointmentsToReject.isEmpty())
                 appointmentRepository.saveAll(studentAppointmentsToReject);
         }
+    }
+
+    public void delete(Long id) {
+        appointmentRepository.deleteById(id);
     }
 }

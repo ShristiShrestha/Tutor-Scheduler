@@ -1,9 +1,12 @@
 package com.fours.onlineschedulerapi.controller;
 
+import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.exception.NotAuthorizedException;
 import com.fours.onlineschedulerapi.model.Appointment;
 import com.fours.onlineschedulerapi.service.AppointmentService;
+import com.fours.onlineschedulerapi.service.AuthenticatedUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,9 @@ public class AppointmentController {
 
     @Autowired
     private AppointmentService appointmentService;
+
+    @Autowired
+    private AuthenticatedUserService authenticatedUserService;
 
     @PostMapping()
     public ResponseEntity<?> save(@RequestBody Appointment appointment) {
@@ -75,7 +81,23 @@ public class AppointmentController {
         } catch (NotAuthorizedException e) {
 
             return new ResponseEntity<>(
-                    e.getMessage(), HttpStatus.UNAUTHORIZED
+                    e.getMessage(), HttpStatus.FORBIDDEN
+            );
+        }
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        if (authenticatedUserService.getAuthorities().contains(RoleConstants.COORDINATOR)) {
+            appointmentService.delete(id);
+
+            return new ResponseEntity<>(
+                    Message.APPOINTMENT_DELETED
+                    , HttpStatus.NO_CONTENT
+            );
+        } else {
+            return new ResponseEntity<>(
+                    Message.UNAUTHORIZED, HttpStatus.FORBIDDEN
             );
         }
     }
