@@ -62,21 +62,21 @@ public class AppointmentService {
         );
 
         if (!conflictingTutorAppointment.isEmpty())
-            throw new BadRequestException("Tutor has an appointment scheduled at this timeslot.");
+            throw new BadRequestException(Message.TUTOR_CONFLICTING_TIMESLOT);
 
         List<Appointment> conflictingStudentAppointment = appointmentRepository.findByStudentIdAndScheduledAtAndStatus(
                 studentId, scheduledAt, AppointmentConstant.ACCEPTED
         );
 
         if (!conflictingStudentAppointment.isEmpty())
-            throw new BadRequestException("Student already has an accepted appointment at this time slot.");
+            throw new BadRequestException(Message.STUDENT_CONFLICTING_TIMESLOT);
 
         Boolean doesPendingAppointmentExist = !appointmentRepository
                 .findByTutorIdAndStudentIdAndScheduledAtAndStatus(tutorId, studentId, scheduledAt, AppointmentConstant.PENDING)
                 .isEmpty();
 
         if (doesPendingAppointmentExist)
-            throw new BadRequestException("Student already has an pending appointment with the same instructor at this time slot.");
+            throw new BadRequestException(Message.TUTOR_STUDENT_PENDING_AT_THIS_TIMESLOT);
     }
 
     public List<Appointment> getAll(
