@@ -2,7 +2,7 @@ package com.fours.onlineschedulerapi.service;
 
 import com.fours.onlineschedulerapi.constants.AppointmentConstant;
 import com.fours.onlineschedulerapi.dto.UserDto;
-import com.fours.onlineschedulerapi.exception.ConflictingAppointmentException;
+import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.model.Appointment;
 import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.repository.AppointmentRepository;
@@ -31,7 +31,7 @@ public class AppointmentService {
         this.userRepository = userRepository;
     }
 
-    public Appointment save(Appointment appointment) throws ConflictingAppointmentException {
+    public Appointment save(Appointment appointment) throws BadRequestException {
         this.validateAppointments(appointment);
 
         appointmentRepository.save(appointment);
@@ -39,13 +39,13 @@ public class AppointmentService {
         return appointment;
     }
 
-    private void validateAppointments(Appointment appointment) throws ConflictingAppointmentException {
+    private void validateAppointments(Appointment appointment) throws BadRequestException {
         Optional<Appointment> conflictingTutorAppointment = appointmentRepository.findByTutorIdAndScheduledAtAndStatus(
                 appointment.getTutorId(), appointment.getScheduledAt(), AppointmentConstant.ACCEPTED
         );
 
         if (conflictingTutorAppointment.isPresent()) {
-            throw new ConflictingAppointmentException("Tutor has an appointment scheduled at this timeslot.");
+            throw new BadRequestException("Tutor has an appointment scheduled at this timeslot.");
         }
 
         Optional<Appointment> conflictingStudentAppointment = appointmentRepository.findByStudentIdAndScheduledAtAndStatus(
@@ -53,7 +53,7 @@ public class AppointmentService {
         );
 
         if (conflictingStudentAppointment.isPresent()) {
-            throw new ConflictingAppointmentException("You already have an appointment scheduled at this timeslot.");
+            throw new BadRequestException("You already have an appointment scheduled at this timeslot.");
         }
     }
 

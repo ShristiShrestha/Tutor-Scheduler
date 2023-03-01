@@ -1,6 +1,6 @@
 package com.fours.onlineschedulerapi.controller;
 
-import com.fours.onlineschedulerapi.exception.ConflictingAppointmentException;
+import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.model.Appointment;
 import com.fours.onlineschedulerapi.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class AppointmentController {
             return new ResponseEntity<>(
                     savedAppointment, HttpStatus.CREATED
             );
-        } catch (ConflictingAppointmentException e) {
+        } catch (BadRequestException e) {
 
             return new ResponseEntity<>(
                     e.getMessage(), HttpStatus.BAD_REQUEST
