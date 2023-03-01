@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -93,13 +94,23 @@ public class AppointmentController {
 
             return new ResponseEntity<>(
                     Message.APPOINTMENT_DELETED
-                    , HttpStatus.NO_CONTENT
+                    , HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(
                     Message.UNAUTHORIZED, HttpStatus.FORBIDDEN
             );
         }
+    }
+
+    @PutMapping(value = "/received")
+    public ResponseEntity<?> updateReceivedAt(@RequestBody Map<String, List<Long>> ids) {
+        appointmentService.updateClientReceivedAt(ids.get("id"));
+
+        return new ResponseEntity<>(
+                Message.APPOINTMENT_RECEIVED_AT_CLIENT,
+                HttpStatus.OK
+        );
     }
 
 }

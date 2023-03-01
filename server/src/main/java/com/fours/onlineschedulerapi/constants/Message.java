@@ -10,4 +10,6 @@ public class Message {
     public static final String NON_EXISTENT_USER = "User with the provided id doesn't exist.";
     public static final String APPOINTMENT_DELETED = "Appointment has been deleted successfully.";
     public static final String USER_DELETED = "User has been deleted successfully.";
+
+    public static final String APPOINTMENT_RECEIVED_AT_CLIENT = "Appointment's client received at information saved successfully.";
 }

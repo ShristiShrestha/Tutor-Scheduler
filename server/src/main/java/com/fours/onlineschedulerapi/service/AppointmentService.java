@@ -348,4 +348,13 @@ public class AppointmentService {
     public void delete(Long id) {
         appointmentRepository.deleteById(id);
     }
+
+    public void updateClientReceivedAt(List<Long> ids) {
+        List<Appointment> appointments = (List) appointmentRepository.findAllById(ids);
+        Date receivedAt = Date.from(Instant.now());
+
+        appointments.forEach(appointment -> appointment.setClientReceivedAt(receivedAt));
+
+        appointmentRepository.saveAll(appointments);
+    }
 }

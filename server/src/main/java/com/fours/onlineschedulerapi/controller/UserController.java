@@ -43,7 +43,7 @@ public class UserController {
 
             return new ResponseEntity<>(
                     Message.USER_DELETED,
-                    HttpStatus.NO_CONTENT
+                    HttpStatus.OK
             );
         } else {
 
