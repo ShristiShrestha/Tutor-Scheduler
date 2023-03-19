@@ -113,4 +113,16 @@ public class AppointmentController {
         );
     }
 
+    @PutMapping(value = "/{id}/rate")
+    public ResponseEntity<?> rate(@PathVariable Long id, @RequestBody Map<String, Float> rating) {
+        try {
+            appointmentService.rate(id, rating.get("rating"));
+
+            return ResponseEntity.ok("Appointment has been rated successfully.");
+        } catch (EntityNotFoundException | BadRequestException e) {
+            return new ResponseEntity<>(
+                    e.getMessage(), HttpStatus.BAD_REQUEST
+            );
+        }
+    }
 }

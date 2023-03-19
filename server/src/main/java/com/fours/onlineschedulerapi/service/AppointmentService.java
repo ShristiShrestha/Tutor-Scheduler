@@ -7,8 +7,10 @@ import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.exception.NotAuthorizedException;
 import com.fours.onlineschedulerapi.model.Appointment;
+import com.fours.onlineschedulerapi.model.Tutor;
 import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.repository.AppointmentRepository;
+import com.fours.onlineschedulerapi.repository.TutorRepository;
 import com.fours.onlineschedulerapi.repository.UserRepository;
 import com.fours.onlineschedulerapi.utils.DateUtil;
 import com.fours.onlineschedulerapi.utils.FilterSortUtil;
@@ -29,14 +31,18 @@ public class AppointmentService {
 
     private AuthenticatedUserService authenticatedUserService;
 
+    private TutorRepository tutorRepository;
+
     public AppointmentService(
             AppointmentRepository appointmentRepository,
             UserRepository userRepository,
-            AuthenticatedUserService authenticatedUserService
+            AuthenticatedUserService authenticatedUserService,
+            TutorRepository tutorRepository
     ) {
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
         this.authenticatedUserService = authenticatedUserService;
+        this.tutorRepository = tutorRepository;
     }
 
     public Appointment save(Appointment appointment) throws BadRequestException {
@@ -356,5 +362,61 @@ public class AppointmentService {
         appointments.forEach(appointment -> appointment.setClientReceivedAt(receivedAt));
 
         appointmentRepository.saveAll(appointments);
+    }
+
+    @Transactional
+    public void rate(Long id, Float rating) throws EntityNotFoundException, BadRequestException {
+        //Get appointment by id from database or throw exception if it doesn't exist
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Message.NON_EXISTENT_APPOINTMENT));
+
+        String status = appointment.getStatus();
+        Date scheduledAt = appointment.getScheduledAt();
+        Float currentRating = appointment.getRating();
+
+        //Check if the appointment has already been rated.
+        if (!currentRating.equals(0.0F))
+            throw new BadRequestException(Message.APPOINTMENT_ALREADY_RATED);
+
+        //Validate if the appointment can be rated.
+        Date currentDate = Date.from(Instant.now());
+
+        if (!status.equals(AppointmentConstant.ACCEPTED) || scheduledAt.after(currentDate))
+            throw new BadRequestException(Message.APPOINTMENT_CANT_BE_RATED);
+
+        //Valid the rating value
+        if (rating < 1.0F || rating > 5.0F)
+            throw new BadRequestException(Message.RATING_INVALID_RANGE);
+
+        Long tutorId = appointment.getTutorId();
+
+        //Get the list of all rated appointments to calculate the average rating
+        List<Appointment> currentTutorsAcceptedAppointmentWithValidRating = this.getByTutorId(
+                tutorId,
+                Optional.of(AppointmentConstant.ACCEPTED),
+                Optional.empty(),
+                Optional.empty())
+                .stream().filter(ap -> ap.getRating() > 0.0F)
+                .collect(Collectors.toList());
+
+        //Get the count of rated appointments
+        Long ratedAppointmentCount = (long) currentTutorsAcceptedAppointmentWithValidRating.size();
+
+        //Get the rating sum including current rating
+        Float ratingSum = currentTutorsAcceptedAppointmentWithValidRating.stream()
+                .reduce(0.0F , (sum, ap) -> ap.getRating() + sum, Float::sum) + rating;
+
+        //Calculate the new average rating
+        Float calculatedAvgRating = ratingSum / (ratedAppointmentCount + 1);
+
+        //Update tutor rating
+        Tutor tutor = tutorRepository.findById(tutorId).get();
+        tutor.setRating(calculatedAvgRating);
+        tutor.setRatedBy(tutor.getRatedBy() + 1);
+        tutorRepository.save(tutor);
+
+        //Update appointment
+        appointment.setRating(rating);
+        appointmentRepository.save(appointment);
     }
 }
