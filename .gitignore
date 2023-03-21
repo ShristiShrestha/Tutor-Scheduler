@@ -7,3 +7,23 @@ server/*.idea
 .DS_STORE
 server/*.iml
 logs
+ui/node_modules
+ui/.pnp
+ui/.pnp.js
+
+# testing
+ui/coverage
+
+# production
+ui/build
+
+# misc
+ui/.DS_Store
+ui/.env.local
+ui/.env.development.local
+ui/.env.test.local
+ui/.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
