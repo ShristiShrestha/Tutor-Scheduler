@@ -1,0 +1,12 @@
+.ant-menu-item-selected {
+    background: #F9F7FF !important;
+    color: #9D6FF2 !important;
+    font-weight: bold;
+}
+
+.ant-layout-sider {
+    position: fixed !important;
+    left: 0 !important;
+    top: 48px !important;
+    height: calc(100vh - 48px) !important;
+}

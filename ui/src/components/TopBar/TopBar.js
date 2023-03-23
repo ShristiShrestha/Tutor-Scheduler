@@ -1,44 +1,43 @@
-import { Layout, Avatar } from "antd";
-import { UserOutlined, DownOutlined } from "@ant-design/icons";
-import "./TopBar.scss";
+import { Avatar } from "antd";
+import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import { ResText14SemiBold } from "../../utils/TextUtils";
+import styled from "styled-components";
 
-const { Header } = Layout;
+const Wrapper = styled.div`
+    line-height: inherit;
+    height: fit-content;
+    padding: 24px;
+`;
+
+const AppName = styled.div`
+    align-self: center;
+`;
+
+const UserInfo = styled.div`
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+`;
 
 const TopBar = ({ name }) => {
-  return (
-    <Layout>
-      <Header
-        className="header"
-        style={{ position: "fixed", zIndex: 1, width: "100%" }}
-      >
-        <div
-          className="top-bar-content"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span className="title">Online Scheduler</span>
-          <div
-            className="user-info"
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <Avatar
-              icon={<UserOutlined />}
-              style={{ marginRight: "10px", cursor: "pointer" }}
-            />
-            <span
-              style={{ marginRight: "10px", fontWeight: 600, fontSize: "16px" }}
-            >
-              Shristi{name}
-            </span>
-            <DownOutlined style={{ cursor: "pointer" }} />
-          </div>
-        </div>
-      </Header>
-    </Layout>
-  );
+    return (
+        <Wrapper className={"h-justified-flex"}>
+            <AppName>
+                <ResText14SemiBold>Online Scheduler</ResText14SemiBold>
+            </AppName>
+            <UserInfo>
+                <Avatar
+                    icon={<UserOutlined />}
+                    style={{ marginRight: "10px", cursor: "pointer" }}
+                />
+                <ResText14SemiBold>Shristi{name}</ResText14SemiBold>
+                <DownOutlined style={{ cursor: "pointer" }} />
+            </UserInfo>
+        </Wrapper>
+    );
 };
 
 export default TopBar;

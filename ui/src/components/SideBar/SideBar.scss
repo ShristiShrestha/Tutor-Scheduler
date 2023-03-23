@@ -1,7 +1,18 @@
+<<<<<<< HEAD
 .container-card {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   margin-left: 210px;
   // margin-top: 60px;
+=======
+.app-sidebar-menu {
+  height: 100%;
+  padding-top: 12px;
+}
+
+.app-sidebar-menu > .ant-menu-item {
+  padding-top: 12px;
+  padding-bottom: 12px;
+>>>>>>> 4b0ec4c (add dep, refactor layout)
 }

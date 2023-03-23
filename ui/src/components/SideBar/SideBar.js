@@ -1,71 +1,52 @@
 import React from "react";
 import {
-  FileTextOutlined,
-  SendOutlined,
-  ShareAltOutlined,
+    CalendarOutlined,
+    SearchOutlined,
+    SendOutlined,
 } from "@ant-design/icons";
-import "./SideBar.scss";
-import { Layout, Menu } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Menu } from "antd";
+import { Link } from "react-router-dom";
 
-const { Sider } = Layout;
+import "./SideBar.scss";
+import { ResText12Regular } from "../../utils/TextUtils";
+
+const menus = [
+    {
+        key: "menu-my-schedule",
+        icon: <CalendarOutlined />,
+        link: "/my-schedule",
+        title: "My Schedule",
+    },
+    {
+        key: "menu-find-tutors",
+        icon: <SearchOutlined />,
+        link: "/find-tutors",
+        title: "Find Tutors",
+    },
+    {
+        key: "menu-chat",
+        icon: <SendOutlined />,
+        link: "/chat",
+        title: "Chat",
+    },
+];
 
 const SideBar = () => {
-  const history = useNavigate();
-
-  const changeUrl = (index) => {
-    console.log(index);
-    if (index.key == "sub3") history("/chat");
-    else if (index.key == "sub2") history("/");
-    else if (index.key == "sub1") history("/myschedule");
-    else history("/");
-  };
-
-  return (
-    <Layout style={{ marginTop: 65 }}>
-      <Sider width={200} className="site-layout-background">
+    return (
         <Menu
-          mode="inline"
-          expandIcon=""
-          defaultSelectedKeys={["sub2"]}
-          defaultOpenKeys={["sub2"]}
-          style={{
-            position: "fixed",
-            left: 0,
-            top: 64,
-            height: "100vh",
-            width: 200,
-          }}
+            className={"app-sidebar-menu"}
+            mode="inline"
+            defaultSelectedKeys={[menus[0].key]}
+            defaultOpenKeys={[menus[0].key]}
         >
-          <Menu.Item
-            style={{ margin: "10px 0 10px 0" }}
-            key="sub1"
-            icon={<FileTextOutlined />}
-            onClick={changeUrl}
-          >
-            My Schedule
-          </Menu.Item>
-
-          <Menu.Item
-            style={{ margin: "10px 0 10px 0" }}
-            key="sub2"
-            icon={<ShareAltOutlined />}
-            onClick={changeUrl}
-          >
-            Find Tutors
-          </Menu.Item>
-
-          <Menu.Item
-            style={{ margin: "10px 0 10px 0" }}
-            key="sub3"
-            icon={<SendOutlined />}
-            onClick={changeUrl}
-          >
-            Chat
-          </Menu.Item>
+            {menus.map(item => (
+                <Menu.Item key={item.key} icon={item.icon}>
+                    <Link to={item.link}>
+                        <ResText12Regular>{item.title}</ResText12Regular>
+                    </Link>
+                </Menu.Item>
+            ))}
         </Menu>
-      </Sider>
-    </Layout>
-  );
+    );
 };
 export default SideBar;
