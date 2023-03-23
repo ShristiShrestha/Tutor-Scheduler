@@ -6,10 +6,21 @@ import {
 } from "@ant-design/icons";
 import "./SideBar.scss";
 import { Layout, Menu } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const { Sider } = Layout;
 
 const SideBar = () => {
+  const history = useNavigate();
+
+  const changeUrl = (index) => {
+    console.log(index);
+    if (index.key == "sub3") history("/chat");
+    else if (index.key == "sub2") history("/");
+    else if (index.key == "sub1") history("/myschedule");
+    else history("/");
+  };
+
   return (
     <Layout style={{ marginTop: 65 }}>
       <Sider width={200} className="site-layout-background">
@@ -30,6 +41,7 @@ const SideBar = () => {
             style={{ margin: "10px 0 10px 0" }}
             key="sub1"
             icon={<FileTextOutlined />}
+            onClick={changeUrl}
           >
             My Schedule
           </Menu.Item>
@@ -38,6 +50,7 @@ const SideBar = () => {
             style={{ margin: "10px 0 10px 0" }}
             key="sub2"
             icon={<ShareAltOutlined />}
+            onClick={changeUrl}
           >
             Find Tutors
           </Menu.Item>
@@ -46,6 +59,7 @@ const SideBar = () => {
             style={{ margin: "10px 0 10px 0" }}
             key="sub3"
             icon={<SendOutlined />}
+            onClick={changeUrl}
           >
             Chat
           </Menu.Item>

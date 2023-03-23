@@ -1,0 +1,15 @@
+.rating-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.rating-mark {
+  flex: 1;
+  height: 100%;
+}
+
+.review {
+  flex: 1;
+  height: 100%;
+}

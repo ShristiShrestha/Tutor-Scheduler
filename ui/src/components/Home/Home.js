@@ -83,7 +83,11 @@ const Home = () => {
       <Layout>
         <Content className="site-layout-background">
           <Search />
-          <span style={{ marginTop: 40 }}>Our Top Rated Tutors</span>
+          <div>
+            <h2 style={{ marginTop: "95px", marginLeft: "230px" }}>
+              Our Top Rated Tutors
+            </h2>
+          </div>
           <div className="container-card">
             {data.map((item, index) => (
               <CardBlock
@@ -95,6 +99,9 @@ const Home = () => {
               />
             ))}
           </div>
+          {/* <Profile expertises={expertises} />
+          <ListView />
+          <Chat /> */}
         </Content>
       </Layout>
     </Layout>

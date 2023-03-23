@@ -1,11 +1,17 @@
-import { Typography, Input, Layout } from "antd";
+import { Breadcrumb, Input, Layout } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import React from "react";
 import "./Search.scss";
+import { useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 
 const Search = () => {
+  const history = useNavigate();
+
+  const handleClick = () => {
+    history("/");
+  };
   return (
     <>
       <Header
@@ -25,7 +31,12 @@ const Search = () => {
             alignItems: "center",
           }}
         >
-          <span className="title">Find Tutors</span>
+          {/* <span className="title">Find Tutors</span> */}
+
+          <Breadcrumb>
+            <Breadcrumb.Item onClick={handleClick}>Find Tutors</Breadcrumb.Item>
+            <Breadcrumb.Item>Tutor #ID 1234</Breadcrumb.Item>
+          </Breadcrumb>
 
           <Input
             prefix={<SearchOutlined />}
