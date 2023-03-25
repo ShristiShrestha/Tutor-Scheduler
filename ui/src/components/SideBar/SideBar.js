@@ -1,31 +1,27 @@
 import React from "react";
-import {
-    CalendarOutlined,
-    SearchOutlined,
-    SendOutlined,
-} from "@ant-design/icons";
-import { Menu } from "antd";
-import { Link } from "react-router-dom";
+import {CalendarOutlined, SearchOutlined, SendOutlined,} from "@ant-design/icons";
+import {Menu} from "antd";
+import {Link} from "react-router-dom";
 
 import "./SideBar.scss";
-import { ResText12Regular } from "../../utils/TextUtils";
+import {ResText14Regular} from "../../utils/TextUtils";
 
 const menus = [
     {
         key: "menu-my-schedule",
-        icon: <CalendarOutlined />,
+        icon: <CalendarOutlined/>,
         link: "/my-schedule",
         title: "My Schedule",
     },
     {
         key: "menu-find-tutors",
-        icon: <SearchOutlined />,
+        icon: <SearchOutlined/>,
         link: "/find-tutors",
         title: "Find Tutors",
     },
     {
         key: "menu-chat",
-        icon: <SendOutlined />,
+        icon: <SendOutlined/>,
         link: "/chat",
         title: "Chat",
     },
@@ -42,7 +38,7 @@ const SideBar = () => {
             {menus.map(item => (
                 <Menu.Item key={item.key} icon={item.icon}>
                     <Link to={item.link}>
-                        <ResText12Regular>{item.title}</ResText12Regular>
+                        <ResText14Regular>{item.title}</ResText14Regular>
                     </Link>
                 </Menu.Item>
             ))}

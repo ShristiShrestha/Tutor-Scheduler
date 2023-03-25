@@ -2,13 +2,17 @@ import React from "react";
 import {Avatar, Divider, Tag} from "antd";
 import styled from "styled-components";
 import {ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
-import {amethyst, grey3, grey6} from "../../utils/ShadesUtils";
+import {amethyst, grey1, grey3, grey4, grey6} from "../../utils/ShadesUtils";
 
 // styled components
 export const Card = styled.div`
   padding: 16px 24px;
   border-radius: 12px;
   border: 1px solid ${grey6};
+
+  text {
+    color: ${grey1};
+  }
 
   :hover {
     border: 2px solid ${amethyst};
@@ -47,7 +51,10 @@ export const StatusTagList = styled.div`
   row-gap: 8px;
 
   .ant-tag {
+    background: white;
+    border: 1px solid ${grey4};
     border-radius: 12px !important;
+    padding: ${props => props.padding || "2px 8px"}
   }
 `;
 
@@ -98,7 +105,7 @@ const ScheduleCard = ({
         <Desc>
             <ResText12Regular>{description}</ResText12Regular>
         </Desc>
-        <StatusTagList>
+        <StatusTagList padding={"12px 16px"}>
             {expertises && expertises.map((expertise) => (<Tag>{expertise}</Tag>))}
         </StatusTagList>
     </Card>);
