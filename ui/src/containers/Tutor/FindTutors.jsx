@@ -1,6 +1,6 @@
 import Search from "../../components/Search/Search";
 import { data } from "../../static_data/tutors";
-import TutorCard from "../../components/CardBlock/TutorCard";
+import TutorCard from "../../components/Card/TutorCard";
 import { ResText14SemiBold } from "../../utils/TextUtils";
 import styled from "styled-components";
 import { grey6 } from "../../utils/ShadesUtils";

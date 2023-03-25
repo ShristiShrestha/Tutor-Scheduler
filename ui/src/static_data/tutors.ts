@@ -69,3 +69,99 @@ export const data = [
         expertises: expertises,
     },
 ];
+
+export const schedule_cards_1 = [
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14.. 2023",
+        slot: 3,
+        status: "Denied",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14,. 2023",
+        slot: 3,
+        status: "Pending",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14. 2023",
+        slot: 3,
+        status: "Pending",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14. 2023",
+        slot: 3,
+        status: "Pending",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+];
+
+export const schedule_cards_2 = [
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14, 2023",
+        slot: 3,
+        status: "Denied",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14, 2023",
+        slot: 3,
+        status: "Pending",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14, 2023",
+        slot: 3,
+        status: "Pending",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14, 2023",
+        slot: 3,
+        status: "Denied",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14, 2023",
+        slot: 3,
+        status: "Pending",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+    {
+        name: "Ms. Alyemma Jones",
+        title: "Joined in Jan 10, 2023",
+        date: "May 14, 2023",
+        slot: 3,
+        status: "Pending",
+        description:
+            "Note - “I am in urgent need. Please do consider tutoring in your available time...”",
+    },
+];
