@@ -45,4 +45,13 @@ public class ChatController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<?> getConversationWith(@PathVariable String email) {
+
+        return new ResponseEntity<>(
+                chatService.getConversationWith(email),
+                HttpStatus.OK
+        );
+    }
 }

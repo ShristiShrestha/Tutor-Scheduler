@@ -34,6 +34,7 @@ public class ChatService {
         // Set message properties
         Map<String, Object> headers = new HashMap<>();
         headers.put(RabbitMqConstant.MESSAGE_ID, message.getId());
+        headers.put(RabbitMqConstant.SENDER_EMAIL, message.getSenderEmail());
 
         String queueName = RabbitMqConstant.QUEUE_PREFIX + message.getReceiverEmail();
 
@@ -109,5 +110,16 @@ public class ChatService {
         }
 
         return userMessagesMap;
+    }
+
+    public List<Message> getConversationWith(String email) {
+        String loggedInUser = authenticatedUserService.getUsername();
+
+        List<Message> conversation = messageRepository.findByReceiverEmailAndSenderEmail(email, loggedInUser);
+        conversation.addAll(messageRepository.findByReceiverEmailAndSenderEmail(loggedInUser, email));
+
+        conversation.sort(Comparator.comparing(Message::getSentAt));
+
+        return conversation;
     }
 }

@@ -12,4 +12,6 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
     List<Message> findBySenderEmail(String email);
 
     List<Message> findByReceiverEmail(String email);
+
+    List<Message> findByReceiverEmailAndSenderEmail(String receiverEmail, String senderEmail);
 }
