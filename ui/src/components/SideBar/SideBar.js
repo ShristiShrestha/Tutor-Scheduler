@@ -9,8 +9,6 @@ import { Link } from "react-router-dom";
 
 import "./SideBar.scss";
 import { ResText14Regular } from "../../utils/TextUtils";
-import { selectAuthenticated } from "../../redux/auth/reducer";
-import { useSelector } from "react-redux";
 
 const menus = [
     {
@@ -32,10 +30,19 @@ const menus = [
         title: "Chat",
     },
 ];
-
 const SideBar = () => {
-    const authenticated = useSelector(selectAuthenticated);
-    const menuItems = authenticated ? menus : [menus[1]];
+    // const { loggedUser } = useSelector(selectAuth);
+    // const menuItems = () => {
+    //     const roles = [loggedUser.roles];
+    //
+    //     if (UserRoles.MODERATOR in roles) return [menus[1], menus[2]];
+    //     return menus;
+    // };
+
+    // const sideMenus = menuItems();
+
+    const menuItems = menus;
+
     return (
         <Menu
             className={"app-sidebar-menu"}

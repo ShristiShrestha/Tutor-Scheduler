@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { authenticate } from "../api/AuthApi";
 import { Navigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -7,8 +7,8 @@ import { setAuth } from "../redux/auth/actions";
 export default function useAuth(Component) {
     const dispatch = useDispatch();
     const [pinged, setPinged] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
 
     const checkLogin = useCallback(() => {
         setLoading(true);
@@ -29,13 +29,13 @@ export default function useAuth(Component) {
             })
             .finally(() => {
                 setLoading(false);
-                setPinged(true);
             });
+        setPinged(true);
     }, [dispatch, setLoading, setPinged, setIsAuthenticated]);
 
-    useEffect(() => {
-        if (!pinged) checkLogin();
-    }, [pinged]);
+    // useEffect(() => {
+    //     if (!pinged) checkLogin();
+    // }, [checkLogin]);
 
     if (loading) return <div>Authenticating...</div>;
 

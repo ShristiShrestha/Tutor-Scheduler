@@ -22,10 +22,6 @@ const pages = [
         path: "/chat",
         component: <Chat />,
     },
-    // {
-    //     path: "/login",
-    //     component: <LoginPage />,
-    // },
     {
         path: "/",
         component: <FindTutors />,
@@ -35,8 +31,12 @@ const pages = [
 export default function PageRoutes() {
     return (
         <Routes>
-            {pages.map(item => (
-                <Route path={item.path} element={item.component} />
+            {pages.map((item, index) => (
+                <Route
+                    key={"inside-route" + index}
+                    path={item.path}
+                    element={item.component}
+                />
             ))}
         </Routes>
     );

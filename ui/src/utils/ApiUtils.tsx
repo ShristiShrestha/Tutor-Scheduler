@@ -29,6 +29,7 @@ export default class Api {
                 return Api.handleError(error);
             });
     }
+
     static handleResponse<T>(response: AxiosResponse<T>): Promise<T> {
         return Promise.resolve<T>(response.data);
     }
@@ -40,8 +41,13 @@ export default class Api {
         ) {
             return new Promise<T>(() => {}); // Lost promise
         }
-        if (error && error.response && error.response.status === 403) {
+        if (
+            error &&
+            error.response &&
+            (error.response.status === 404 || error.response.status === 403)
+        ) {
             // TODO : 403 api call here
+            console.log("rejecting status: ", error.response.status);
             return Promise.reject<T>(error);
         }
         return Promise.reject<T>(error);

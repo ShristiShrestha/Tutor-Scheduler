@@ -5,6 +5,8 @@ import { ResText14SemiBold } from "../../utils/TextUtils";
 import styled from "styled-components";
 import { grey6 } from "../../utils/ShadesUtils";
 import { Col, Row } from "antd";
+import { Link } from "react-router-dom";
+import React from "react";
 
 const Wrapper = styled.div`
     position: relative;
@@ -57,13 +59,15 @@ export default function FindTutors() {
                 <Row gutter={[24, 24]} wrap={true}>
                     {data.map((item, index) => (
                         <Col key={"find-tutors-" + index} span={6}>
-                            <TutorCard
-                                name={item.name}
-                                title={item.title}
-                                rating={item.ratings}
-                                description={item.description}
-                                expertises={item.expertises}
-                            />
+                            <Link to={"/users/" + index}>
+                                <TutorCard
+                                    name={item.name}
+                                    title={item.title}
+                                    rating={item.ratings}
+                                    description={item.description}
+                                    expertises={item.expertises}
+                                />
+                            </Link>
                         </Col>
                     ))}
                 </Row>

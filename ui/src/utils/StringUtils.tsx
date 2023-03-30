@@ -1,9 +1,9 @@
 // capitalize
 
 ///todo: refactor dummy impl
-import queryString from "querystring";
+// import queryString from "querystring";
 import _ from "lodash";
-import { isNetherUndefinedNorNull } from "./ValidationUtils";
+import {isNetherUndefinedNorNull} from "./ValidationUtils";
 
 const thousandSeparatorRegex = /\d{1,3}(?=(\d{3})+(?!\d))/g;
 const emailRegex =
@@ -30,6 +30,16 @@ export const toMidDottedStr = (
     const leadingStr = str.toString().substring(firstIndex, leadingVisible);
     const trailingStr = str.toString().substring(total - leadingVisible);
     return `${leadingStr}...${trailingStr}`;
+};
+
+export const toEndDottedStr = (
+    str: string | number,
+    leadingVisible = 12,
+    firstIndex = 0,
+    // trailing_visible_max = 12,
+) => {
+    const leadingStr = str.toString().substring(firstIndex, leadingVisible);
+    return `${leadingStr}...`;
 };
 
 export const getCommaSeparatedStr = (
@@ -63,26 +73,26 @@ export const getTruncVal = (val, decimalCount = 2) => {
 };
 
 /* parse query params from location */
-export const parseLocationQuery = (
-    locSearch,
-    key,
-): string | string[] | undefined => {
-    const params = queryString.parse(locSearch);
-    const queryStr = `${key}`;
-    return params[queryStr] ? params[queryStr] : undefined;
-};
-
-export const parseLocationQueryStr = (locSearch, key): string | undefined => {
-    const params = queryString.parse(locSearch);
-    const queryStr = `${key}`;
-    // @ts-ignore
-    return params[queryStr]
-        ? typeof params[queryStr] === "string"
-            ? params[queryStr]
-            : // @ts-ignore
-              params[queryStr][0]
-        : undefined;
-};
+// export const parseLocationQuery = (
+//     locSearch,
+//     key,
+// ): string | string[] | undefined => {
+//     const params = queryString.parse(locSearch);
+//     const queryStr = `${key}`;
+//     return params[queryStr] ? params[queryStr] : undefined;
+// };
+//
+// export const parseLocationQueryStr = (locSearch, key): string | undefined => {
+//     const params = queryString.parse(locSearch);
+//     const queryStr = `${key}`;
+//     // @ts-ignore
+//     return params[queryStr]
+//         ? typeof params[queryStr] === "string"
+//             ? params[queryStr]
+//             : // @ts-ignore
+//             params[queryStr][0]
+//         : undefined;
+// };
 
 /* Format string */
 export const replaceBy = (val, replace, replaceBy) =>
