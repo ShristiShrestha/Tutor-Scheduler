@@ -1,7 +1,7 @@
 // api/errorReducer.js
 import _ from "lodash";
-import { BaseActionType, RootState } from "../common/types";
-import { ErrorState } from "./types";
+import {BaseActionType, RootState} from "../common/types";
+import {ErrorState} from "./types";
 
 // ------------------------------------------------------------------------- //
 // selectors
@@ -29,7 +29,7 @@ export const errorSelectorFromAllErrors = (actions: string[]) => (
 };
 
 // ------------------------------------------------------------------------- //
-// reducer
+// reducer.ts
 // ------------------------------------------------------------------------- //
 
 const initialState = {
@@ -40,7 +40,7 @@ const errorReducer = (
     state = initialState,
     action: BaseActionType,
 ): ErrorState => {
-    const { type, payload } = action;
+    const {type, payload} = action;
     const matches = /(.*)_(REQUEST|FAILURE)/.exec(type);
 
     // not a *_REQUEST / *_FAILURE actions, so we ignore them

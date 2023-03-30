@@ -1,6 +1,6 @@
-import { Action } from "redux";
-import { ThunkAction, ThunkDispatch } from "redux-thunk";
-import { combinedReducer } from "../store";
+import {Action} from "redux";
+import {ThunkAction, ThunkDispatch} from "redux-thunk";
+import {combinedReducer} from "../store"; // -------------------------------------------------------------------------------- //
 
 // -------------------------------------------------------------------------------- //
 // Thunk //
@@ -19,10 +19,12 @@ export type MyThunkDispatch = ThunkDispatch<RootState, MyExtraArg, Action>;
 export interface BaseActionType {
     readonly type: string;
     readonly payload?: any;
+
     readonly [key: string]: any;
 }
 
 export const RESET_REDUX = "RESET_REDUX";
+
 export interface ResetReduxActionType {
     type: typeof RESET_REDUX;
 }
@@ -43,6 +45,18 @@ export type PageConfigType = {
     size: number;
     totalElements: number;
     numberOfElements: number;
+};
+
+export type PageResponse<T> = {
+    content: T[];
+    config: PageConfigType;
+};
+
+export const defaultPageConfig = {
+    page: 0,
+    size: 10,
+    totalElements: 0,
+    numberOfElements: 0,
 };
 
 export type RootState = ReturnType<typeof combinedReducer>;
