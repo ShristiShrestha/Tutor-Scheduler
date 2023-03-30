@@ -36,4 +36,13 @@ public class ChatController {
                 HttpStatus.OK
         );
     }
+
+    @GetMapping
+    public ResponseEntity<?> get() {
+
+        return new ResponseEntity<> (
+                chatService.getMessages(),
+                HttpStatus.OK
+        );
+    }
 }
