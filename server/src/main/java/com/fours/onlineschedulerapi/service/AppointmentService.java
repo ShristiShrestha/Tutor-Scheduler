@@ -1,7 +1,7 @@
 package com.fours.onlineschedulerapi.service;
 
 import com.fours.onlineschedulerapi.constants.AppointmentConstant;
-import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.ResponseMessage;
 import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
@@ -68,21 +68,21 @@ public class AppointmentService {
         );
 
         if (!conflictingTutorAppointment.isEmpty())
-            throw new BadRequestException(Message.TUTOR_CONFLICTING_TIMESLOT);
+            throw new BadRequestException(ResponseMessage.TUTOR_CONFLICTING_TIMESLOT);
 
         List<Appointment> conflictingStudentAppointment = appointmentRepository.findByStudentIdAndScheduledAtAndStatus(
                 studentId, scheduledAt, AppointmentConstant.ACCEPTED
         );
 
         if (!conflictingStudentAppointment.isEmpty())
-            throw new BadRequestException(Message.STUDENT_CONFLICTING_TIMESLOT);
+            throw new BadRequestException(ResponseMessage.STUDENT_CONFLICTING_TIMESLOT);
 
         Boolean doesPendingAppointmentExist = !appointmentRepository
                 .findByTutorIdAndStudentIdAndScheduledAtAndStatus(tutorId, studentId, scheduledAt, AppointmentConstant.PENDING)
                 .isEmpty();
 
         if (doesPendingAppointmentExist)
-            throw new BadRequestException(Message.TUTOR_STUDENT_PENDING_AT_THIS_TIMESLOT);
+            throw new BadRequestException(ResponseMessage.TUTOR_STUDENT_PENDING_AT_THIS_TIMESLOT);
     }
 
     public List<Appointment> getAll(
@@ -186,7 +186,7 @@ public class AppointmentService {
     public Appointment getById(Long id) throws EntityNotFoundException {
         //Get appointment by id from database or throw exception if it doesn't exist
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Message.NON_EXISTENT_APPOINTMENT));
+                .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NON_EXISTENT_APPOINTMENT));
 
         //Set student/tutor details to the appointment
         appointment.setTutor(
@@ -263,7 +263,7 @@ public class AppointmentService {
         //Get appointment to update from database
         Appointment appointmentToUpdate = appointmentRepository
                 .findById(appointmentId)
-                .orElseThrow(() -> new BadRequestException(Message.NON_EXISTENT_APPOINTMENT));
+                .orElseThrow(() -> new BadRequestException(ResponseMessage.NON_EXISTENT_APPOINTMENT));
 
         //Get updated status and status message from the request
         String status = appointment.getStatus();
@@ -293,7 +293,7 @@ public class AppointmentService {
         else if (Objects.nonNull(scheduledAt)) {
 
             if (!authenticatedUserService.getAuthorities().contains(RoleConstants.COORDINATOR))
-                throw new NotAuthorizedException(Message.UNAUTHORIZED);
+                throw new NotAuthorizedException(ResponseMessage.UNAUTHORIZED);
 
             this.validateAppointments(
                     appointmentToUpdate.getTutorId(),
@@ -335,12 +335,12 @@ public class AppointmentService {
 
             tutorAppointmentsToReject.forEach(ap -> {
                 ap.setStatus(AppointmentConstant.REJECTED);
-                ap.setStatusMessage(Message.SYSTEM_CANCELED_APPOINTMENT);
+                ap.setStatusMessage(ResponseMessage.SYSTEM_CANCELED_APPOINTMENT);
             });
 
             studentAppointmentsToReject.forEach(ap -> {
                 ap.setStatus(AppointmentConstant.REJECTED);
-                ap.setStatusMessage(Message.SYSTEM_CANCELED_APPOINTMENT);
+                ap.setStatusMessage(ResponseMessage.SYSTEM_CANCELED_APPOINTMENT);
             });
 
             if (!tutorAppointmentsToReject.isEmpty())
@@ -368,7 +368,7 @@ public class AppointmentService {
     public void rate(Long id, Float rating) throws EntityNotFoundException, BadRequestException {
         //Get appointment by id from database or throw exception if it doesn't exist
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Message.NON_EXISTENT_APPOINTMENT));
+                .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NON_EXISTENT_APPOINTMENT));
 
         String status = appointment.getStatus();
         Date scheduledAt = appointment.getScheduledAt();
@@ -376,17 +376,17 @@ public class AppointmentService {
 
         //Check if the appointment has already been rated.
         if (!currentRating.equals(0.0F))
-            throw new BadRequestException(Message.APPOINTMENT_ALREADY_RATED);
+            throw new BadRequestException(ResponseMessage.APPOINTMENT_ALREADY_RATED);
 
         //Validate if the appointment can be rated.
         Date currentDate = Date.from(Instant.now());
 
         if (!status.equals(AppointmentConstant.ACCEPTED) || scheduledAt.after(currentDate))
-            throw new BadRequestException(Message.APPOINTMENT_CANT_BE_RATED);
+            throw new BadRequestException(ResponseMessage.APPOINTMENT_CANT_BE_RATED);
 
         //Valid the rating value
         if (rating < 1.0F || rating > 5.0F)
-            throw new BadRequestException(Message.RATING_INVALID_RANGE);
+            throw new BadRequestException(ResponseMessage.RATING_INVALID_RANGE);
 
         Long tutorId = appointment.getTutorId();
 

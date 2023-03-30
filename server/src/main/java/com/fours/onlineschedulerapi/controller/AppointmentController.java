@@ -1,6 +1,6 @@
 package com.fours.onlineschedulerapi.controller;
 
-import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.ResponseMessage;
 import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.exception.NotAuthorizedException;
@@ -93,12 +93,12 @@ public class AppointmentController {
             appointmentService.delete(id);
 
             return new ResponseEntity<>(
-                    Message.APPOINTMENT_DELETED
+                    ResponseMessage.APPOINTMENT_DELETED
                     , HttpStatus.OK
             );
         } else {
             return new ResponseEntity<>(
-                    Message.UNAUTHORIZED, HttpStatus.FORBIDDEN
+                    ResponseMessage.UNAUTHORIZED, HttpStatus.FORBIDDEN
             );
         }
     }
@@ -108,7 +108,7 @@ public class AppointmentController {
         appointmentService.updateClientReceivedAt(ids.get("id"));
 
         return new ResponseEntity<>(
-                Message.APPOINTMENT_RECEIVED_AT_CLIENT,
+                ResponseMessage.APPOINTMENT_RECEIVED_AT_CLIENT,
                 HttpStatus.OK
         );
     }

@@ -1,12 +1,14 @@
 package com.fours.onlineschedulerapi.controller;
 
-import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.ResponseMessage;
+import com.fours.onlineschedulerapi.constants.RabbitMqConstant;
 import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.service.AppointmentService;
 import com.fours.onlineschedulerapi.service.AuthenticatedUserService;
+import com.fours.onlineschedulerapi.service.RabbitMqService;
 import com.fours.onlineschedulerapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -29,9 +33,17 @@ public class UserController {
     @Autowired
     private AppointmentService appointmentService;
 
+    @Autowired
+    private RabbitMqService rabbitMqService;
+
     @PostMapping(value = "/signup")
     public ResponseEntity<?> save(@RequestBody User user) throws EntityExistsException {
         UserDto savedUser = userService.save(user);
+
+        String queueName = RabbitMqConstant.QUEUE_PREFIX + savedUser.getEmail();
+
+        //Create a queue for every user to facilitate chat
+        rabbitMqService.createQueue(queueName);
 
         return ResponseEntity.ok(savedUser);
     }
@@ -42,13 +54,13 @@ public class UserController {
             userService.delete(id);
 
             return new ResponseEntity<>(
-                    Message.USER_DELETED,
+                    ResponseMessage.USER_DELETED,
                     HttpStatus.OK
             );
         } else {
 
             return new ResponseEntity<>(
-                    Message.UNAUTHORIZED,
+                    ResponseMessage.UNAUTHORIZED,
                     HttpStatus.FORBIDDEN
             );
         }

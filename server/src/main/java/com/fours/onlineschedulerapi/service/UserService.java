@@ -1,6 +1,6 @@
 package com.fours.onlineschedulerapi.service;
 
-import com.fours.onlineschedulerapi.constants.Message;
+import com.fours.onlineschedulerapi.constants.ResponseMessage;
 import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
@@ -161,7 +161,7 @@ public class UserService {
     public UserDto getById(Long id) throws BadRequestException {
         User user = userRepository
                 .findById(id)
-                .orElseThrow(() -> new BadRequestException(Message.NON_EXISTENT_USER));
+                .orElseThrow(() -> new BadRequestException(ResponseMessage.NON_EXISTENT_USER));
 
         return new UserDto(user);
     }
