@@ -14,7 +14,7 @@ const menus = [
     {
         key: "menu-my-schedule",
         icon: <CalendarOutlined />,
-        link: "/my-schedule",
+        link: "/schedules",
         title: "My Schedule",
     },
     {

@@ -11,11 +11,11 @@ const pages = [
         component: <FindTutors />,
     },
     {
-        path: "/my-schedule",
+        path: "/schedules",
         component: <MySchedule />,
     },
     {
-        path: "/my-schedule/:id",
+        path: "/schedules/:id",
         component: <ScheduleView />,
     },
     {

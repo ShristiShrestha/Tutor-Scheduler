@@ -22,7 +22,7 @@ export default function MySchedule() {
             <Row gutter={[24, 24]} className={"schedules-upcoming"}>
                 {schedule_cards_1?.map((item, index) => (
                     <Col xxl={6} lg={8} md={12} sm={24} xs={24}>
-                        <Link to={"/my-schedule/" + index}>
+                        <Link to={"/schedules/" + index}>
                             <ScheduleCard
                                 name={item.name}
                                 title={item.title}
@@ -39,7 +39,7 @@ export default function MySchedule() {
             <Row gutter={[24, 24]} className={"schedules-upcoming"}>
                 {schedule_cards_2?.map((item, index) => (
                     <Col xxl={6} lg={8} md={12} sm={24} xs={24}>
-                        <Link to={"/my-schedule/" + index}>
+                        <Link to={"/schedules/" + index}>
                             <ScheduleCard
                                 name={item.name}
                                 title={item.title}

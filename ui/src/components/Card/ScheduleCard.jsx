@@ -2,7 +2,7 @@ import React from "react";
 import {Avatar, Divider, Tag} from "antd";
 import styled from "styled-components";
 import {ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
-import {amethyst, grey1, grey2, grey3, grey6} from "../../utils/ShadesUtils";
+import {amethyst, grey1, grey2, grey3, grey6,} from "../../utils/ShadesUtils";
 
 // styled components
 export const Card = styled.div`
@@ -54,7 +54,7 @@ export const StatusTagList = styled.div`
         width: fit-content;
         background: white;
         color: ${grey2} !important;
-        border: 1px solid ${grey6};
+        border: 1px solid ${grey3};
         border-radius: 12px !important;
         padding: ${props => props.padding || "2px 8px"};
     }

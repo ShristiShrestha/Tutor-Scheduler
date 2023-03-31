@@ -1,3 +1,5 @@
+import React from "react";
+
 import styled from "styled-components";
 import { useParams } from "react-router";
 import {
@@ -6,12 +8,13 @@ import {
     ResText14Regular,
     ResText14SemiBold,
 } from "../../utils/TextUtils";
-import { grey6, pearl } from "../../utils/ShadesUtils";
-import { Avatar, Tag } from "antd";
+import { amethyst, grey6, pearl } from "../../utils/ShadesUtils";
+import { Avatar, Menu, Tag } from "antd";
 import { Link } from "react-router-dom";
 import { StatusTagList } from "../../components/Card/ScheduleCard";
-import React from "react";
 import { expertises } from "../../static_data/tutors";
+import { CalendarOutlined } from "@ant-design/icons";
+import MyCalendar from "../../components/MyCalendar/MyCalendar";
 
 const Wrapper = styled.div``;
 
@@ -25,6 +28,9 @@ const Content = styled.div`
     padding: 24px;
     background: ${pearl};
     height: calc(100vh - 48px);
+    overflow-y: auto;
+    position: relative;
+    padding-bottom: 120px;
 `;
 
 const ScheduleActorInfo = styled.div.attrs({
@@ -65,8 +71,56 @@ const NeedsTutoring = styled.div.attrs({
     row-gap: 4px;
 `;
 
+const ScheduleDetailsTabs = styled.div`
+    max-width: 720px;
+    margin: auto;
+    border: 1px solid ${grey6};
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+
+    .schedules-menu > .ant-menu-item {
+        padding-top: 6px;
+        padding-bottom: 6px;
+
+        ::after {
+            display: none;
+        }
+    }
+
+    .schedules-menu > .ant-menu-item-active {
+        border-bottom: 2px solid ${amethyst};
+        border-radius: 0;
+    }
+`;
+
 export default function ScheduleView() {
     const { id } = useParams();
+
+    const menuItems = [
+        {
+            key: "schedule-view",
+            link: "/schedules/" + id,
+            title: "Schedule Details",
+            icon: <CalendarOutlined />,
+        },
+        {
+            key: "schedule-rating",
+            link: "/schedules/" + id,
+            title: "Rate Tutor",
+            icon: <CalendarOutlined />,
+        },
+    ];
+
+    const renderMenuComponent = () => {
+        return (
+            <div>
+                Schedule details
+                <MyCalendar />
+            </div>
+        );
+    };
+
     return (
         <Wrapper>
             <Header>My Schedule 1</Header>
@@ -113,7 +167,25 @@ export default function ScheduleView() {
                         </ResText12Regular>
                     </div>
                 </NeedsTutoring>
-                <ResText14SemiBold>Showing schedule {id}</ResText14SemiBold>
+                <ScheduleDetailsTabs>
+                    <Menu
+                        mode={"horizontal"}
+                        className={"schedules-menu"}
+                        defaultSelectedKeys={[menuItems[0].key]}
+                        defaultOpenKeys={[menuItems[0].key]}
+                    >
+                        {menuItems.map(item => (
+                            <Menu.Item key={item.key} icon={item.icon}>
+                                <Link to={item.link}>
+                                    <ResText14Regular>
+                                        {item.title}
+                                    </ResText14Regular>
+                                </Link>
+                            </Menu.Item>
+                        ))}
+                    </Menu>
+                    {renderMenuComponent()}
+                </ScheduleDetailsTabs>
             </Content>
         </Wrapper>
     );
