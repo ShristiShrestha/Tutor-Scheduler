@@ -2,7 +2,8 @@ import React, {useState} from "react";
 import {Badge, Calendar} from "antd";
 import styled from "styled-components";
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+`;
 
 const MyCalendar = ({onClick}) => {
     const [loading, setLoading] = useState(false);

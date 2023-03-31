@@ -1,24 +1,33 @@
-import { Button } from "antd";
+import {Button} from "antd";
 import React from "react";
 import styled from "styled-components";
-import { amethyst } from "../../utils/ShadesUtils";
+import {amethyst, snow} from "../../utils/ShadesUtils";
 
 const Wrapper = styled.div`
-    .ant-btn {
-        display: flex;
-        align-items: center;
-        padding: 16px 20px !important;
-        border: none;
-    }
+  .ant-btn {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px !important;
+    border-radius: 2px !important;
+  }
 
-    .secondary {
-        background: white;
-        color: ${amethyst};
-    }
+  .secondary {
+    background: white;
+    color: ${amethyst};
 
-    .primary {
-        background: ${amethyst};
+
+    :hover {
+      background: ${snow};
     }
+  }
+
+  .primary {
+    background: ${amethyst};
+
+    :hover {
+      background: ${amethyst};
+    }
+  }
 `;
 export default function MyButton(props) {
     const type = props.type;
