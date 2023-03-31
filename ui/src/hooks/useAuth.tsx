@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
-import { authenticate } from "../api/AuthApi";
-import { Navigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setAuth } from "../redux/auth/actions";
+import React, {useCallback, useState} from "react";
+import {authenticate} from "../api/AuthApi";
+import {Navigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {setAuth} from "../redux/auth/actions";
 
 export default function useAuth(Component) {
     const dispatch = useDispatch();
@@ -35,13 +35,13 @@ export default function useAuth(Component) {
 
     // useEffect(() => {
     //     if (!pinged) checkLogin();
-    // }, [checkLogin]);
+    // }, [checkLogin, pinged]);
 
     if (loading) return <div>Authenticating...</div>;
 
     return (
         <React.Fragment>
-            {isAuthenticated ? Component : <Navigate to={"/login"} />}
+            {isAuthenticated ? Component : <Navigate to={"/login"}/>}
         </React.Fragment>
     );
 }
