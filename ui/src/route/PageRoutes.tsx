@@ -40,7 +40,7 @@ const pages = [
     },
     {
         path: "/",
-        component: <FindTutors />,
+        component: <MySchedule />,
     },
     {
         path: "/notification",

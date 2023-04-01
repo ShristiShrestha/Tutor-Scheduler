@@ -15,8 +15,7 @@ const menus = [
     {
         key: "menu-my-schedule",
         icon: <CalendarOutlined />,
-        // link: "/schedules",
-        link: "/tutor-schedule",
+        link: "/schedules",
         title: "My Schedule",
     },
     {
@@ -30,12 +29,6 @@ const menus = [
         icon: <SendOutlined />,
         link: "/chat",
         title: "Chat",
-    },
-    {
-        key: "menu-notification",
-        icon: <NotificationOutlined />,
-        link: "/notification",
-        title: "Notification",
     },
 ];
 const SideBar = () => {
