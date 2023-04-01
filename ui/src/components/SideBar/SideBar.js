@@ -3,6 +3,7 @@ import {
     CalendarOutlined,
     SearchOutlined,
     SendOutlined,
+    NotificationOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
@@ -14,7 +15,8 @@ const menus = [
     {
         key: "menu-my-schedule",
         icon: <CalendarOutlined />,
-        link: "/schedules",
+        // link: "/schedules",
+        link: "/tutor-schedule",
         title: "My Schedule",
     },
     {
@@ -28,6 +30,12 @@ const menus = [
         icon: <SendOutlined />,
         link: "/chat",
         title: "Chat",
+    },
+    {
+        key: "menu-notification",
+        icon: <NotificationOutlined />,
+        link: "/notification",
+        title: "Notification",
     },
 ];
 const SideBar = () => {
