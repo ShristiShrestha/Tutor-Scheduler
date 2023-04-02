@@ -13,6 +13,7 @@ import {
     amethyst,
     crimson,
     green,
+    grey1,
     grey2,
     grey3,
     grey5,
@@ -32,7 +33,15 @@ import {toMonthDateYearStr} from "../../utils/DateUtils";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import MyButton from "../../components/Button/MyButton";
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  .ant-divider {
+    margin: 0;
+  }
+
+  .ant-col {
+    height: fit-content;
+  }
+`;
 
 const Header = styled.div`
   padding: 12px 24px;
@@ -48,18 +57,23 @@ const Content = styled.div`
   overflow-y: auto;
   position: relative;
   padding-bottom: 120px;
+
+  .border-right {
+    border-right: 1px solid ${grey6};
+  }
 `;
 
 const ScheduleActorInfo = styled.div.attrs({
     // className: "outer-shadow",
 })`
-  max-width: 720px;
+  //max-width: 720px;
   //margin: auto;
-  padding: 24px;
+  width: 100%;
+  padding: 24px 0 24px 24px;
     // border: 1px solid ${grey6};
   background: white;
   border-radius: 8px;
-  column-gap: 24px;
+  //column-gap: 24px;
   //margin-bottom: 24px;
 
   .actor-info-content {
@@ -78,15 +92,19 @@ const NeedsTutoring = styled.div.attrs({
 })`
   //max-width: 720px;
   //margin: auto;
-  padding: 24px;
+  width: 100%;
+  padding: 0 0 24px 24px;
     // border: 1px solid ${grey6};
   //background: white;
   border-radius: 8px;
   column-gap: 24px;
-  margin-bottom: 24px;
   align-items: start;
   row-gap: 4px;
 `;
+
+const SlotInfo = styled.div`
+  padding: 24px;
+`
 
 const ScheduleDetailsTabs = styled.div`
   //max-width: 720px;
@@ -97,15 +115,21 @@ const ScheduleDetailsTabs = styled.div`
   //padding: 12px 0;
 
   .schedules-menu > .ant-menu-item {
+    padding-left: 36px;
     //padding-top: 6px;
     //padding-bottom: 6px;
     border-bottom: 1px solid ${grey6};
-    min-width: 160px;
+    min-width: 215px;
     //min-height: 50px;
 
     ::after {
       display: none;
     }
+  }
+
+  .schedule-menu-last-item {
+    min-width: 160px !important;
+    padding-left: 24px !important;
   }
 
   .schedules-menu > .ant-menu-item-active {
@@ -295,6 +319,12 @@ export default function ScheduleView() {
         </div>
     </NeedsTutoring>
 
+    const renderSlotView = () => <SlotInfo>
+        <ResText16Regular className={"text-grey2"}>Showing slots for
+            <b style={{marginLeft: 8, color: grey1}}>{`${toMonthDateYearStr(new Date())}`}</b>
+        </ResText16Regular>
+    </SlotInfo>
+
     // ---------------- schedule details and rate tutor --------------
     const renderMenuComponent = () => {
         const defaultTab = getDefaultTab()[0];
@@ -350,8 +380,9 @@ export default function ScheduleView() {
                 defaultSelectedKeys={defaultTab}
                 defaultOpenKeys={defaultTab}
             >
-                {menuItems.map(item => (
-                    <Menu.Item key={item.key} icon={item.icon}>
+                {menuItems.map((item, index) => (
+                    <Menu.Item key={item.key} icon={item.icon}
+                               className={index === menuItems.length - 1 ? "schedule-menu-last-item" : ""}>
                         <Link to={item.link}>
                             <ResText14Regular>
                                 {item.title}
@@ -369,15 +400,14 @@ export default function ScheduleView() {
             <Header><ResText14SemiBold>Schedule Details</ResText14SemiBold></Header>
             <Content>
                 <Row gutter={[24, 24]}>
-                    <Col xxl={12} md={24}>
+                    <Col xxl={16} md={24} className={"border-right no-padding"}>
                         {renderTabs()}
                     </Col>
-                    <Col xxl={12} md={24} className={"h-start-top-flex"}>
-                        <Divider type={"vertical"} style={{height: "100%"}}/>
-                        <div>
-                            {renderActorInfo()}
-                            {renderNeedsTutoring()}
-                        </div>
+                    <Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>
+                        {renderActorInfo()}
+                        {renderNeedsTutoring()}
+                        <Divider type={"horizontal"}/>
+                        {renderSlotView()}
                     </Col>
                 </Row>
             </Content>
