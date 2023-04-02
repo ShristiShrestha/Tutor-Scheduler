@@ -1,15 +1,16 @@
-.title-listview {
-  margin-left: 10px;
-  font-weight: 600;
-  margin-right: 10px;
-  font-size: 14px;
-  color: #303b4f;
+.listview-title {
+  :hover {
+    text-decoration: underline !important;
+    color: #3d94fb !important;
+    z-index: 1;
+  }
 }
 
 .listview-field {
-  margin-left: 20px;
+  margin-left: 120px;
 }
 
 .listview-time {
   float: right;
+  margin-right: 12px;
 }

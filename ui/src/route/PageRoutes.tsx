@@ -1,13 +1,14 @@
 import React from "react";
 import {Route, Routes} from "react-router-dom";
-import Chat from "../containers/Chat/Chat";
 import MySchedule from "../containers/Schedule/MySchedule";
 import FindTutors from "../containers/Tutor/FindTutors";
 import ScheduleView from "../containers/Schedule/ScheduleView";
 import TutorSchedule from "../containers/Schedule/TutorSchedule";
 import Notification from "../containers/Notification/Notification";
-import TutorProfile from "../containers/Tutor/TutorProfile.jsx";
+import TutorProfile from "../containers/Tutor/TutorProfile";
 import TutorStatusPage from "../containers/Schedule/TutorStatusPage";
+import Chat from "../containers/Chat/Chat";
+import ChatConversation from "../containers/Chat/ChatConversation";
 
 const pages = [
     {
@@ -37,6 +38,12 @@ const pages = [
     {
         path: "/chat",
         component: <Chat/>,
+
+    },
+    {
+        path: "/chat/users/sender_id",
+        component: <ChatConversation/>,
+
     },
     {
         path: "/",
