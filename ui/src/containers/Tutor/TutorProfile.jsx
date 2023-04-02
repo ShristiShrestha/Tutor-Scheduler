@@ -2,16 +2,21 @@ import React, {useState} from "react";
 import styled from "styled-components";
 import {grey1, grey6, pearl} from "../../utils/ShadesUtils";
 import {ResText14Regular, ResText14SemiBold, ResText16Regular, ResText16SemiBold} from "../../utils/TextUtils";
-import {renderActorInfo, renderNeedsTutoring, renderTabs, SlotInfo} from "../Schedule/ScheduleView";
+import {
+    ratings,
+    renderActorInfo,
+    renderNeedsTutoring,
+    renderTabs,
+    SlotInfo,
+    TabContent
+} from "../Schedule/ScheduleView";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {toMonthDateYearStr} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {useParams} from "react-router";
 import {useLocation} from "react-router-dom";
-import {Checkbox, Col, Divider, Row} from "antd";
+import {Checkbox, Col, Divider, Input, Row} from "antd";
 import MyButton from "../../components/Button/MyButton";
-
-const expertises = ["Computer Vision", "Machine Learning", "Web Development"];
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -46,14 +51,6 @@ const Content = styled.div`
     border-right: 1px solid ${grey6};
   }
 `;
-
-const TabContent = styled.div`
-  padding: 24px 36px;
-
-  .ant-picker-calendar-mode-switch {
-    display: none;
-  }
-`
 
 const ProfileCard = styled.div`
   background: ${pearl};
@@ -105,7 +102,7 @@ const getMenuItems = (id) => [
     //     icon: <UserOutlined/>,
     // },
     {
-        key: "request-tutoring-view",
+        key: "request-tutoring",
         link: `/profile/${id}/request-tutoring`,
         title: "Request for tutoring",
         icon: <CalendarOutlined/>,
@@ -117,6 +114,58 @@ const getMenuItems = (id) => [
         icon: <StarOutlined/>,
     },
 ];
+
+
+const availableSlots = [
+    {
+        "key": "slot-0",
+        "title": "12 - 1 PM",
+        "start-date": new Date(),
+        "disabled": false
+    },
+    {
+        "key": "slot-1",
+        "title": "1 - 2 PM",
+        "start-date": new Date(),
+        "disabled": false
+    },
+    {
+        "key": "slot-2",
+        "title": "2 - 3 PM",
+        "start-date": new Date(),
+        "disabled": false
+    },
+    {
+        "key": "slot-3",
+        "title": "3 - 4 PM",
+        "start-date": new Date(),
+        "disabled": false
+    },
+    {
+        "key": "slot-4",
+        "title": "4 - 5 PM",
+        "start-date": new Date(),
+        "disabled": false
+    },
+    {
+        "key": "slot-5",
+        "title": "5 - 6 PM",
+        "start-date": new Date(),
+        "disabled": false,
+    },
+    {
+        "key": "slot-6",
+        "title": "6 - 7 PM",
+        "start-date": new Date(),
+        "disabled": false,
+    },
+    {
+        "key": "slot-7",
+        "title": "7 - 8 PM",
+        "start-date": new Date(),
+        "disabled": true,
+    }
+]
 
 const TutorProfile = () => {
     const [visible, setVisible] = useState(false);
@@ -144,7 +193,7 @@ const TutorProfile = () => {
             }
             return [menuItems[0].key];
         }
-        return ""
+        return [""]
     }
 
     const renderMenuComponent = (menuItems = getMenuItems(id)) => {
@@ -191,66 +240,29 @@ const TutorProfile = () => {
             //     </TabContent>
 
             default:
-                <TabContent>
-                    {renderActorInfo()}
-                    {renderNeedsTutoring()}
+                return <TabContent>
+                    <ResText16SemiBold>Overall tutor ratings</ResText16SemiBold>
+                    <div className={"rate-tutor-content"}>
+                        <div className={"rate-tutor-features h-start-top-flex"}>
+                            <ResText16Regular className={"text-grey2"}>Tutoring skill</ResText16Regular>
+                            <ul className={"rate-tutor-options"}>
+                                {ratings.map(item => <li className={item.className}>{item.icon}</li>)}
+                            </ul>
+                        </div>
+                        <div className={"rate-tutor-comment h-start-flex"}>
+                            <ResText16Regular className={"text-grey2"}>Your
+                                comment {<img width={20} height={20}
+                                              style={{marginLeft: 4, marginBottom: "-4px"}}
+                                              src={process.env.PUBLIC_URL + '/pouting_face.svg'}/>} </ResText16Regular>
+                            <Input disabled={true} rootClassName={"rate-tutor-input"} size={"large"} bordered/>
+                        </div>
+                    </div>
                 </TabContent>
-
         }
     };
 
-    const availableSlots = [
-        {
-            "key": "slot-0",
-            "title": "12 - 1 PM",
-            "start-date": new Date(),
-            "disabled": false
-        },
-        {
-            "key": "slot-1",
-            "title": "1 - 2 PM",
-            "start-date": new Date(),
-            "disabled": false
-        },
-        {
-            "key": "slot-2",
-            "title": "2 - 3 PM",
-            "start-date": new Date(),
-            "disabled": false
-        },
-        {
-            "key": "slot-3",
-            "title": "3 - 4 PM",
-            "start-date": new Date(),
-            "disabled": false
-        },
-        {
-            "key": "slot-4",
-            "title": "4 - 5 PM",
-            "start-date": new Date(),
-            "disabled": false
-        },
-        {
-            "key": "slot-5",
-            "title": "5 - 6 PM",
-            "start-date": new Date(),
-            "disabled": false,
-        },
-        {
-            "key": "slot-6",
-            "title": "6 - 7 PM",
-            "start-date": new Date(),
-            "disabled": false,
-        },
-        {
-            "key": "slot-7",
-            "title": "7 - 8 PM",
-            "start-date": new Date(),
-            "disabled": true,
-        }
-    ]
 
-    const renderSlotView = () => <SlotInfo>
+    const renderCurrentSlot = () => <SlotInfo>
         <ResText16Regular className={"text-grey2"}>Showing slots for
             <b style={{marginLeft: 8, color: grey1}}>{`${toMonthDateYearStr(new Date())}`}</b>
             <ul className={"slot-items"}>
@@ -269,6 +281,17 @@ const TutorProfile = () => {
         </ResText16Regular>
     </SlotInfo>
 
+    const renderOtherReviews = () => <TabContent>
+        <ResText16Regular className={"text-grey2"}>Other reviews</ResText16Regular>
+        <ul className={"ratings-other-reviews"}>
+            {new Array(3).fill(1).map((item, index) => <li>
+                <ResText14Regular key={index}>I am writing this review {item} for index {index}</ResText14Regular>
+            </li>)}
+        </ul>
+    </TabContent>
+
+    const renderSlotView = (tabOpened) => (tabOpened === "" || tabOpened === getMenuItems(id)[0].key) ? renderCurrentSlot() : renderOtherReviews()
+
     return <Wrapper>
         <Header><ResText14SemiBold>Tutor Profile</ResText14SemiBold></Header>
         <Content>
@@ -283,7 +306,7 @@ const TutorProfile = () => {
                 </Col>
                 <Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>
                     <Divider type={"horizontal"}/>
-                    {renderSlotView()}
+                    {renderSlotView(getDefaultTab()[0])}
                 </Col>
             </Row>
         </Content>

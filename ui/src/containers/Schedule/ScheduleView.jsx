@@ -172,7 +172,7 @@ const ScheduleDetailsTabs = styled.div`
   }
 `;
 
-const TabContent = styled.div`
+export const TabContent = styled.div`
   padding: 24px;
 
   .ant-picker-calendar-mode-switch {
@@ -184,7 +184,6 @@ const TabContent = styled.div`
   }
 
   .rate-tutor-features {
-    margin-top: 12px;
     row-gap: 6px;
   }
 
@@ -192,7 +191,7 @@ const TabContent = styled.div`
     width: 100%;
     list-style-type: none;
     padding: 0;
-    margin-bottom: 48px;
+    margin-bottom: 24px;
 
     li {
       display: inline-flex;
@@ -251,11 +250,12 @@ const TabContent = styled.div`
   }
 `;
 
-const ratings = [
+export const ratings = [
     {
         id: "very-bad",
         title: "Very bad",
         className: "rate-very-bad",
+        totalUsers: 10,
         icon: <img width={30} height={30}
                    src={process.env.PUBLIC_URL + '/pouting_face.svg'}/>
     },
@@ -263,6 +263,7 @@ const ratings = [
         id: "bad",
         title: "Just bad",
         className: "rate-just-bad",
+        totalUsers: 1,
         icon: <img width={30} height={30}
                    src={process.env.PUBLIC_URL + '/neutral_face.svg'}/>
     },
@@ -270,6 +271,7 @@ const ratings = [
         id: "good",
         title: "Good",
         className: "rate-good",
+        totalUsers: 100,
         icon: <img width={30} height={30}
                    src={process.env.PUBLIC_URL + '/slightly_smiling.svg'}/>
     },
@@ -277,6 +279,7 @@ const ratings = [
         id: "very-good",
         title: "Very Good",
         className: "rate-very-good",
+        totalUsers: 1000,
         icon: <img width={30} height={30}
                    src={process.env.PUBLIC_URL + '/grinning_face.svg'}/>
     }
@@ -423,7 +426,7 @@ export default function ScheduleView() {
                     <TabContent>
                         <ResText16SemiBold><b>Today</b>
                             <ResText16Regular className={"text-grey"}
-                                              style={{fontStyle: "normal", marginLeft: 12, fontWeight: "normal"}}>
+                                              style={{marginLeft: 12}}>
                                 {toMonthDateYearStr(today)}
                             </ResText16Regular>
                         </ResText16SemiBold>
