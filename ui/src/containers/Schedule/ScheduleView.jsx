@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import {useParams} from "react-router";
 import {
+    ResText10Regular,
     ResText12Regular,
     ResText14Regular,
     ResText14SemiBold,
@@ -30,12 +31,16 @@ import {StatusTagList} from "../../components/Card/ScheduleCard";
 import {expertises} from "../../static_data/tutors";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {toMonthDateYearStr} from "../../utils/DateUtils";
-import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import MyButton from "../../components/Button/MyButton";
+import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 
 const Wrapper = styled.div`
   .ant-divider {
     margin: 0;
+  }
+
+  .ant-row {
+    margin: 0 !important;
   }
 
   .ant-col {
@@ -63,7 +68,7 @@ const Content = styled.div`
   }
 `;
 
-const ScheduleActorInfo = styled.div.attrs({
+export const ScheduleActorInfo = styled.div.attrs({
     // className: "outer-shadow",
 })`
   //max-width: 720px;
@@ -93,7 +98,8 @@ const NeedsTutoring = styled.div.attrs({
   //max-width: 720px;
   //margin: auto;
   width: 100%;
-  padding: 0 0 24px 24px;
+  margin-top: 16px;
+  padding: 0 0 36px 24px;
     // border: 1px solid ${grey6};
   //background: white;
   border-radius: 8px;
@@ -102,17 +108,46 @@ const NeedsTutoring = styled.div.attrs({
   row-gap: 4px;
 `;
 
-const SlotInfo = styled.div`
-  padding: 24px;
+export const SlotInfo = styled.div`
+  padding: 24px 0 24px 24px;
+
+  .slot-items {
+    list-style-type: none;
+    padding: 0;
+
+    li {
+      display: flex;
+      padding: 0;
+      column-gap: 12px;
+
+      .ant-checkbox {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+
+  .send-slot-request {
+    column-gap: 20px !important;
+    row-gap: 20px;
+
+    .ant-btn {
+      align-self: end;
+    }
+  }
 `
 
 const ScheduleDetailsTabs = styled.div`
   //max-width: 720px;
   //margin: auto;
-    // border: 1px solid ${grey6};
+
   //background: white;
   border-radius: 8px;
   //padding: 12px 0;
+
+  .ant-menu-horizontal {
+    border-top: 1px solid ${grey6};
+  }
 
   .schedules-menu > .ant-menu-item {
     padding-left: 36px;
@@ -139,6 +174,10 @@ const ScheduleDetailsTabs = styled.div`
 
 const TabContent = styled.div`
   padding: 24px;
+
+  .ant-picker-calendar-mode-switch {
+    display: none;
+  }
 
   .rate-tutor-content {
     margin-top: 24px;
@@ -243,81 +282,104 @@ const ratings = [
     }
 ]
 
+const getMenuItems = (id) => [
+    {
+        key: "schedule-view",
+        link: "/schedules/" + id,
+        title: "Schedule Details",
+        icon: <CalendarOutlined/>,
+    },
+    {
+        key: "schedule-rating",
+        link: "/schedules/" + id + "/rate-tutor",
+        title: "Rate Tutor",
+        icon: <StarOutlined/>,
+    },
+];
+
+//  ----------------- actor details -----------
+export const renderActorInfo = (title = "Tutor info") => <ScheduleActorInfo>
+    <ResText16SemiBold>{title}</ResText16SemiBold>
+    <div className={"h-start-flex actor-info-content"}>
+        <Avatar shape="circle" size={64}/>
+        <div className={"vertical-start-flex actor-profile-info"}>
+            <ResText14SemiBold>
+                Shristi Shrestha{" "}
+                <Link to={"/user/"}>
+                    <ResText12Regular>
+                        View profile
+                    </ResText12Regular>
+                </Link>
+            </ResText14SemiBold>
+            <ResText14Regular className={"text-grey3"}>
+                Joined in Jan 24, 2023
+            </ResText14Regular>
+        </div>
+    </div>
+</ScheduleActorInfo>
+
+// ---------------- needs tutoring --------------
+export const renderNeedsTutoring = (title = "Needs tutoring in", noteTitle = "Student Note - ") => <NeedsTutoring>
+    <ResText16SemiBold>{title}</ResText16SemiBold>
+    <StatusTagList>
+        {expertises &&
+            expertises.map(expertise => (
+                <Tag style={{padding: "3px 10px"}}>
+                    <ResText10Regular>
+                        {expertise}
+                    </ResText10Regular>
+                </Tag>
+            ))}
+    </StatusTagList>
+    <div style={{marginTop: "1rem"}}>
+        <ResText14Regular className={"text-grey2"}>
+            {noteTitle}
+        </ResText14Regular>
+        <ResText14Regular>
+            <i>"I am looking for an easy and fun tutoring."</i>
+        </ResText14Regular>
+    </div>
+</NeedsTutoring>
+
+export const renderTabs = (defaultTab, renderMenuComponent, menuItems) => {
+    return <ScheduleDetailsTabs>
+        <Menu
+            mode={"horizontal"}
+            className={"schedules-menu"}
+            defaultSelectedKeys={defaultTab}
+            defaultOpenKeys={defaultTab}
+        >
+            {menuItems.map((item, index) => (
+                <Menu.Item key={item.key} icon={item.icon}
+                           className={index === menuItems.length - 1 ? "schedule-menu-last-item" : ""}>
+                    <Link to={item.link}>
+                        <ResText14Regular>
+                            {item.title}
+                        </ResText14Regular>
+                    </Link>
+                </Menu.Item>
+            ))}
+        </Menu>
+        {renderMenuComponent()}
+    </ScheduleDetailsTabs>
+}
 export default function ScheduleView() {
     const {id} = useParams();
     const location = useLocation();
 
-    const menuItems = [
-        {
-            key: "schedule-view",
-            link: "/schedules/" + id,
-            title: "Schedule Details",
-            icon: <CalendarOutlined/>,
-        },
-        {
-            key: "schedule-rating",
-            link: "/schedules/" + id + "/rate-tutor",
-            title: "Rate Tutor",
-            icon: <StarOutlined/>,
-        },
-    ];
-
 
     const getDefaultTab = () => {
+        const menuItems = getMenuItems(id)
         const pathname = location ? location.pathname : "/schedules/" + id;
-        const defaultOpenTabs = menuItems.filter(item => item["link"] === pathname);
-        if (defaultOpenTabs.length > 0) {
-            return defaultOpenTabs.map(item => item["key"]);
+        if (!!menuItems) {
+            const defaultOpenTabs = menuItems.filter(item => item["link"] === pathname);
+            if (defaultOpenTabs.length > 0) {
+                return defaultOpenTabs.map(item => item["key"]);
+            }
+            return [menuItems[0].key];
         }
-        return [menuItems[0].key];
+        return ""
     }
-
-
-    //  ----------------- actor details -----------
-    const renderActorInfo = () => <ScheduleActorInfo>
-        <ResText16SemiBold>Tutor Info</ResText16SemiBold>
-        <div className={"h-start-flex actor-info-content"}>
-            <Avatar shape="circle" size={64}/>
-            <div
-                className={"vertical-start-flex actor-profile-info"}
-            >
-                <ResText14SemiBold>
-                    Shristi Shrestha{" "}
-                    <Link to={"/user/"}>
-                        <ResText12Regular>
-                            View profile
-                        </ResText12Regular>
-                    </Link>
-                </ResText14SemiBold>
-                <ResText14Regular className={"text-grey3"}>
-                    Joined in Jan 24, 2023
-                </ResText14Regular>
-            </div>
-        </div>
-    </ScheduleActorInfo>
-
-    // ---------------- needs tutoring --------------
-    const renderNeedsTutoring = () => <NeedsTutoring>
-        <ResText16SemiBold>Needs tutoring in</ResText16SemiBold>
-        <StatusTagList>
-            {expertises &&
-                expertises.map(expertise => (
-                    <Tag style={{padding: "6px 12px"}}>
-                        <ResText12Regular>
-                            {expertise}
-                        </ResText12Regular>
-                    </Tag>
-                ))}
-        </StatusTagList>
-        <div style={{marginTop: "1rem"}}>
-            <ResText14Regular className={"text-grey2"}>
-                Student Note -{" "}
-            </ResText14Regular>
-            <ResText14Regular>
-                <i>"I am looking for an easy and fun tutoring."</i>
-            </ResText14Regular>
-        </div>
-    </NeedsTutoring>
 
     const renderSlotView = () => <SlotInfo>
         <ResText16Regular className={"text-grey2"}>Showing slots for
@@ -326,7 +388,7 @@ export default function ScheduleView() {
     </SlotInfo>
 
     // ---------------- schedule details and rate tutor --------------
-    const renderMenuComponent = () => {
+    const renderMenuComponent = (menuItems = getMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
         switch (defaultTab) {
@@ -371,29 +433,6 @@ export default function ScheduleView() {
         }
     };
 
-    const renderTabs = () => {
-        const defaultTab = getDefaultTab()[0];
-        return <ScheduleDetailsTabs>
-            <Menu
-                mode={"horizontal"}
-                className={"schedules-menu"}
-                defaultSelectedKeys={defaultTab}
-                defaultOpenKeys={defaultTab}
-            >
-                {menuItems.map((item, index) => (
-                    <Menu.Item key={item.key} icon={item.icon}
-                               className={index === menuItems.length - 1 ? "schedule-menu-last-item" : ""}>
-                        <Link to={item.link}>
-                            <ResText14Regular>
-                                {item.title}
-                            </ResText14Regular>
-                        </Link>
-                    </Menu.Item>
-                ))}
-            </Menu>
-            {renderMenuComponent()}
-        </ScheduleDetailsTabs>
-    }
 
     return (
         <Wrapper>
@@ -401,7 +440,7 @@ export default function ScheduleView() {
             <Content>
                 <Row gutter={[24, 24]}>
                     <Col xxl={16} md={24} className={"border-right no-padding"}>
-                        {renderTabs()}
+                        {renderTabs(getDefaultTab(), () => renderMenuComponent(), getMenuItems(id))}
                     </Col>
                     <Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>
                         {renderActorInfo()}
