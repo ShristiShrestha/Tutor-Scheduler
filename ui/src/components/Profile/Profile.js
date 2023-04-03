@@ -10,8 +10,6 @@ import SideBar from "../SideBar/SideBar";
 import Search from "../Search/Search";
 
 const { TabPane } = Tabs;
-const { Content } = Layout;
-const expertises = ["Computer Vision", "Machine Learning", "Web Development"];
 const { Meta } = Card;
 const data = [
     {
@@ -47,9 +45,6 @@ const data = [
 ];
 
 const CoverImage = () => {
-    // console.log(navigate, "navigateee");
-    // const handleClick = () => navigate("/profile");
-    const navigate = useNavigate();
     return (
         <div className="cover-image">
             <img
@@ -82,10 +77,6 @@ const ProfileInfo = () => {
                 description="Former teacher at School of Science. Now doing a freelance tutoring."
                 style={{ marginLeft: "20px", marginTop: "15px" }}
             />
-            {/* <p>Location: Los Angeles, CA</p>
-      <p>Email: johndoe@example.com</p> */}
-            {/* Add more information here */}
-            {/* <span>Joined in 2021</span> */}
         </div>
     );
 };

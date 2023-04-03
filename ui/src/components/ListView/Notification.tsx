@@ -1,29 +1,17 @@
-import { Checkbox, List, Row, Space, Tag } from "antd";
-import React, { useState } from "react";
-import { StarOutlined, StarFilled, DeleteOutlined } from "@ant-design/icons";
-import "./ListView.scss";
-import { useNavigate } from "react-router-dom";
+import { Button, List, Tag } from "antd";
+import React from "react";
 import styled from "styled-components";
-import { grey6 } from "../../utils/ShadesUtils";
-import {
-    ResText10Regular,
-    ResText12Regular,
-    ResText14Regular,
-} from "../../utils/TextUtils";
+import { ResText10Regular, ResText14Regular } from "../../utils/TextUtils";
 import { expertises } from "../../static_data/tutors";
 
-const Header = styled.div`
-    background-color: rgb(234, 234, 234);
-    padding: 12px;
-    margin-top: 20px;
-
+const Wrapper = styled.div`
     .button-text {
-        padding: 7px 19px;
+        padding: 1px;
         color: white;
         border-radius: 5px;
-        text-align: center;
         font-weight: 600;
-        border: transparent;
+        cursor: pointer;
+        width: 8vw;
     }
     .button-green {
         background-color: #1bb885;
@@ -31,55 +19,83 @@ const Header = styled.div`
     .button-red {
         background-color: #f44336;
     }
-    .margin-left {
-        margin-left: 40px;
+
+    .text-field {
+        margin-left: 25px;
     }
-    .block-spacing-left-right {
-        margin-left: 7em;
-        margin-right: 5em;
+
+    .ant-list-item {
+        :hover {
+            background: #f8f8f8;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     }
 `;
 
-const NotificationListView = ({ item }) => {
+const ListItem = ({ item, onDelete }) => {
+    const handleData = key => {
+        console.log(key);
+        onDelete(item.key);
+    };
+    return (
+        <Wrapper>
+            <List.Item>
+                <ResText14Regular className={"text-grey1 text-field"}>
+                    {item.name}
+                </ResText14Regular>
+                <ResText14Regular className="text-field text-grey1">
+                    {item.date}
+                </ResText14Regular>
+                <ResText10Regular
+                    className="text-field"
+                    style={{ marginRight: "140px" }}
+                >
+                    {item.time}
+                </ResText10Regular>
+
+                {expertises &&
+                    expertises.map(expertise => (
+                        <Tag color={"purple"}>
+                            <ResText10Regular>{expertise}</ResText10Regular>
+                        </Tag>
+                    ))}
+
+                <Button
+                    className="button-green button-text"
+                    style={{ marginRight: "20px", marginLeft: "95px" }}
+                    onClick={() => handleData(item.key)}
+                    size={"small"}
+                >
+                    Accept
+                </Button>
+
+                <Button
+                    className="button-red button-text text-field"
+                    onClick={() => handleData(item.key)}
+                    size={"small"}
+                >
+                    Reject
+                </Button>
+            </List.Item>
+        </Wrapper>
+    );
+};
+
+const NotificationListView = ({ item, onDelete }) => {
     return (
         <>
-            <Header>
-                <Row key={"find-tutors"}>
-                    <div className="h-start-flex">
-                        <ResText14Regular className="margin-left default-margin-right ">
-                            {item.name}
-                        </ResText14Regular>
-                        <ResText12Regular
-                            className={"text-grey3 default-margin-right"}
-                        >
-                            {item.date}
-                        </ResText12Regular>
-                        <ResText10Regular
-                            className={"text-grey3 default-margin-right"}
-                        >
-                            {item.time}
-                        </ResText10Regular>
-                    </div>
-                    <div className="default-margin-right block-spacing-left-right">
-                        {expertises &&
-                            expertises.map(expertise => (
-                                <Tag color={"purple"}>
-                                    <ResText10Regular>
-                                        {expertise}
-                                    </ResText10Regular>
-                                </Tag>
-                            ))}
-                    </div>
-                    <div>
-                        <ResText12Regular className="button-green button-text default-margin-right select-item">
-                            Accept
-                        </ResText12Regular>
-                        <ResText12Regular className="button-red button-text select-item">
-                            Reject
-                        </ResText12Regular>
-                    </div>
-                </Row>
-            </Header>
+            <List
+                itemLayout="vertical"
+                size="large"
+                pagination={{
+                    pageSize: 8,
+                }}
+                dataSource={item}
+                renderItem={item => (
+                    <ListItem item={item} onDelete={onDelete} />
+                )}
+            />
         </>
     );
 };

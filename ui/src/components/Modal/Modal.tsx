@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Divider, Input, Modal } from "antd";
 import { ResText10Regular, ResText12Regular } from "../../utils/TextUtils";
 import styled from "styled-components";
@@ -22,19 +22,20 @@ const Specialization = () => {
     );
 };
 
-const input = <Input value={"Shristi Shrestha"} className="input-textarea" />;
-
-const Description = () => {
-    return (
-        <Input.TextArea
-            className="comment-textarea"
-            value="Former teacher at School of Science. Now doing a freelance tutoring. "
-            autoSize={{ minRows: 6, maxRows: 10 }}
-        />
-    );
-};
-
 const ModalBlock = ({ visible, onClose, title, bodyText, param }) => {
+    const [info, setInfo] = useState({
+        name: "John Doe Hill `Johnny`",
+        description:
+            "Former teacher at School of Science. Now doing a freelance tutoring.",
+    });
+
+    const handleChange = event => {
+        setInfo({
+            ...info,
+            [event.target.name]: event.target.value,
+        });
+    };
+
     return (
         <Layout>
             <Modal
@@ -53,11 +54,21 @@ const ModalBlock = ({ visible, onClose, title, bodyText, param }) => {
 
                 {param == "Name" ? (
                     <Input
-                        value={"Shristi Shrestha"}
+                        value={info.name}
                         className="input-textarea"
+                        name="name"
+                        onChange={handleChange}
                     />
                 ) : null}
-                {param == "Description" ? <Description /> : null}
+                {param == "Description" ? (
+                    <Input.TextArea
+                        className="comment-textarea"
+                        name="description"
+                        value={info.description}
+                        autoSize={{ minRows: 6, maxRows: 10 }}
+                        onChange={handleChange}
+                    />
+                ) : null}
                 <div className={"medium-vertical-margin"}>
                     <ResText10Regular className={"text-gray"}>
                         This is public information. Make sure you use proper

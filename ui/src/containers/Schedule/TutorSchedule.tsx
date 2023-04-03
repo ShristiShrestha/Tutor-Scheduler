@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import {
     ResText12Regular,
@@ -91,9 +91,16 @@ const ContentCalendar = styled.div.attrs({
     .comment-textarea {
         border: 1px solid; /* Add a solid line to the bottom */
     }
+    .select-slot {
+        background-color: #d3adf7;
+    }
 `;
 
 const TutorSchedule = () => {
+    const [slot, setSlot] = useState({
+        time: "9 AM to 10 AM",
+    });
+
     const onClick = date =>
         alert("hello, " + toMonthDateYearStr(new Date(date)));
     return (
@@ -196,19 +203,22 @@ const TutorSchedule = () => {
 
                 <ContentCalendar>
                     <MyCalendar onClick={onClick} />
-                    <ResText12Regular className={"text-grey3"}>
+                    <ResText12Regular className={`text-grey`}>
                         Select available slots
                     </ResText12Regular>
                     <TimeSlot>
-                        {time?.map(time => (
+                        {time.map((item, index) => (
                             <Tag
                                 color="purple"
                                 style={{
-                                    borderRadius: "20%",
                                     fontSize: "8px",
+                                    borderRadius: "20px",
+                                    width: "9em",
+                                    padding: "3px",
+                                    textAlign: "center",
                                 }}
                             >
-                                {time}
+                                {item}
                             </Tag>
                         ))}
                     </TimeSlot>

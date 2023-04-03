@@ -1,17 +1,8 @@
-import { Col } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { grey6 } from "../../utils/ShadesUtils";
 import NotificationListView from "../../components/ListView/Notification";
-
-const data = Array.from({
-    length: 5,
-}).map((_, i) => ({
-    time: `9:${i}5 AM`,
-    name: `Mr. John Doe ${i}`,
-    date: "May 10, 2023",
-}));
-
+import { notification_data } from "../../static_data/tutors";
 const Wrapper = styled.div``;
 
 const Header = styled.div`
@@ -44,15 +35,22 @@ const NotificationList = styled.div`
 `;
 
 const Notification = () => {
+    const [notificationData, setNotificationData] = useState(notification_data);
+
+    const handleDeleteItem = key => {
+        const updatedData = notificationData.filter(item => item.key !== key);
+        setNotificationData(updatedData);
+    };
+
     return (
         <Wrapper>
             <Header>Recent Notification</Header>
             <NotificationList>
-                <Col>
-                    {data.map((item, index) => (
-                        <NotificationListView item={item} />
-                    ))}
-                </Col>
+                <NotificationListView
+                    item={notificationData}
+                    // key={item.key}
+                    onDelete={handleDeleteItem}
+                />
             </NotificationList>
         </Wrapper>
     );
