@@ -10,6 +10,7 @@ export const authenticate = () => {
     });
 };
 
+// todo: /user/signup
 export const signup = (data) => {
     const signupData: SignupType = {
         ...data,

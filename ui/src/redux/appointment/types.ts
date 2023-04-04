@@ -6,13 +6,11 @@ export const FETCH_APPOINTMENTS = "FETCH_APPOINTMENTS";
 export const FETCH_APPOINTMENT = "FETCH_APPOINTMENT";
 export const UPDATE_APPOINTMENT = "UPDATE_APPOINTMENT";
 export const RATE_APPOINTMENT = "RATE_APPOINTMENT";
-
 export const UPDATE_APPOINTMENTS_RECEIVED = "UPDATE_APPOINTMENTS_RECEIVED";
-export const DELETE_APPOINTMENT = "DELETE_APPOINTMENT";
 export const SET_APPOINTMENTS = "SET_APPOINTMENTS";
 export const SET_APPOINTMENT = "SET_APPOINTMENT";
 
-/******************* data types ************************/
+/******************* props ************************/
 
 export type AppointmentType = {
     id: number;
