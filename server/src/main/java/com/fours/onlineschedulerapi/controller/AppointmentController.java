@@ -105,10 +105,10 @@ public class AppointmentController {
 
     @PutMapping(value = "/received")
     public ResponseEntity<?> updateReceivedAt(@RequestBody Map<String, List<Long>> ids) {
-        appointmentService.updateClientReceivedAt(ids.get("id"));
+        List<Appointment> updatedAppointments = appointmentService.updateClientReceivedAt(ids.get("id"));
 
         return new ResponseEntity<>(
-                ResponseMessage.APPOINTMENT_RECEIVED_AT_CLIENT,
+                updatedAppointments,
                 HttpStatus.OK
         );
     }
@@ -116,9 +116,12 @@ public class AppointmentController {
     @PutMapping(value = "/{id}/rate")
     public ResponseEntity<?> rate(@PathVariable Long id, @RequestBody Map<String, Float> rating) {
         try {
-            appointmentService.rate(id, rating.get("rating"));
+            Appointment appointment = appointmentService.rate(id, rating.get("rating"));
 
-            return ResponseEntity.ok("Appointment has been rated successfully.");
+            return new ResponseEntity<>(
+                    appointment,
+                    HttpStatus.OK
+            );
         } catch (EntityNotFoundException | BadRequestException e) {
             return new ResponseEntity<>(
                     e.getMessage(), HttpStatus.BAD_REQUEST

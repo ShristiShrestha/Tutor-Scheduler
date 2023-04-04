@@ -355,17 +355,19 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
-    public void updateClientReceivedAt(List<Long> ids) {
+    public List<Appointment> updateClientReceivedAt(List<Long> ids) {
         List<Appointment> appointments = (List) appointmentRepository.findAllById(ids);
         Date receivedAt = Date.from(Instant.now());
 
         appointments.forEach(appointment -> appointment.setClientReceivedAt(receivedAt));
 
         appointmentRepository.saveAll(appointments);
+
+        return appointments;
     }
 
     @Transactional
-    public void rate(Long id, Float rating) throws EntityNotFoundException, BadRequestException {
+    public Appointment rate(Long id, Float rating) throws EntityNotFoundException, BadRequestException {
         //Get appointment by id from database or throw exception if it doesn't exist
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NON_EXISTENT_APPOINTMENT));
@@ -418,5 +420,7 @@ public class AppointmentService {
         //Update appointment
         appointment.setRating(rating);
         appointmentRepository.save(appointment);
+
+        return appointment;
     }
 }
