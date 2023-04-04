@@ -13,6 +13,7 @@ import { SendOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import { toMonthDateYearStr } from "../../utils/DateUtils";
+import MyButton from "../../components/Button/MyButton";
 const Header = styled.div`
     width: 100%;
     height: 56px;
@@ -79,7 +80,7 @@ const ScheduleActorInfo = styled.div.attrs({
 const ContentCalendar = styled.div.attrs({
     className: "vertical-start-flex outer-shadow",
 })`
-    max-width: 600px;
+    max-width: 860px;
     padding: 24px;
     border: 1px solid ${grey6};
     background: white;
@@ -197,9 +198,12 @@ const TutorSchedule = () => {
                     </ScheduleActorInfo>
                 </div>
 
-                <ResText14Regular className="select-item text-white delete-app danger-context-card-label small-padding ant-pagination-item">
+                <MyButton
+                    type={"primary"}
+                    className="small-padding medium-vertical-margin  delete-app danger-context-card-label"
+                >
                     Delete this appointment
-                </ResText14Regular>
+                </MyButton>
 
                 <ContentCalendar>
                     <MyCalendar onClick={onClick} />
@@ -235,12 +239,13 @@ const TutorSchedule = () => {
                                 It may take a couple of days for tutor to
                                 respond to your request.
                             </ResText12Regular>
-                            <div style={{ padding: "9px" }}>
-                                <ResText12Regular className="text-white small-padding select-item ant-switch-checked ant-pagination-item">
-                                    Update
-                                    <SendOutlined className="default-margin" />
-                                </ResText12Regular>
-                            </div>
+                            <MyButton
+                                type={"primary"}
+                                className="small-padding medium-vertical-margin "
+                            >
+                                Update
+                                <SendOutlined />
+                            </MyButton>
                         </div>
                     </div>
                 </ContentCalendar>

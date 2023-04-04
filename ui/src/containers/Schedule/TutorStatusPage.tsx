@@ -121,7 +121,6 @@ const ResponseAppointment = styled.div.attrs({
 `;
 
 const TutorStatusPage = ({ isAccepted }) => {
-    console.log("valll" + isAccepted);
     return (
         <Wrapper>
             <Header>
