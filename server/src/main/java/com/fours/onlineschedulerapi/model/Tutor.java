@@ -8,10 +8,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "tutors")
@@ -42,6 +39,9 @@ public class Tutor {
 
     @Column(name = "rated_by", columnDefinition = "integer default 0")
     private Integer ratedBy = 0;
+
+    @Transient
+    private Map<Float,Integer> ratingByNumbers;
 
     public void setExpertise(String expertise) {
         this.expertise = expertise;

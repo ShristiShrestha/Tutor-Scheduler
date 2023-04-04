@@ -31,6 +31,8 @@ public class UserDto {
 
     private Integer ratedBy;
 
+    private Map<Float,Integer> ratingByNumbers;
+
     public UserDto(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
@@ -43,6 +45,7 @@ public class UserDto {
             this.rating = user.getTutor().getRating();
             this.expertise = user.getTutor().getExpertiseList();
             this.ratedBy = user.getTutor().getRatedBy();
+            this.ratingByNumbers = user.getTutor().getRatingByNumbers();
         }
     }
 }

@@ -23,6 +23,15 @@ public class JwtResponse implements Serializable {
 
     private List<String> roles = new ArrayList<>();
 
+    public JwtResponse(String username, Collection<? extends GrantedAuthority> authorities) {
+        this.username = username;
+        List<SimpleGrantedAuthority> roles = (List<SimpleGrantedAuthority>) authorities;
+
+        for (SimpleGrantedAuthority role: roles) {
+            this.roles.add(role.getAuthority());
+        }
+    }
+
     public JwtResponse(String token, String username, Collection<? extends GrantedAuthority> authorities) {
         this.token = token;
         this.username = username;

@@ -1,10 +1,12 @@
 package com.fours.onlineschedulerapi.service;
 
+import com.fours.onlineschedulerapi.constants.AppointmentConstant;
 import com.fours.onlineschedulerapi.constants.ResponseMessage;
 import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.model.*;
+import com.fours.onlineschedulerapi.repository.AppointmentRepository;
 import com.fours.onlineschedulerapi.repository.RoleRepository;
 import com.fours.onlineschedulerapi.repository.UserRepository;
 import com.fours.onlineschedulerapi.utils.FilterSortUtil;
@@ -25,14 +27,18 @@ public class UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private final AppointmentRepository appointmentRepository;
+
     public UserService(
             UserRepository userRepository,
             BCryptPasswordEncoder bCryptPasswordEncoder,
-            RoleRepository roleRepository
+            RoleRepository roleRepository,
+            AppointmentRepository appointmentRepository
     ) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleRepository = roleRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
     public UserDto save(User user) throws EntityExistsException {
@@ -163,6 +169,38 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(() -> new BadRequestException(ResponseMessage.NON_EXISTENT_USER));
 
+        if (user.getIsTutor()) {
+            user.getTutor().setRatingByNumbers(
+                    this.getRatingByNumbers(id)
+            );
+        }
+
         return new UserDto(user);
+    }
+
+    private Map<Float, Integer> getRatingByNumbers(Long id) {
+        List<Appointment> appointments = appointmentRepository.findByTutorIdAndStatus(id, AppointmentConstant.ACCEPTED);
+
+        Map<Float, Integer> ratingByNumber = new HashMap<>();
+
+        appointments = appointments.stream()
+                .filter(appointment -> !appointment.getRating().equals(0F))
+                .collect(Collectors.toList());
+
+        if (!appointments.isEmpty()) {
+            appointments.forEach(appointment -> {
+                Float rating = appointment.getRating();
+
+                if (ratingByNumber.containsKey(rating)) {
+                    Integer ratingCount = ratingByNumber.get(rating);
+                    ratingCount++;
+                    ratingByNumber.put(rating, ratingCount);
+                } else {
+                    ratingByNumber.put(rating, 1);
+                }
+            });
+        }
+
+        return ratingByNumber;
     }
 }

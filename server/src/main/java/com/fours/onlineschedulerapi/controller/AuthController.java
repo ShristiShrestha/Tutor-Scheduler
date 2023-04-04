@@ -7,6 +7,8 @@ import com.fours.onlineschedulerapi.model.JwtResponse;
 import com.fours.onlineschedulerapi.service.AuthenticatedUserService;
 import com.fours.onlineschedulerapi.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,9 @@ public class AuthController {
     @Autowired
     private AuthenticatedUserService authenticatedUserService;
 
+    private final String AUTHORIZATION = "Authorization";
+    private final String BEARER = "Bearer ";
+
     @PostMapping(value = "/access-token")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
@@ -39,10 +44,30 @@ public class AuthController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(AUTHORIZATION, BEARER + token);
+
+        return new ResponseEntity<>(
                 new JwtResponse(
                         token, userDetails.getUsername(), userDetails.getAuthorities()
-                )
+                ),
+                headers,
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile() {
+        final String userName = authenticatedUserService.getUsername();
+
+        final UserDetails userDetails = userDetailsService
+                .loadUserByUsername(userName);
+
+        return new ResponseEntity<>(
+                new JwtResponse(
+                      userDetails.getUsername(), userDetails.getAuthorities()
+                ),
+                HttpStatus.OK
         );
     }
 
