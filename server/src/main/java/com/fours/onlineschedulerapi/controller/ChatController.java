@@ -21,18 +21,20 @@ public class ChatController {
 
     @PostMapping()
     public ResponseEntity<?> send(@RequestBody @Valid Message message) {
-        chatService.send(message);
+        List<Message> messages = chatService.send(message);
 
-        return ResponseEntity
-                .ok(ResponseMessage.CHAT_MESSAGE_SENT_TO + message.getReceiverEmail());
+        return new ResponseEntity<>(
+          messages,
+          HttpStatus.OK
+        );
     }
 
     @PutMapping(value = "/received")
     public ResponseEntity<?> updateReceivedAt(@RequestBody Map<String, List<Long>> ids) {
-        chatService.updateReceivedAt(ids.get("id"));
+        List<Message> messages = chatService.updateReceivedAt(ids.get("id"));
 
         return new ResponseEntity<> (
-                ResponseMessage.MESSAGES_RECEIVED_AT_CLIENT,
+                messages,
                 HttpStatus.OK
         );
     }

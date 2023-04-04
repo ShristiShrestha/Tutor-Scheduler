@@ -28,7 +28,7 @@ public class ChatService {
     @Autowired
     private UserRepository userRepository;
 
-    public void send(Message message) {
+    public List<Message> send(Message message) {
         messageRepository.save(message);
 
         // Set message properties
@@ -39,9 +39,11 @@ public class ChatService {
         String queueName = RabbitMqConstant.QUEUE_PREFIX + message.getReceiverEmail();
 
         rabbitMqService.sendMessage(message.getMessage(), queueName, headers);
+
+        return this.getConversationWith(message.getReceiverEmail());
     }
 
-    public void updateReceivedAt(List<Long> ids) {
+    public List<Message> updateReceivedAt(List<Long> ids) {
         List<Message> messages = (List) messageRepository.findAllById(ids);
 
         Date receivedAt = Date.from(Instant.now());
@@ -49,6 +51,8 @@ public class ChatService {
         messages.forEach(message -> message.setReceivedAt(receivedAt));
 
         messageRepository.saveAll(messages);
+
+        return messages;
     }
 
     public Map<String, List<Message>> getMessages() {
