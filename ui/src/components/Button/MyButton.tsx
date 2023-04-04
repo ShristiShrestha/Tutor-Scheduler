@@ -33,7 +33,9 @@ export default function MyButton(props) {
     const type = props.type;
     return (
         <Wrapper>
-            <Button type={type} className={type} size={"large"}>
+            <Button className={type} size={"large"}
+                    {...props}
+            >
                 {props.children}
             </Button>
         </Wrapper>

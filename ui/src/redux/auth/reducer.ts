@@ -1,8 +1,8 @@
-import { AuthState, SET_AUTH } from "./types";
-import { RootState } from "../common/types";
+import {AuthState, SET_AUTH} from "./types";
+import {RootState} from "../common/types";
 
 const initialState: AuthState = {
-    authenticated: true,
+    authenticated: false,
 };
 /******************* reducer ************************/
 
@@ -17,6 +17,6 @@ export default function reducer(state = initialState, action: any): AuthState {
             };
         }
         default:
-            return { ...state };
+            return {...state};
     }
 }

@@ -1,27 +1,21 @@
-import {
-    FETCH_USER,
-    FETCH_USERS,
-    SET_USER,
-    SET_USERS,
-    UserMiniDetailsType,
-} from "./types";
-import { MyThunkDispatch, PageResponse } from "../common/types";
-import { actionFailure, actionStart, actionSuccess } from "../common/actions";
-import { getUser, getUsers } from "../../api/UserApi";
+import {FETCH_USER, FETCH_USERS, SET_USER, SET_USERS, UserDetailsType,} from "./types";
+import {MyThunkDispatch, PageResponse} from "../common/types";
+import {actionFailure, actionStart, actionSuccess} from "../common/actions";
+import {getUser, getUsers} from "../../api/UserApi";
 
 /******************* state ************************/
-export function setUser(props: UserMiniDetailsType) {
+export function setUser(props: UserDetailsType) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_USER));
-        dispatch({ type: SET_USER, payload: props });
+        dispatch({type: SET_USER, payload: props});
         dispatch(actionSuccess(SET_USER, props));
     };
 }
 
-export function setUsers(props: PageResponse<UserMiniDetailsType>) {
+export function setUsers(props: PageResponse<UserDetailsType>) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_USERS));
-        dispatch({ type: SET_USERS, payload: props });
+        dispatch({type: SET_USERS, payload: props});
         dispatch(actionSuccess(SET_USERS, props));
     };
 }

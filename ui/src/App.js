@@ -1,38 +1,38 @@
 import React from "react";
 import PageRoutes from "./route/PageRoutes";
 import TopBar from "./components/TopBar/TopBar";
-import { Layout } from "antd";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {Layout} from "antd";
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
 // import "antd/dist/reset.css";
 import "./App.css";
 import "./custom_antd.css";
 import useAuth from "./hooks/useAuth";
 import LoginPage from "./containers/Auth/LoginPage";
+import {useSelector} from "react-redux";
+import {selectAuth} from "./redux/auth/reducer";
 import SideBar from "./components/SideBar/SideBar";
-import { useSelector } from "react-redux";
-import { selectAuth } from "./redux/auth/reducer";
 
-const { Header, Content, Sider } = Layout;
+const {Header, Content, Sider} = Layout;
 
 const publicRoutes = [
     {
         path: "/login",
-        component: <LoginPage />,
+        component: <LoginPage/>,
     },
 ];
 
 const App = () => {
-    const { authenticated } = useSelector(selectAuth);
+    const {authenticated} = useSelector(selectAuth);
 
     const getLayout = child => (
         <Layout>
             <Header className={"app-layout-header centered-flex"}>
-                <TopBar />
+                <TopBar/>
             </Header>
             {authenticated ? (
                 <Sider width={200}>
-                    <SideBar />
+                    <SideBar/>
                 </Sider>
             ) : (
                 <></>
@@ -51,7 +51,7 @@ const App = () => {
 
     return (
         <Router>
-            {getLayout(
+            {!authenticated && getLayout(
                 <Routes>
                     {publicRoutes.map((item, index) => (
                         <Route
@@ -62,7 +62,7 @@ const App = () => {
                     ))}
                 </Routes>,
             )}
-            {useAuth(getLayout(<PageRoutes />))}
+            {useAuth(getLayout(<PageRoutes/>))}
         </Router>
     );
 };

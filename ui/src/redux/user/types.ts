@@ -1,5 +1,5 @@
-import { PageConfigType } from "../common/types";
-import { UserRoles } from "../../enum/UserEnum";
+import {PageConfigType} from "../common/types";
+import {UserRoles} from "../../enum/UserEnum";
 
 /******************* actions ************************/
 export const FETCH_USER = "FETCH_USER";
@@ -14,15 +14,27 @@ export type UserMiniDetailsType = {
     roles: UserRoles[];
 };
 
+export type UserDetailsType = {
+    id: number;
+    name: string;
+    email: string;
+    isTutor: boolean;
+    roles: UserRoles[];
+    rating: number;
+    expertise: string[];
+    createdAt: Date;
+    ratedBy: number;
+}
+
 /******************* states ************************/
 
 export type UserState = {
     // store user details of currently viewing user:
     // could be profile page of
     // a particular user
-    user?: UserMiniDetailsType;
+    user?: UserDetailsType;
 
     // stores list of users: could be list of tutors
-    users: UserMiniDetailsType[];
+    users: UserDetailsType[];
     usersPageConfig: PageConfigType;
 };

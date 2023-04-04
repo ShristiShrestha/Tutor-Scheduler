@@ -61,3 +61,7 @@
     /*width: calc(100vw - 200px) !important;*/
     overflow: hidden;
 }
+
+.ant-layout.ant-layout-has-sider > .ant-layout-content {
+    width: fit-content;
+}

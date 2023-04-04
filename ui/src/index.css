@@ -580,6 +580,10 @@ a:not([href]):not([class]) {
     margin: 16px 0;
 }
 
+.large-vertical-margin {
+    margin: 24px 0;
+}
+
 /* ============================================= */
 /* Paddings */
 /* ============================================= */
@@ -767,6 +771,10 @@ input[id^="search"]::placeholder {
 .full-block {
     width: 100%;
     display: block;
+}
+
+.full-width {
+    width: 100%;
 }
 
 /* ============================================= */

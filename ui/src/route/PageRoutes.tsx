@@ -43,11 +43,6 @@ const pages = [
     {
         path: "/chat/users/sender_id",
         component: <ChatConversation/>,
-
-    },
-    {
-        path: "/",
-        component: <MySchedule/>,
     },
     {
         path: "/notification",
@@ -68,6 +63,10 @@ const pages = [
     {
         path: "/profile/:id/view-tutor-ratings",
         component: <TutorProfile/>,
+    },
+    {
+        path: "/",
+        component: <MySchedule/>,
     },
 ];
 

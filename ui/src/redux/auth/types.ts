@@ -4,6 +4,18 @@ import {UserMiniDetailsType} from "../user/types";
 export const FETCH_AUTH = "FETCH_AUTH";
 export const SET_AUTH = "SET_AUTH";
 
+/******************* props ************************/
+
+export type SignupType = {
+    name: string;
+    email: string;
+    password: string;
+    isTutor: boolean;
+    tutor?: {
+        expertiseList: string[];
+    }
+}
+
 /******************* states ************************/
 
 export type AuthState = {
