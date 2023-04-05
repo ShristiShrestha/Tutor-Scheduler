@@ -1,6 +1,8 @@
 package com.fours.onlineschedulerapi.utils;
 
 import com.fours.onlineschedulerapi.auth.JwtUserDetailService;
+import com.fours.onlineschedulerapi.constants.AuthConstants;
+import com.fours.onlineschedulerapi.service.CookieService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,14 +31,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        final String requestTokenHeader = request.getHeader("Authorization");
+        final String cookie = request.getHeader("Cookie");
 
         String username = null;
         String jwtToken = null;
         // JWT Token is in the form "Bearer token". Remove Bearer word and get
         // only the Token
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
+        if (cookie != null && cookie.contains(AuthConstants.COOKIE_TOKEN_PREFIX)) {
+            jwtToken = CookieService.getTokenFromCookieString(cookie);
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {

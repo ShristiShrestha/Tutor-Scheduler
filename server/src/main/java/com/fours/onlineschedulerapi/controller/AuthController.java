@@ -32,7 +32,7 @@ public class AuthController {
     @Autowired
     private AuthenticatedUserService authenticatedUserService;
 
-    @PostMapping(value = "/access-token")
+    @PostMapping(value = "/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
             throws Exception {
         String email = authenticationRequest.getEmail();
@@ -43,7 +43,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,
-                        CookieService.getResponseCookie(token, email).toString())
+                        CookieService.getResponseCookie(token).toString())
                 .build();
     }
 

@@ -55,7 +55,7 @@ public class UserController {
             return ResponseEntity
                     .ok()
                     .header(HttpHeaders.SET_COOKIE,
-                            CookieService.getResponseCookie(token, email).toString())
+                            CookieService.getResponseCookie(token).toString())
                     .build();
         } catch (BadRequestException e) {
 
