@@ -1,9 +1,9 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
 import * as _ from "lodash";
-import { getAxiosInstance } from "./AxiosUtils";
+import {getAxiosInstance} from "./AxiosUtils";
 
 export default class Api {
-    public static baseURL = process.env.NEXT_PUBLIC_API_URL || "/api";
+    public static baseURL = process.env.REACT_APP_API_URL + "/api" || "/api";
     public static apiVersion = "";
     public static axiosInstance: AxiosInstance = getAxiosInstance(
         Api.baseURL,
@@ -39,7 +39,8 @@ export default class Api {
             _.get(error, "constructor.name", null) === "Cancel" ||
             axios.isCancel(error)
         ) {
-            return new Promise<T>(() => {}); // Lost promise
+            return new Promise<T>(() => {
+            }); // Lost promise
         }
         if (
             error &&
