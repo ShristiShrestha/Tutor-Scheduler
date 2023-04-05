@@ -15,8 +15,9 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("*", "http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("Authorization", "Content-Type")
-                        .exposedHeaders("Authorization");
+                        .allowedHeaders("Content-Type", "Authorization")
+                        .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Access-Control-Allow-Methods", "Access-Control-Max-Age", "Access-Control-Expose-Headers", "Authorization")
+                        .allowCredentials(false).maxAge(3600);
             }
         };
     }
