@@ -1,18 +1,19 @@
 package com.fours.onlineschedulerapi.controller;
 
+import com.fours.onlineschedulerapi.auth.JwtUserDetailService;
 import com.fours.onlineschedulerapi.constants.ResponseMessage;
 import com.fours.onlineschedulerapi.constants.RabbitMqConstant;
 import com.fours.onlineschedulerapi.constants.RoleConstants;
 import com.fours.onlineschedulerapi.exception.BadRequestException;
 import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.dto.UserDto;
-import com.fours.onlineschedulerapi.service.AppointmentService;
-import com.fours.onlineschedulerapi.service.AuthenticatedUserService;
-import com.fours.onlineschedulerapi.service.RabbitMqService;
-import com.fours.onlineschedulerapi.service.UserService;
+import com.fours.onlineschedulerapi.service.*;
+import com.fours.onlineschedulerapi.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityExistsException;
@@ -34,20 +35,38 @@ public class UserController {
     @Autowired
     private RabbitMqService rabbitMqService;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     @PostMapping(value = "/signup")
-    public ResponseEntity<?> save(@RequestBody User user) throws EntityExistsException {
-        UserDto savedUser = userService.save(user);
+    public ResponseEntity<?> save(@RequestBody User user) {
+        try {
+            UserDto savedUser = userService.save(user);
 
-        String queueName = RabbitMqConstant.QUEUE_PREFIX + savedUser.getEmail();
+            String email = savedUser.getEmail();
 
-        //Create a queue for every user to facilitate chat
-        rabbitMqService.createQueue(queueName);
+            String queueName = RabbitMqConstant.QUEUE_PREFIX + email;
 
-        return ResponseEntity.ok(savedUser);
+            //Create a queue for every user to facilitate chat
+            rabbitMqService.createQueue(queueName);
+
+            final String token = jwtTokenUtil.generateToken(email);
+
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.SET_COOKIE,
+                            CookieService.getResponseCookie(token, email).toString())
+                    .build();
+        } catch (BadRequestException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) throws EntityExistsException {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         if (authenticatedUserService.getAuthorities().contains(RoleConstants.COORDINATOR)) {
             userService.delete(id);
 

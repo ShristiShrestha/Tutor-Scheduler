@@ -1,8 +1,10 @@
 package com.fours.onlineschedulerapi.utils;
 
+import com.fours.onlineschedulerapi.auth.JwtUserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,10 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil implements Serializable {
+
+
+    @Autowired
+    private JwtUserDetailService userDetailsService;
 
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
@@ -49,7 +55,8 @@ public class JwtTokenUtil implements Serializable {
     }
 
     //generate token for user
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(String email) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 

@@ -41,12 +41,12 @@ public class UserService {
         this.appointmentRepository = appointmentRepository;
     }
 
-    public UserDto save(User user) throws EntityExistsException {
+    public UserDto save(User user) throws BadRequestException {
 
         Optional<User> savedUser = userRepository.findByEmail(user.getEmail());
 
         if (savedUser.isPresent()) {
-            throw new EntityExistsException("User with provided email already exists.");
+            throw new BadRequestException("User with provided email already exists.");
         } else {
             Boolean isTutor = user.getIsTutor();
 

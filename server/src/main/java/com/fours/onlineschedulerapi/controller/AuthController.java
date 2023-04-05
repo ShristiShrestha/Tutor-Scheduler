@@ -5,6 +5,7 @@ import com.fours.onlineschedulerapi.auth.JwtUserDetailService;
 import com.fours.onlineschedulerapi.model.JwtRequest;
 import com.fours.onlineschedulerapi.model.JwtResponse;
 import com.fours.onlineschedulerapi.service.AuthenticatedUserService;
+import com.fours.onlineschedulerapi.service.CookieService;
 import com.fours.onlineschedulerapi.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -31,29 +32,19 @@ public class AuthController {
     @Autowired
     private AuthenticatedUserService authenticatedUserService;
 
-    private final String AUTHORIZATION = "Authorization";
-    private final String BEARER = "Bearer ";
-
     @PostMapping(value = "/access-token")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
+            throws Exception {
+        String email = authenticationRequest.getEmail();
 
-        authService.authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+        authService.authenticate(email, authenticationRequest.getPassword());
 
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(authenticationRequest.getEmail());
+        final String token = jwtTokenUtil.generateToken(email);
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(AUTHORIZATION, BEARER + token);
-
-        return new ResponseEntity<>(
-                new JwtResponse(
-                        token, userDetails.getUsername(), userDetails.getAuthorities()
-                ),
-                headers,
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE,
+                        CookieService.getResponseCookie(token, email).toString())
+                .build();
     }
 
     @GetMapping("/profile")
