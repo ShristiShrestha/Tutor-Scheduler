@@ -13,9 +13,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*", "http://localhost:3000")
+                        .allowedOrigins("http://localhost:3000")
                         .allowedMethods("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("Content-Type", "Authorization")
+//                        .allowedHeaders("Content-Type", "Authorization")
+                        .allowedHeaders("*")
                         .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
                                 "Access-Control-Allow-Methods"," Access-Control-Request-Headers",
                                 "Access-Control-Max-Age", "Access-Control-Expose-Headers", "Authorization")
