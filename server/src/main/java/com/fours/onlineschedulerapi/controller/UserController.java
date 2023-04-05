@@ -105,11 +105,13 @@ public class UserController {
             @RequestParam("status") Optional<String> status,
             @RequestParam("upcoming") Optional<Boolean> upcoming,
             @PathVariable("id") Long id,
-            @RequestParam("sortBy") Optional<String> sortBy
+            @RequestParam("sortBy") Optional<String> sortBy,
+            @RequestParam("year") Optional<String> year,
+            @RequestParam("month") Optional<String> month
     ) {
 
         return ResponseEntity.ok(
-                appointmentService.getByTutorId(id, status, upcoming, sortBy)
+                appointmentService.getByTutorId(id, status, upcoming, sortBy, year, month)
         );
     }
 

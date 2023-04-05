@@ -208,8 +208,10 @@ public class AppointmentService {
             Long tutorId,
             Optional<String> status,
             Optional<Boolean> upcoming,
-            Optional<String> sortBy
-    ) {
+            Optional<String> sortBy,
+            Optional<String> year,
+            Optional<String> month
+            ) {
         List<Appointment> appointments = appointmentRepository.findByTutorId(tutorId);
 
         if (status.isPresent() && !status.get().isEmpty()) {
@@ -224,6 +226,28 @@ public class AppointmentService {
             appointments = appointments.stream()
                     .filter(appointment -> appointment.getScheduledAt().after(now))
                     .collect(Collectors.toList());
+        }
+
+        if (year.isPresent()) {
+            Integer y = Integer.valueOf(year.get());
+
+            appointments = appointments.stream()
+                    .filter(appointment -> DateUtil.getYear(appointment.getScheduledAt()).equals(y))
+                    .collect(Collectors.toList());
+
+            if (month.isPresent() && !month.get().isEmpty()) {
+                Integer m = DateUtil.getMonth(
+                        month.get()
+                );
+
+                appointments = appointments.stream()
+                        .filter(appointment -> {
+                            Integer mon = appointment.getScheduledAt().getMonth();
+
+                            return mon.equals(m);
+                        })
+                        .collect(Collectors.toList());
+            }
         }
 
         //Collect student ids and fetch user details from database
@@ -397,7 +421,9 @@ public class AppointmentService {
                 tutorId,
                 Optional.of(AppointmentConstant.ACCEPTED),
                 Optional.empty(),
-                Optional.empty())
+                        Optional.empty(),
+                        Optional.empty(),
+                        Optional.empty())
                 .stream().filter(ap -> ap.getRating() > 0.0F)
                 .collect(Collectors.toList());
 
