@@ -2,7 +2,7 @@ import React from "react";
 import PageRoutes from "./route/PageRoutes";
 import TopBar from "./components/TopBar/TopBar";
 import {Layout} from "antd";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 
 // import "antd/dist/reset.css";
 import "./App.css";
@@ -30,7 +30,8 @@ const App = () => {
             <Header className={"app-layout-header centered-flex"}>
                 <TopBar/>
             </Header>
-            {authenticated ? (
+            {/* todo: remove true*/}
+            {(authenticated || true) ? (
                 <Sider width={200}>
                     <SideBar/>
                 </Sider>
@@ -50,8 +51,10 @@ const App = () => {
     );
 
     return (
-        <Router>
-            {!authenticated && getLayout(
+        <>
+            {/* todo: remove true */}
+            {/*{(!authenticated || true) || }*/}
+            {getLayout(
                 <Routes>
                     {publicRoutes.map((item, index) => (
                         <Route
@@ -63,7 +66,7 @@ const App = () => {
                 </Routes>,
             )}
             {useAuth(getLayout(<PageRoutes/>))}
-        </Router>
+        </>
     );
 };
 export default App;
