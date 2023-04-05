@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import {getAxiosInstance} from "./AxiosUtils";
 
 export default class Api {
-    public static baseURL = process.env.REACT_APP_API_URL + "/api" || "/api";
+    public static baseURL = process.env.REACT_APP_API_URL || "/api";
     public static apiVersion = "";
     public static axiosInstance: AxiosInstance = getAxiosInstance(
         Api.baseURL,
