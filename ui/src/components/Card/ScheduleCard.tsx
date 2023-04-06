@@ -6,7 +6,7 @@ import {amethyst, grey1, grey2, grey3, grey6,} from "../../utils/ShadesUtils";
 import {AppointmentType} from "../../redux/appointment/types";
 import {toMonthDateStr} from "../../utils/DateUtils";
 import {AppointmentStatus} from "../../enum/AppointmentEnum";
-import {StarOutlined, UserOutlined} from "@ant-design/icons";
+import {StarOutlined} from "@ant-design/icons";
 import {toEndDottedStr} from "../../utils/StringUtils";
 
 // styled components
@@ -111,10 +111,12 @@ const ScheduleCard = (apt: AppointmentType) => {
                 <Avatar shape="circle" size={64}/>
                 <div className={"tutor-profile-info"}>
                     <ResText14SemiBold>{apt.tutor}</ResText14SemiBold>
-                    <ResText12Regular className={"text-grey4"}>
-                        <StarOutlined/> <b className={"text-grey3"}>{`${apt.rating}`}</b>
-                        <Divider type={"vertical"} style={{marginLeft: 12, marginRight: 12}}/>
-                        <UserOutlined/> <b className={"text-grey3"}>100</b>
+                    <ResText12Regular>
+                        <span className={"text-grey1"}>{apt.tutorDesc || `Freelancer developer`}</span>
+                        <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>
+                        <StarOutlined style={{marginRight: 3}}/> <span>{`${apt.rating}`}</span>
+                        <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>
+                        <span>100 ratings</span>
                     </ResText12Regular>
                 </div>
             </TutorInfo>
