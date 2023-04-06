@@ -7,6 +7,8 @@ import {grey6} from "../../utils/ShadesUtils";
 import {Col, Row} from "antd";
 import {Link} from "react-router-dom";
 import React from "react";
+import {UserDetailsType} from "../../redux/user/types";
+import {UserRoles} from "../../enum/UserEnum";
 
 const Wrapper = styled.div`
   position: relative;
@@ -41,6 +43,19 @@ const TutorsList = styled.div`
   margin-bottom: 120px;
   padding: 24px;
 `;
+
+const tutor: UserDetailsType = {
+    id: 1,
+    name: "tutor1",
+    email: "tutor@lsu.edu",
+    isTutor: true,
+    roles: [UserRoles.TUTOR],
+    rating: 3,
+    expertise: ["web", "machine learning"],
+    createdAt: Date(),
+    ratedBy: 100,
+    description: "Lorem epsium veritically venteered, flex nut slchjeep sdue hussh"
+}
 export default function FindTutors() {
     return (
         <Wrapper className={"h-vertically-centered-flex"}>
@@ -60,13 +75,7 @@ export default function FindTutors() {
                     {data.map((item, index) => (
                         <Col key={"find-tutors-" + index} span={6}>
                             <Link to={"/profile/" + index + "/request-tutoring"}>
-                                <TutorCard
-                                    name={item.name}
-                                    title={item.title}
-                                    rating={item.ratings}
-                                    description={item.description}
-                                    expertises={item.expertises}
-                                />
+                                <TutorCard {...tutor}/>
                             </Link>
                         </Col>
                     ))}

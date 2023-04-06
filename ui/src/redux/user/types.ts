@@ -51,6 +51,8 @@ export type UserDetailsType = {
     expertise: string[];
     createdAt: Date;
     ratedBy: number;
+
+    description?: string,
 }
 
 /******************* states ************************/

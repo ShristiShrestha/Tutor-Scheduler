@@ -1,11 +1,12 @@
-import { List, Space } from "antd";
-import React, { useState } from "react";
-import { StarFilled, StarOutlined } from "@ant-design/icons";
+import {List, Space} from "antd";
+import React, {useState} from "react";
+import {StarFilled, StarOutlined} from "@ant-design/icons";
 import "./ListView.scss";
-import { ResText14Regular, ResText16SemiBold } from "../../utils/TextUtils";
+import {ResText14Regular} from "../../utils/TextUtils";
 import styled from "styled-components";
-import { yellow } from "../../utils/ShadesUtils";
-import { Link } from "react-router-dom";
+import {grey6, yellow} from "../../utils/ShadesUtils";
+import {Link} from "react-router-dom";
+import {toEndDottedStr} from "../../utils/StringUtils";
 
 const data = Array.from({
     length: 23,
@@ -18,22 +19,24 @@ const data = Array.from({
 }));
 
 const Wrapper = styled.div`
-    .anticon svg {
-        font-size: 18px;
-        cursor: pointer;
-        z-index: 1;
-    }
+  .anticon svg {
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 1;
+  }
 
-    .ant-list-item {
-        :hover {
-            background: #f8f8f8;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+  .ant-list-item {
+    border-bottom: 1px solid ${grey6} !important;
+
+    :hover {
+      background: #f8f8f8;
+      border-radius: 4px;
+      cursor: pointer;
     }
+  }
 `;
 
-const ListItem = ({ item }) => {
+const ListItem = ({item}) => {
     const [checked, setChecked] = useState(false);
     const [starred, setStarred] = useState(false);
 
@@ -48,21 +51,21 @@ const ListItem = ({ item }) => {
     return (
         <Link to={"/chat/users/0"}>
             <List.Item>
-                <Space style={{ marginRight: 12 }}>
+                <Space style={{marginRight: 12}}>
                     {starred ? (
                         <StarFilled
                             onClick={handleStarClick}
-                            style={{ color: yellow }}
+                            style={{color: yellow}}
                         />
                     ) : (
-                        <StarOutlined onClick={handleStarClick} />
+                        <StarOutlined onClick={handleStarClick}/>
                     )}
                 </Space>
                 <ResText14Regular className={"listview-title text-grey1"}>
                     {item.title}
                 </ResText14Regular>
-                <ResText14Regular className="listview-field text-grey3">
-                    {item.description}
+                <ResText14Regular className="listview-field text-grey2">
+                    {toEndDottedStr(item.description, 20)}
                 </ResText14Regular>
                 <ResText14Regular className="listview-time">
                     {item.time}{" "}
@@ -83,29 +86,30 @@ const ListView = () => {
         <Wrapper>
             <div
                 style={{
-                    marginLeft: "25px",
+                    // marginLeft: "25px",
                     marginTop: "20px",
                     marginBottom: "10px",
                 }}
             >
-                <ResText16SemiBold
-                    className={"text-grey2"}
-                    style={{ marginRight: "12px", fontSize: "16px" }}
+                <ResText14Regular
+                    className={"text-grey1"}
+                    style={{marginRight: "12px"}}
                 >
-                    Recent conversations{" "}
-                </ResText16SemiBold>
+                    Recent {" "}
+                </ResText14Regular>
                 {starred ? (
                     <StarFilled
-                        style={{ color: yellow }}
+                        style={{color: yellow}}
                         onClick={() => handleStarClick()}
                     />
                 ) : (
-                    <StarOutlined onClick={() => handleStarClick()} />
+                    <StarOutlined onClick={() => handleStarClick()}/>
                 )}
             </div>
             <List
                 itemLayout="vertical"
                 size="large"
+                className={""}
                 pagination={{
                     onChange: page => {
                         console.log(page);
@@ -113,7 +117,7 @@ const ListView = () => {
                     pageSize: 8,
                 }}
                 dataSource={data}
-                renderItem={item => <ListItem item={item} />}
+                renderItem={item => <ListItem item={item}/>}
             />
         </Wrapper>
     );

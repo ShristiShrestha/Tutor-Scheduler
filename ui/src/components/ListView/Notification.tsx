@@ -1,39 +1,67 @@
-import { Button, List, Tag } from "antd";
+import {Button, List, Tag} from "antd";
 import React from "react";
 import styled from "styled-components";
-import { ResText10Regular, ResText14Regular } from "../../utils/TextUtils";
-import { expertises } from "../../static_data/tutors";
+import {ResText10Regular, ResText12Regular, ResText14Regular} from "../../utils/TextUtils";
+import {expertises} from "../../static_data/tutors";
+import {grey6} from "../../utils/ShadesUtils";
 
 const Wrapper = styled.div`
-    .button-text {
-        padding: 1px;
-        color: white;
-        border-radius: 5px;
-        font-weight: 600;
-        cursor: pointer;
-        width: 8vw;
-    }
-    .button-green {
-        background-color: #1bb885;
-    }
-    .button-red {
-        background-color: #f44336;
-    }
+  .button-text {
+    padding: 1px;
+    color: white;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 8vw;
+  }
 
-    .text-field {
-        margin-left: 25px;
-    }
+  .button-green {
+    background-color: #1bb885;
+  }
 
-    .ant-list-item {
-        :hover {
-            background: #f8f8f8;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+  .button-red {
+    background-color: #f44336;
+  }
+
+  .text-field {
+    margin-left: 12px;
+  }
+
+  .expertise-tags {
+    width: fit-content;
+    margin-left: 48px;
+    display: inline-flex;
+  }
+
+  .text-field-date {
+    float: right;
+    text-align: right;
+  }
+
+  .text-field-date2 {
+    float: right;
+    text-align: right;
+    margin-right: 32px;
+  }
+
+  .expertise-tag {
+    border-radius: 8px;
+    background: white;
+    border-color: grey;
+  }
+
+  .ant-list-item {
+    border-bottom: 1px solid ${grey6} !important;
+
+    :hover {
+      background: #f8f8f8;
+      border-radius: 4px;
+      cursor: pointer;
     }
+  }
 `;
 
-const ListItem = ({ item, onDelete }) => {
+const ListItem = ({item, onDelete}) => {
     const handleData = key => {
         console.log(key);
         onDelete(item.key);
@@ -44,26 +72,27 @@ const ListItem = ({ item, onDelete }) => {
                 <ResText14Regular className={"text-grey1 text-field"}>
                     {item.name}
                 </ResText14Regular>
-                <ResText14Regular className="text-field text-grey1">
+                <ResText12Regular className="text-field-date text-grey1">
                     {item.date}
-                </ResText14Regular>
-                <ResText10Regular
-                    className="text-field"
-                    style={{ marginRight: "140px" }}
+                </ResText12Regular>
+                <ResText12Regular
+                    className="text-field-date2"
                 >
                     {item.time}
-                </ResText10Regular>
+                </ResText12Regular>
 
-                {expertises &&
-                    expertises.map(expertise => (
-                        <Tag color={"purple"}>
-                            <ResText10Regular>{expertise}</ResText10Regular>
-                        </Tag>
-                    ))}
+                <div className={"h-start-flex expertise-tags"}>
+                    {expertises &&
+                        expertises.map(expertise => (
+                            <Tag className={"expertise-tag"}>
+                                <ResText10Regular>{expertise}</ResText10Regular>
+                            </Tag>
+                        ))}
+                </div>
 
                 <Button
                     className="button-green button-text"
-                    style={{ marginRight: "20px", marginLeft: "95px" }}
+                    style={{marginRight: "20px", marginLeft: "95px"}}
                     onClick={() => handleData(item.key)}
                     size={"small"}
                 >
@@ -82,9 +111,9 @@ const ListItem = ({ item, onDelete }) => {
     );
 };
 
-const NotificationListView = ({ item, onDelete }) => {
+const NotificationListView = ({item, onDelete}) => {
     return (
-        <>
+        <Wrapper>
             <List
                 itemLayout="vertical"
                 size="large"
@@ -93,10 +122,10 @@ const NotificationListView = ({ item, onDelete }) => {
                 }}
                 dataSource={item}
                 renderItem={item => (
-                    <ListItem item={item} onDelete={onDelete} />
+                    <ListItem item={item} onDelete={onDelete}/>
                 )}
             />
-        </>
+        </Wrapper>
     );
 };
 

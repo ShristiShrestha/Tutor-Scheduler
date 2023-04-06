@@ -116,7 +116,7 @@ const ScheduleCard = (apt: AppointmentType) => {
                         <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>
                         <StarOutlined style={{marginRight: 3}}/> <span>{`${apt.rating}`}</span>
                         <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>
-                        <span>100 ratings</span>
+                        <span>0 ratings</span>
                     </ResText12Regular>
                 </div>
             </TutorInfo>

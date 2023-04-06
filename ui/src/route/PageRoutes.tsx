@@ -4,7 +4,7 @@ import MySchedule from "../containers/Schedule/MySchedule";
 import FindTutors from "../containers/Tutor/FindTutors";
 import ScheduleView from "../containers/Schedule/ScheduleView";
 import TutorSchedule from "../containers/Schedule/TutorSchedule";
-import Notification from "../containers/Notification/Notification";
+import NotificationsPage from "../containers/Notification/NotificationsPage";
 import TutorProfile from "../containers/Tutor/TutorProfile";
 import TutorStatusPage from "../containers/Schedule/TutorStatusPage";
 import Chat from "../containers/Chat/Chat";
@@ -46,8 +46,8 @@ const pages = [
         component: <ChatConversation/>,
     },
     {
-        path: "/notification",
-        component: <Notification/>,
+        path: "/notifications",
+        component: <NotificationsPage/>,
     },
     {
         path: "/profile/:id",

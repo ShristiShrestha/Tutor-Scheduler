@@ -29,7 +29,6 @@ export type AppointmentType = {
     updatedAt: Date;
     rating: number;
     tutor: string;
-
     tutorDesc?: string;
     student: string;
 };
