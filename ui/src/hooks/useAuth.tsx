@@ -7,6 +7,7 @@ import {openNotification} from "../utils/Alert";
 import {useNavigate} from "react-router";
 import {UserRoles} from "../enum/UserEnum";
 import {selectAuth} from "../redux/auth/reducer";
+import {UserMiniDetailsType} from "../redux/user/types";
 
 export default function useAuth(Component) {
     const dispatch = useDispatch();
@@ -16,7 +17,7 @@ export default function useAuth(Component) {
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [unauthAlertShown, setAlertShown] = useState(true);
     const {authenticated} = useSelector(selectAuth);
-    
+
     const checkLogin = useCallback(() => {
         setLoading(true);
         authenticate()
@@ -28,7 +29,7 @@ export default function useAuth(Component) {
                 }
                 console.log("profile response: ", res);
                 const roles = res["roles"]
-                const userMiniDetails = {
+                const userMiniDetails: UserMiniDetailsType = {
                     username: res["username"],
                     email: res["username"],
                     roles: Object.values(UserRoles).filter(item => roles.includes(item))

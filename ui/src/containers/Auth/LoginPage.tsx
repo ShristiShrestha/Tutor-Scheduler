@@ -12,6 +12,7 @@ import {openNotification} from "../../utils/Alert";
 import {setAuth} from "../../redux/auth/actions";
 import {UserRoles} from "../../enum/UserEnum";
 import {selectAuth} from "../../redux/auth/reducer";
+import {UserMiniDetailsType} from "../../redux/user/types";
 
 const Wrapper = styled.div`
   background: ${amethyst};
@@ -44,7 +45,7 @@ export default function LoginPage() {
 
     const handleProfile = (res) => {
         const roles = res["roles"]
-        const userMiniDetails = {
+        const userMiniDetails: UserMiniDetailsType = {
             username: res["username"],
             email: res["username"],
             roles: Object.values(UserRoles).filter(item => roles.includes(item))

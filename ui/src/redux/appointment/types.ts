@@ -1,5 +1,5 @@
 /******************* actions ************************/
-import { AppointmentStatus } from "../../enum/AppointmentEnum";
+import {AppointmentStatus} from "../../enum/AppointmentEnum";
 
 export const CREATE_APPOINTMENT = "CREATE_APPOINTMENT";
 export const FETCH_APPOINTMENTS = "FETCH_APPOINTMENTS";
@@ -17,8 +17,8 @@ export const REJECT_APPOINTMENT = "REJECT_APPOINTMENT";
 
 export type AppointmentType = {
     id: number;
-    studentId: string;
-    tutorId: string;
+    studentId: number;
+    tutorId: number;
     status: AppointmentStatus;
     statusMessage: string;
     studentNote: string;

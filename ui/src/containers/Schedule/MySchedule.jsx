@@ -1,19 +1,38 @@
 import React from "react";
 import ScheduleCard from "../../components/Card/ScheduleCard";
-import { schedule_cards_1, schedule_cards_2 } from "../../static_data/tutors";
+import {schedule_cards_1, schedule_cards_2} from "../../static_data/tutors";
 import styled from "styled-components";
-import { ResText14SemiBold } from "../../utils/TextUtils";
-import { Col, Row } from "antd";
-import { Link } from "react-router-dom";
+import {ResText14SemiBold} from "../../utils/TextUtils";
+import {Col, Row} from "antd";
+import {Link} from "react-router-dom";
+import {AppointmentType} from "../../redux/appointment/types";
+import {AppointmentStatus} from "../../enum/AppointmentEnum";
 
 const Wrapper = styled.div`
-    padding: 24px;
+  padding: 24px;
 
-    .schedules-upcoming {
-        margin-top: 24px;
-        margin-bottom: 24px;
-    }
+  .schedules-upcoming {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
 `;
+
+
+const apt: AppointmentType = {
+    id: 1,
+    studentId: 1,
+    tutorId: 1,
+    status: AppointmentStatus.ACCEPTED,
+    statusMessage: "Hellop",
+    studentNote: "Need urgent help",
+    tutoringOnList: "web,machine learnig,AI",
+    scheduledAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    rating: 1,
+    tutor: "tutor name",
+    student: "student name"
+}
 
 export default function MySchedule() {
     return (
@@ -23,14 +42,7 @@ export default function MySchedule() {
                 {schedule_cards_1?.map((item, index) => (
                     <Col xxl={6} lg={8} md={12} sm={24} xs={24}>
                         <Link to={"/schedules/" + index}>
-                            <ScheduleCard
-                                name={item.name}
-                                title={item.title}
-                                ratings={item.rating}
-                                description={item.description}
-                                date={item.date}
-                                slot={item.slot}
-                            />
+                            <ScheduleCard {...apt}/>
                         </Link>
                     </Col>
                 ))}
@@ -40,14 +52,7 @@ export default function MySchedule() {
                 {schedule_cards_2?.map((item, index) => (
                     <Col xxl={6} lg={8} md={12} sm={24} xs={24}>
                         <Link to={"/schedules/" + index}>
-                            <ScheduleCard
-                                name={item.name}
-                                title={item.title}
-                                ratings={item.rating}
-                                description={item.description}
-                                date={item.date}
-                                slot={item.slot}
-                            />
+                            <ScheduleCard {...apt}/>
                         </Link>
                     </Col>
                 ))}
