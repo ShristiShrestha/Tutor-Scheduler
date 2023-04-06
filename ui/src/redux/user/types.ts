@@ -30,6 +30,7 @@ export type UserAppointmentParams = {
 
 export type UserMiniDetailsType = {
     email: string;
+    username: string;
     roles: UserRoles[];
 };
 

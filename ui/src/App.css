@@ -56,12 +56,12 @@
 .app-layout-content-unauth {
     position: fixed;
     top: 48px;
-    left: 200px;
+    /*left: 200px;*/
     width: 100vw;
     /*width: calc(100vw - 200px) !important;*/
     overflow: hidden;
 }
 
-.ant-layout.ant-layout-has-sider > .ant-layout-content {
-    width: fit-content;
-}
+/*.ant-layout.ant-layout-has-sider > .ant-layout-content {*/
+/*    width: fit-content;*/
+/*}*/

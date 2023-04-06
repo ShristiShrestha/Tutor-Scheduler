@@ -9,6 +9,7 @@ import TutorProfile from "../containers/Tutor/TutorProfile";
 import TutorStatusPage from "../containers/Schedule/TutorStatusPage";
 import Chat from "../containers/Chat/Chat";
 import ChatConversation from "../containers/Chat/ChatConversation";
+import LoginPage from "../containers/Auth/LoginPage";
 
 const pages = [
     {
@@ -63,6 +64,10 @@ const pages = [
     {
         path: "/profile/:id/view-tutor-ratings",
         component: <TutorProfile/>,
+    },
+    {
+        path: "/login",
+        component: <LoginPage/>,
     },
     {
         path: "/",

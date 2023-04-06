@@ -5,8 +5,8 @@ import {capitalize} from "../utils/StringUtils";
 
 export const authenticate = () => {
     return Api.apiCall<UserMiniDetailsType>({
-        url: "/authenticate",
-        method: "POST",
+        url: "/auth/profile",
+        method: "GET",
     });
 };
 
@@ -18,7 +18,7 @@ export const signup = (data) => {
         isTutor: false,
     }
     return Api.apiCall<UserMiniDetailsType>({
-        url: "/signup",
+        url: "/user/signup",
         method: "POST",
         data: signupData
     })
@@ -26,7 +26,7 @@ export const signup = (data) => {
 
 export const login = (data) => {
     return Api.apiCall<UserMiniDetailsType>({
-        url: "/login",
+        url: "/auth/login",
         method: "POST",
         data: data
     })

@@ -2,7 +2,6 @@ import React from "react";
 import PageRoutes from "./route/PageRoutes";
 import TopBar from "./components/TopBar/TopBar";
 import {Layout} from "antd";
-import {Route, Routes} from "react-router-dom";
 
 // import "antd/dist/reset.css";
 import "./App.css";
@@ -30,14 +29,9 @@ const App = () => {
             <Header className={"app-layout-header centered-flex"}>
                 <TopBar/>
             </Header>
-            {/* todo: remove true*/}
-            {(authenticated || true) ? (
-                <Sider width={200}>
-                    <SideBar/>
-                </Sider>
-            ) : (
-                <></>
-            )}
+            {authenticated && <Sider width={200}>
+                <SideBar/>
+            </Sider>}
             <Content
                 className={
                     authenticated
@@ -52,19 +46,17 @@ const App = () => {
 
     return (
         <>
-            {/* todo: remove true */}
-            {/*{(!authenticated || true) || }*/}
-            {getLayout(
-                <Routes>
-                    {publicRoutes.map((item, index) => (
-                        <Route
-                            key={"public-route-" + index}
-                            path={item.path}
-                            element={item.component}
-                        />
-                    ))}
-                </Routes>,
-            )}
+            {/*{!authenticated && getLayout(*/}
+            {/*    <Routes>*/}
+            {/*        {publicRoutes.map((item, index) => (*/}
+            {/*            <Route*/}
+            {/*                key={"public-route-" + index}*/}
+            {/*                path={item.path}*/}
+            {/*                element={item.component}*/}
+            {/*            />*/}
+            {/*        ))}*/}
+            {/*    </Routes>,*/}
+            {/*)}*/}
             {useAuth(getLayout(<PageRoutes/>))}
         </>
     );

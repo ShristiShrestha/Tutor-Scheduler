@@ -1,5 +1,5 @@
 import axios from "axios";
-import Axios, { AxiosInstance } from "axios";
+import Axios, {AxiosInstance} from "axios";
 import _ from "lodash";
 import axiosCancel from "axios-cancel";
 
@@ -7,14 +7,13 @@ function getAxiosInstance(baseUrl: string, apiVersion: string) {
     // the axios instance to return
     const axiosInstance: AxiosInstance = axios.create({
         baseURL: `${baseUrl}${apiVersion}`,
-        // withCredentials: true,
+        withCredentials: true,
         headers: {
-            crossDomain: true,
-            accessControlAllowOrigin: true,
+            'Content-Type': 'application/json',
+            // crossDomain: true,
+            // accessControlAllowOrigin: true,
+            // withCredentials: true
         },
-        // params: {
-        //     lang: "en",
-        // },
     });
 
     // @ts-ignore
@@ -57,4 +56,4 @@ const startAnew = (state, label) => {
     return CancelToken.source();
 };
 
-export { getAxiosInstance, sourceSelector, cancelRequest, startAnew };
+export {getAxiosInstance, sourceSelector, cancelRequest, startAnew};

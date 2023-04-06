@@ -3,14 +3,15 @@ import styled from "styled-components";
 import {amethyst} from "../../utils/ShadesUtils";
 import {Header4, ResText14Regular, ResText16Regular, ResText16SemiBold} from "../../utils/TextUtils";
 import MyButton from "../../components/Button/MyButton";
-import {Form, Input, Modal, notification} from "antd";
+import {Form, Input, Modal} from "antd";
 import {capitalize} from "../../utils/StringUtils";
-import {login, signup} from "../../api/AuthApi";
-import {NotificationPlacement} from "antd/lib/notification/interface";
-import {useDispatch} from "react-redux";
+import {authenticate, login, signup} from "../../api/AuthApi";
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router";
+import {openNotification} from "../../utils/Alert";
 import {setAuth} from "../../redux/auth/actions";
 import {UserRoles} from "../../enum/UserEnum";
-import {useNavigate} from "react-router";
+import {selectAuth} from "../../redux/auth/reducer";
 
 const Wrapper = styled.div`
   background: ${amethyst};
@@ -36,19 +37,24 @@ export default function LoginPage() {
     const [modals, setModalOpen] = useState({"login": false, "signup": false})
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
-    const openNotification = (title, description, placement: NotificationPlacement = "topRight") => {
-        notification.info({
-            message: title,
-            description: description,
-            placement,
-        });
-    };
-
+    const {authenticated} = useSelector(selectAuth)
     const handleModal = (item, action) => {
-        console.log("modal authenticate: ", item, action)
         setModalOpen({...modals, [item]: action})
     }
+
+    const handleProfile = (res) => {
+        const roles = res["roles"]
+        const userMiniDetails = {
+            username: res["username"],
+            email: res["username"],
+            roles: Object.values(UserRoles).filter(item => roles.includes(item))
+        }
+        // @ts-ignore
+        dispatch(setAuth(userMiniDetails))
+        return navigate("/schedules");
+    }
+
+    const handleErr = (item, err) => openNotification("Error on " + capitalize(item), "Error msg: " + err);
 
     // successful auth: todo:
     // tutor, student => schedules page by default
@@ -57,34 +63,28 @@ export default function LoginPage() {
         switch (item) {
             case "login":
                 login(formInput).then(res => {
-                    navigate("/schedules")
-                    // history.go(0)
+                    authenticate()
+                        .then(res1 => handleProfile(res1))
+                        .catch(err => handleErr("login", err));
                 }).catch(err => {
-                    openNotification("Error on " + capitalize(item), "Error msg: " + err)
-                    //     todo: remove this
-                    // @ts-ignore
-                    dispatch(setAuth({"email": "shristi@lsu.edu", roles: [UserRoles.STUDENT]}))
-                    navigate("/schedules")
-                    // history.go(0)
+                    openNotification("Error on " + capitalize(item), "Error msg: " + err);
                 })
                 break;
             case "signup":
                 signup(formInput).then(res => {
-                    navigate("/schedules")
-                    // history.go(0)
-                }).catch(err => {
-                    openNotification("Error on " + capitalize(item), "Error msg: " + err)
-                    //     TODO: remove
-                    // @ts-ignore
-                    dispatch(setAuth({"email": "shristi@lsu.edu", roles: [UserRoles.STUDENT]}))
-                    navigate("/schedules")
-                    // history.go(0)
-                })
+                    authenticate()
+                        .then(res1 => handleProfile(res1))
+                        .catch(err => openNotification("Error on profile", "Please login again.", err));
+                }).catch(err => handleErr("signup", err))
                 break;
             default:
                 alert("Invalid actions.")
         }
     }
+
+    console.log("login page: authenticated", authenticated)
+    if (authenticated)
+        navigate("/schedules");
 
     return (
         <Wrapper>
