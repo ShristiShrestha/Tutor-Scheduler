@@ -9,7 +9,7 @@ public class CookieService {
 
     public static ResponseCookie getResponseCookie(String token) {
 
-        ResponseCookie responseCookie = ResponseCookie.from(COOKIE_TOKEN_PREFIX, token)
+        ResponseCookie responseCookie = ResponseCookie.from(COOKIE_TOKEN_PREFIX, "Bearer " + token)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
@@ -26,6 +26,8 @@ public class CookieService {
         for (String item: cookieItems) {
             if (item.startsWith(COOKIE_TOKEN_PREFIX)) {
                 token = item.split("=")[1];
+                token = token.split(" ")[1];
+                System.out.println("Token recieved: " + token);
             }
         }
 
