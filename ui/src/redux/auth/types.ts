@@ -1,4 +1,4 @@
-import {UserMiniDetailsType} from "../user/types";
+import {UserDetailsType} from "../user/types";
 
 /******************* actions ************************/
 export const FETCH_AUTH = "FETCH_AUTH";
@@ -20,5 +20,5 @@ export type SignupType = {
 
 export type AuthState = {
     authenticated: boolean;
-    loggedUser?: UserMiniDetailsType;
+    loggedUser?: UserDetailsType;
 };

@@ -34,12 +34,13 @@ export type AppointmentType = {
 };
 
 export type AppointmentParams = {
-    tutorId: number;
-    studentId: number;
+    tutorId?: number;
+    studentId?: number;
     month: string;
     year: string;
     upcoming: boolean;
 };
+
 
 /******************* states ************************/
 export type AppointmentState = {
