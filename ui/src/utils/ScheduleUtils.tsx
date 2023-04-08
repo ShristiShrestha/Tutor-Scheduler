@@ -130,6 +130,18 @@ export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = 
     return SLOTS_PER_DAY;
 }
 
+export const getScheduledSlots = (scheduledDate?: Date) => {
+    if (!scheduledDate)
+        return [];
+    const scheduledHrs = scheduledDate.getHours();
+    return SLOTS_PER_DAY.map(slotItem => {
+        return {
+            ...slotItem,
+            available: scheduledHrs !== slotItem.start, // if false, the user scheduled this slot
+        }
+    })
+}
+
 /******************* user ratings utils ************************/
 
 

@@ -92,7 +92,7 @@ export default function MySchedule() {
                         {upcomingAppointments?.map((item, index) => (
                             <Col key={"acpted-upcoming-apts-key-" + item.id}
                                  xxl={6} xl={8} lg={8} md={12} sm={24} xs={24}>
-                                <Link to={"/schedules/" + index}>
+                                <Link to={"/schedules/" + item.id}>
                                     <ScheduleCard {...item}/>
                                 </Link>
                             </Col>
@@ -114,7 +114,7 @@ export default function MySchedule() {
                             {otherAppointments.map((item, index) => (
                                 <Col key={"other-apts-key-" + item.id}
                                      xxl={6} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                    <Link to={"/schedules/" + index}>
+                                    <Link to={"/schedules/" + item.id}>
                                         <ScheduleCard {...item}/>
                                     </Link>
                                 </Col>

@@ -342,7 +342,7 @@ const TutorProfile = () => {
                 <Content>
                     <div>
                         {renderActorInfo(user)}
-                        {renderNeedsTutoring(user, "Specializations", "")}
+                        {renderNeedsTutoring(user?.expertise || [], undefined, "Specializations", "")}
                     </div>
 
                     <Row gutter={[24, 24]}>
