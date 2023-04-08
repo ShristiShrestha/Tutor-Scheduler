@@ -40,18 +40,23 @@ export type UserEntityType = {
     expertise?: string[];
 }
 
+export type UserRoleType = {
+    id: number;
+    name: UserRoles;
+}
+
 // user dto that server responds with
 export type UserDetailsType = {
     id: number;
     name: string;
     email: string;
     isTutor: boolean;
-    roles: UserRoles[];
+    roles: UserRoleType[];
     rating: number;
     expertise: string[];
     createdAt: Date;
     ratedBy: number;
-
+    ratingByNumbers?: Record<number, number>; // rating: number of users rated
     description?: string,
 }
 

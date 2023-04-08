@@ -5,9 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setAuth} from "../redux/auth/actions";
 import {openNotification} from "../utils/Alert";
 import {useNavigate} from "react-router";
-import {UserRoles} from "../enum/UserEnum";
 import {selectAuth} from "../redux/auth/reducer";
-import {UserMiniDetailsType} from "../redux/user/types";
 
 export default function useAuth(Component) {
     const dispatch = useDispatch();
@@ -28,14 +26,14 @@ export default function useAuth(Component) {
                     setIsAuthenticated(false);
                 }
                 console.log("profile response: ", res);
-                const roles = res["roles"]
-                const userMiniDetails: UserMiniDetailsType = {
-                    username: res["username"],
-                    email: res["username"],
-                    roles: Object.values(UserRoles).filter(item => roles.includes(item))
-                }
+                // const roles = res["roles"]
+                // const userMiniDetails: UserMiniDetailsType = {
+                //     username: res["username"],
+                //     email: res["username"],
+                //     roles: Object.values(UserRoles).filter(item => roles.includes(item))
+                // }
                 // @ts-ignore
-                dispatch(setAuth(userMiniDetails));
+                dispatch(setAuth(res));
             })
             .catch(err => {
                 // eslint-disable-next-line no-console

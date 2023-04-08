@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import ScheduleCard from "../../components/Card/ScheduleCard";
 import {schedule_cards_1, schedule_cards_2} from "../../static_data/tutors";
 import styled from "styled-components";
@@ -8,6 +8,9 @@ import {Link} from "react-router-dom";
 import {AppointmentType} from "../../redux/appointment/types";
 import {AppointmentStatus} from "../../enum/AppointmentEnum";
 import {grey6} from "../../utils/ShadesUtils";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchAppointments} from "../../redux/appointment/actions";
+import {selectAuth} from "../../redux/auth/reducer";
 
 const Wrapper = styled.div`
   .schedules-upcoming {
@@ -42,7 +45,7 @@ const apt: AppointmentType = {
     studentId: 1,
     tutorId: 1,
     status: AppointmentStatus.ACCEPTED,
-    statusMessage: "Hellop",
+    statusMessage: "I am rejecting this because I ma fgul.",
     studentNote: "Need urgent help",
     tutoringOnList: "web,machine learnig,AI",
     scheduledAt: new Date(),
@@ -54,6 +57,13 @@ const apt: AppointmentType = {
 }
 
 export default function MySchedule() {
+    const dispatch = useDispatch();
+    const {loggedUser} = useSelector(selectAuth);
+
+    useEffect(() => {
+        dispatch(fetchAppointments())
+    }, [])
+
     return (
         <Wrapper>
             <Header><ResText14SemiBold>Upcoming Schedule</ResText14SemiBold></Header>
