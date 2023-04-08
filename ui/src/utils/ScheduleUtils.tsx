@@ -33,51 +33,51 @@ export const calendarIntToMonth = {
 
 /******************* get available slots from the list of accepted apts ************************/
 
-// hrs shown in UTC which starts from 0
+// hrs shown in Local time zone
 export const SLOTS_PER_DAY = [
     {
         title: "9 - 10 AM",
-        start: 8,
-        available: true,
-    },
-    {
-        title: "10 - 11 AM",
         start: 9,
         available: true,
     },
     {
-        title: "11 AM - 12 PM",
+        title: "10 - 11 AM",
         start: 10,
         available: true,
     },
     {
-        title: "12 - 1 PM",
+        title: "11 AM - 12 PM",
         start: 11,
         available: true,
     },
     {
-        title: "1 - 2 PM",
+        title: "12 - 1 PM",
         start: 12,
         available: true,
     },
     {
-        title: "2 - 3 PM",
+        title: "1 - 2 PM",
         start: 13,
         available: true,
     },
     {
-        title: "3 - 4 PM",
+        title: "2 - 3 PM",
         start: 14,
         available: true,
     },
     {
-        title: "4 - 5 PM",
+        title: "3 - 4 PM",
         start: 15,
         available: true,
     },
     {
-        title: "5 - 6 PM",
+        title: "4 - 5 PM",
         start: 16,
+        available: true,
+    },
+    {
+        title: "5 - 6 PM",
+        start: 17,
         available: true,
     }
 ]

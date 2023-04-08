@@ -104,14 +104,14 @@ const TutorProfile = () => {
         const selectedDateTs = new Date(selectedCalendarDate.getFullYear(),
             selectedCalendarDate.getMonth(),
             selectedCalendarDate.getDate(),
-            item.start + 1) // hrs start from 0 (since utc stars from 0)
+            item.start)
         setSelectedSlot(item);
         setSelectedSlotDate(selectedDateTs);
         console.log("selected slot: (could take time to state change)", selectedSlot,
             "\navailableSlots: ", availableSlots,
             "\nselected slot date (could take time to state change): ", selectedSlotDate,
             "\nlocal var for selectedSlotDate", selectedDateTs,
-            "\nselected slot utc date: ", selectedSlotDate.toUTCString(),
+            "\nselected slot utc date: ", selectedSlotDate?.toUTCString(),
             "\nselected slot utc date to local time: ", new Date(selectedSlotDate.toUTCString()),
         )
     }
