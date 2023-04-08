@@ -2,14 +2,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import styled from "styled-components";
 import {grey1, grey6, pearl} from "../../utils/ShadesUtils";
 import {ResText14Regular, ResText14SemiBold, ResText16Regular, ResText16SemiBold,} from "../../utils/TextUtils";
-import {
-    ratings,
-    renderActorInfo,
-    renderNeedsTutoring,
-    renderTabs,
-    SlotInfo,
-    TabContent,
-} from "../Schedule/ScheduleView";
+import {renderActorInfo, renderNeedsTutoring, renderTabs, SlotInfo, TabContent,} from "../Schedule/ScheduleView";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {getYearMonthDateHrsUtcFormat, toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
@@ -27,6 +20,7 @@ import {createAppointment} from "../../redux/appointment/actions";
 import {AppointmentType} from "../../redux/appointment/types";
 import {selectAuth} from "../../redux/auth/reducer";
 import {openNotification} from "../../utils/Alert";
+import ViewTutorRatings from "./ViewTutorRatings";
 
 const {TextArea} = Input;
 
@@ -254,56 +248,7 @@ const TutorProfile = () => {
             //     </TabContent>
 
             default:
-                return (
-                    <TabContent>
-                        <ResText16SemiBold>
-                            Overall tutor ratings
-                        </ResText16SemiBold>
-                        <div className={"rate-tutor-content"}>
-                            <div
-                                className={
-                                    "rate-tutor-features h-start-top-flex"
-                                }
-                            >
-                                <ResText16Regular className={"text-grey2"}>
-                                    Tutoring skill
-                                </ResText16Regular>
-                                <ul className={"rate-tutor-options"}>
-                                    {ratings.map(item => (
-                                        <li className={item.className}>
-                                            {item.icon}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className={"rate-tutor-comment h-start-flex"}>
-                                <ResText16Regular className={"text-grey2"}>
-                                    Your comment{" "}
-                                    {
-                                        <img
-                                            width={20}
-                                            height={20}
-                                            style={{
-                                                marginLeft: 4,
-                                                marginBottom: "-4px",
-                                            }}
-                                            src={
-                                                process.env.PUBLIC_URL +
-                                                "/pouting_face.svg"
-                                            }
-                                        />
-                                    }{" "}
-                                </ResText16Regular>
-                                <Input
-                                    disabled={true}
-                                    rootClassName={"rate-tutor-input"}
-                                    size={"large"}
-                                    bordered
-                                />
-                            </div>
-                        </div>
-                    </TabContent>
-                );
+                return <ViewTutorRatings/>;
         }
     };
 
@@ -368,18 +313,18 @@ const TutorProfile = () => {
 
     const renderOtherReviews = () => (
         <TabContent>
-            <ResText16Regular className={"text-grey2"}>
-                Other reviews
-            </ResText16Regular>
-            <ul className={"ratings-other-reviews"}>
-                {new Array(3).fill(1).map((item, index) => (
-                    <li>
-                        <ResText14Regular key={index}>
-                            I am writing this review {item} for index {index}
-                        </ResText14Regular>
-                    </li>
-                ))}
-            </ul>
+            {/*<ResText16Regular className={"text-grey2"}>*/}
+            {/*    Other reviews*/}
+            {/*</ResText16Regular>*/}
+            {/*<ul className={"ratings-other-reviews"}>*/}
+            {/*    {new Array(3).fill(1).map((item, index) => (*/}
+            {/*        <li>*/}
+            {/*            <ResText14Regular key={index}>*/}
+            {/*                I am writing this review {item} for index {index}*/}
+            {/*            </ResText14Regular>*/}
+            {/*        </li>*/}
+            {/*    ))}*/}
+            {/*</ul>*/}
         </TabContent>
     );
 

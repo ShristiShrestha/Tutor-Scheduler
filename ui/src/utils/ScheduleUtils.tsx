@@ -1,6 +1,7 @@
 import {UserDetailsType} from "../redux/user/types";
 import {capitalize} from "./StringUtils";
 import {AppointmentType} from "../redux/appointment/types";
+import React from "react";
 
 /******************* user details ************************/
 export const getUsername = (user: UserDetailsType) => {
@@ -127,4 +128,53 @@ export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = 
 
     // by default sending all slots as available
     return SLOTS_PER_DAY;
+}
+
+/******************* user ratings utils ************************/
+
+
+export const ratings = {
+    1: {
+        id: "very-bad",
+        title: "Very bad",
+        className: "rate-very-bad",
+        totalUsers: 10,
+        icon: <img width={30} height={30}
+                   src={process.env.PUBLIC_URL + '/pouting_face.svg'}/>
+    },
+    2: {
+        id: "bad",
+        title: "Just bad",
+        className: "rate-just-bad",
+        totalUsers: 1,
+        icon: <img width={30} height={30}
+                   src={process.env.PUBLIC_URL + '/neutral_face.svg'}/>
+    },
+    3: {
+        id: "good",
+        title: "Good",
+        className: "rate-good",
+        totalUsers: 100,
+        icon: <img width={30} height={30}
+                   src={process.env.PUBLIC_URL + '/slightly_smiling.svg'}/>
+    },
+    4: {
+        id: "very-good",
+        title: "Very Good",
+        className: "rate-very-good",
+        totalUsers: 1000,
+        icon: <img width={30} height={30}
+                   src={process.env.PUBLIC_URL + '/grinning_face.svg'}/>
+    }
+}
+export const getFormattedRatings = (user?: UserDetailsType) => {
+    if (!user)
+        return []
+
+    return Object.keys(ratings).map(ratingKey => {
+        return {
+            ...ratings[ratingKey],
+            totalUsers: user.ratingByNumbers ? user.ratingByNumbers[ratingKey] : 0
+        }
+    })
 }

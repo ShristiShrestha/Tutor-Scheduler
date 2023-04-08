@@ -80,7 +80,7 @@ export type UserDetailsType = {
 export type UserState = {
     // store user details of currently viewing user:
     // could be profile page of
-    // a particular user
+    // a particular user like a tutor profile page
     user?: UserDetailsType;
 
     // scheduled apts for logged user with the tutor profile currently visiting
