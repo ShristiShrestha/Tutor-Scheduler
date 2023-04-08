@@ -1,13 +1,28 @@
-import {AppointmentState, SET_APPOINTMENT, SET_APPOINTMENTS} from "./types";
-import {AppointmentFetchType} from "../../enum/AppointmentEnum";
+import {AppointmentState, AppointmentType, SET_APPOINTMENT, SET_APPOINTMENTS} from "./types";
+import {AppointmentFetchType, AppointmentStatus} from "../../enum/AppointmentEnum";
 import {RootState} from "../common/types";
 
 const initialState: AppointmentState = {
-    allAppointments: [],
+    otherAppointments: [],
     upcomingAppointments: []
 };
 
 export const selectAppointment = (state: RootState) => state.appointment;
+
+export const filterAcceptedAptsUpcoming = (upcoming: AppointmentType[]): AppointmentType[] => {
+    if (upcoming.length === 0)
+        return upcoming;
+    return upcoming.filter(item => item.status === AppointmentStatus.ACCEPTED)
+}
+
+export const filterOtherAptsThanUpcoming = (allApts: AppointmentType[], upcoming: AppointmentType[]): AppointmentType[] => {
+    if (upcoming.length === 0)
+        return allApts;
+    if (allApts.length === 0)
+        return []
+    const upcomingIds = upcoming.map(item => item.id);
+    return allApts.filter(item => !upcomingIds.includes(item.id))
+}
 
 export default function reducer(state = initialState, action: any): AppointmentState {
     switch (action.type) {
@@ -19,14 +34,17 @@ export default function reducer(state = initialState, action: any): AppointmentS
         }
         case SET_APPOINTMENTS: {
             const {apts, type} = action.payload
-            if (type === AppointmentFetchType.UPCOMING)
+            if (type === AppointmentFetchType.UPCOMING) {
+                const upcomingAcceptedApts = filterAcceptedAptsUpcoming(apts);
                 return {
                     ...state,
-                    upcomingAppointments: apts
+                    upcomingAppointments: upcomingAcceptedApts
                 };
+            }
+            const otherReqs = filterOtherAptsThanUpcoming(apts, state.upcomingAppointments);
             return {
                 ...state,
-                allAppointments: apts
+                otherAppointments: otherReqs
             };
         }
         default:

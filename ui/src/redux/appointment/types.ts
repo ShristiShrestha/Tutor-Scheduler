@@ -21,9 +21,9 @@ export type AppointmentType = {
     studentId: number;
     tutorId: number;
     status: AppointmentStatus;
-    statusMessage: string;
-    studentNote: string;
-    tutoringOnList: string;
+    statusMessage?: string;
+    studentNote?: string;
+    tutoringOnList: string[];
     scheduledAt: Date;
     clientReceivedAt?: Date;
     createdAt: Date;
@@ -36,9 +36,9 @@ export type AppointmentType = {
 export type AppointmentParams = {
     tutorId?: number;
     studentId?: number;
-    month: string;
-    year: string;
-    upcoming: boolean;
+    month?: string;
+    year?: string;
+    upcoming?: boolean;
 };
 
 
@@ -46,5 +46,5 @@ export type AppointmentParams = {
 export type AppointmentState = {
     appointment?: AppointmentType;
     upcomingAppointments: AppointmentType[];
-    allAppointments: AppointmentType[];
+    otherAppointments: AppointmentType[];
 };

@@ -172,6 +172,15 @@ export const toSlotRangeStr = (date: Date) => {
     return `${selectedHrs - 12} - ${selectedHrs - 11} (local hrs) | ${selectedUtcHrs} - ${selectedUtcHrs + 1} (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`
 }
 
+export const toScheduleSlotRangeStr = (date: Date) => {
+    const selectedHrs = date.getHours();
+    if (selectedHrs + 1 <= 12)
+        return `${selectedHrs} ${selectedHrs === 12 ? "AM" : ""} - ${selectedHrs + 1} ${selectedHrs < 12 ? "AM" : "PM"}`
+    if (selectedHrs === 12)
+        return `12 - 1 PM`
+    return `${selectedHrs - 12} - ${selectedHrs - 11} PM`
+}
+
 /// shows lagging by
 /// days or hours w.r.t current moment
 /// <0 => day is behind the today
