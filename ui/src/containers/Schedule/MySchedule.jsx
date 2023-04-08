@@ -1,18 +1,18 @@
 import React, {useCallback, useEffect, useState} from "react";
 import ScheduleCard from "../../components/Card/ScheduleCard";
-import {schedule_cards_1, schedule_cards_2} from "../../static_data/tutors";
 import styled from "styled-components";
-import {ResText14SemiBold} from "../../utils/TextUtils";
+import {ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
 import {Col, Row, Spin} from "antd";
-import {Link} from "react-router-dom";
-import {AppointmentParams, AppointmentType} from "../../redux/appointment/types";
-import {AppointmentStatus} from "../../enum/AppointmentEnum";
+import {Link, useNavigate} from "react-router-dom";
+import {AppointmentParams} from "../../redux/appointment/types";
 import {grey6} from "../../utils/ShadesUtils";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchAppointments} from "../../redux/appointment/actions";
 import {selectAuth} from "../../redux/auth/reducer";
 import {isLoggedTutor} from "../../utils/AuthUtils";
-import {calendarIntToMonth} from "../../utils/ScheduleUtils";
+import {selectAppointment} from "../../redux/appointment/reducer";
+import EmptyContent from "../../components/NoContent/EmptyContent";
+import MyButton from "../../components/Button/MyButton";
 
 const Wrapper = styled.div`
   .schedules-upcoming {
@@ -34,51 +34,45 @@ const Header = styled.div`
 `
 
 const Content = styled.div`
-  padding: 0 24px;
+  padding: 12px 24px;
   margin-top: 60px;
   position: relative;
   height: calc(100vh - 112px);
   overflow-y: auto;
   margin-bottom: 120px;
-`
 
-const apt: AppointmentType = {
-    id: 1,
-    studentId: 1,
-    tutorId: 1,
-    status: AppointmentStatus.ACCEPTED,
-    statusMessage: "I am rejecting this because I ma fgul.",
-    studentNote: "Need urgent help",
-    tutoringOnList: "web,machine learnig,AI",
-    scheduledAt: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    rating: 1,
-    tutor: "tutor name",
-    student: "student name"
-}
+  .empty-content {
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+`
 
 export default function MySchedule() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const {loggedUser} = useSelector(selectAuth);
+    const {upcomingAppointments, otherAppointments} = useSelector(selectAppointment);
 
-    const getAptParams = (upcoming = true): AppointmentParams => {
+    const getAptParams = (upcoming?: boolean): AppointmentParams => {
         const today = new Date();
-        const month = calendarIntToMonth[today.getMonth()];
+        // const month = calendarIntToMonth[today.getMonth()];
         const year = today.getFullYear();
         const isTutor = isLoggedTutor(loggedUser);
         return {
+            // apts with this tutor
             tutorId: loggedUser && isTutor ? loggedUser.id : null,
+            // apts created by this logged user as a student
             studentId: loggedUser && !isTutor ? loggedUser.id : null,
-            month: month,
+            // fetch all apt reqs for this year
             year: `${year}`,
+            // filter if upcoming only (irrespective of status)
             upcoming: upcoming
         }
     }
 
     const fetchApts = useCallback(() => {
-        const upcomingParams = getAptParams();
+        const upcomingParams = getAptParams(true);
         const allParams = getAptParams();
         dispatch(fetchAppointments(upcomingParams));
         dispatch(fetchAppointments(allParams));
@@ -91,28 +85,41 @@ export default function MySchedule() {
 
     return (
         <Wrapper>
-            <Header><ResText14SemiBold>Upcoming Schedule</ResText14SemiBold></Header>
+            <Header><ResText14SemiBold>My Appointments</ResText14SemiBold></Header>
             <Spin spinning={loading}>
                 <Content>
-                    <Row gutter={[24, 24]} className={"schedules-upcoming"}>
-                        {schedule_cards_1?.map((item, index) => (
-                            <Col xxl={6} lg={8} md={12} sm={24} xs={24}>
+                    {upcomingAppointments.length > 0 ? <Row gutter={[24, 24]} className={"schedules-upcoming"}>
+                        {upcomingAppointments?.map((item, index) => (
+                            <Col key={"acpted-upcoming-apts-key-" + item.id}
+                                 xxl={6} xl={8} lg={8} md={12} sm={24} xs={24}>
                                 <Link to={"/schedules/" + index}>
-                                    <ScheduleCard {...apt}/>
+                                    <ScheduleCard {...item}/>
                                 </Link>
                             </Col>
                         ))}
-                    </Row>
-                    <ResText14SemiBold>All Schedule Requests</ResText14SemiBold>
-                    <Row gutter={[24, 24]} className={"schedules-upcoming"}>
-                        {schedule_cards_2?.map((item, index) => (
-                            <Col xxl={6} lg={8} md={12} sm={24} xs={24}>
-                                <Link to={"/schedules/" + index}>
-                                    <ScheduleCard {...apt}/>
-                                </Link>
-                            </Col>
-                        ))}
-                    </Row>
+                    </Row> : otherAppointments.length === 0 ? <EmptyContent title={"Upcoming appointments"}
+                                                                            className={"empty-content"}
+                                                                            showEmptyIcon={true}
+                                                                            desc={"You have no accepted upcoming appointments. Find tutors and request an appointment."}
+                                                                            action={<MyButton type={"primary"}
+                                                                                              onClick={() => navigate("/find-tutors")}><ResText12Regular>Find
+                                                                                tutors</ResText12Regular></MyButton>}
+                    /> : <></>}
+
+
+                    {otherAppointments &&
+                        <ResText14SemiBold>{upcomingAppointments.length === 0 ? "All appointments" : "Other appointments"}</ResText14SemiBold>}
+                    {otherAppointments && otherAppointments.length > 0 ?
+                        <Row gutter={[24, 24]} className={"schedules-upcoming"}>
+                            {otherAppointments.map((item, index) => (
+                                <Col key={"other-apts-key-" + item.id}
+                                     xxl={6} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Link to={"/schedules/" + index}>
+                                        <ScheduleCard {...item}/>
+                                    </Link>
+                                </Col>
+                            ))}
+                        </Row> : <></>}
                 </Content>
             </Spin>
         </Wrapper>

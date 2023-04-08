@@ -32,7 +32,7 @@ import {toMonthDateYearStr} from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {UserDetailsType} from "../../redux/user/types";
-import {getUsername} from "../../utils/ScheduleUtils";
+import {getUsername, ratings} from "../../utils/ScheduleUtils";
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -225,6 +225,7 @@ export const TabContent = styled.div`
       border: 1px solid ${grey3};
       margin-right: 10px;
       border-radius: 4px;
+      column-gap: 4px;
 
       .anticon svg {
         font-size: 24px;
@@ -235,6 +236,15 @@ export const TabContent = styled.div`
         background: ${snow};
       }
     }
+  }
+
+  .margin-btm-icon {
+    max-width: 70px !important;
+    max-height: 85px !important;
+  }
+
+  .margin-btm-icon > img {
+    margin-bottom: 6px;
   }
 
   .rate-very-bad:hover {
@@ -269,41 +279,6 @@ export const TabContent = styled.div`
     font-style: normal;
   }
 `;
-
-export const ratings = [
-    {
-        id: "very-bad",
-        title: "Very bad",
-        className: "rate-very-bad",
-        totalUsers: 10,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/pouting_face.svg'}/>
-    },
-    {
-        id: "bad",
-        title: "Just bad",
-        className: "rate-just-bad",
-        totalUsers: 1,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/neutral_face.svg'}/>
-    },
-    {
-        id: "good",
-        title: "Good",
-        className: "rate-good",
-        totalUsers: 100,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/slightly_smiling.svg'}/>
-    },
-    {
-        id: "very-good",
-        title: "Very Good",
-        className: "rate-very-good",
-        totalUsers: 1000,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/grinning_face.svg'}/>
-    }
-]
 
 const getMenuItems = (id) => [
     {
@@ -416,6 +391,8 @@ export default function ScheduleView() {
     </SlotInfo>
 
     // ---------------- schedule details and rate tutor --------------
+
+
     const renderMenuComponent = (menuItems = getMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
@@ -430,7 +407,8 @@ export default function ScheduleView() {
                         <div className={"rate-tutor-features h-start-top-flex"}>
                             <ResText16Regular className={"text-grey2"}>Tutoring skill</ResText16Regular>
                             <ul className={"rate-tutor-options"}>
-                                {ratings.map(item => <li className={item.className}>{item.icon}</li>)}
+                                {Object.values(ratings).map(item => <li key={"rate-tutor-options-" + item.id}
+                                                                        className={item.className}>{item.icon}</li>)}
                             </ul>
                         </div>
                         <div className={"rate-tutor-comment h-start-flex"}>

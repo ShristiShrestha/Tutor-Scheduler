@@ -1,4 +1,7 @@
+import moment from 'moment';
+
 // parse  str to date object
+
 export const parseDate = (dateStr: any) => Date.parse(dateStr);
 
 ///
@@ -142,6 +145,14 @@ export function getDateMonthFormat(locale: string) {
     return "MM/DD";
 }
 
+
+// expected schedule date string : scheduledAt": "2023-02-24 13:00 UTC"
+
+export const getYearMonthDateHrsUtcFormat = (date, format = "YYYY-MM-DD HH:mm UTC") => {
+    return moment(date).format(format);
+};
+
+
 export const getDateByNdays = (
     currentDate: Date,
     goBack: boolean,
@@ -194,6 +205,15 @@ export const toSlotRangeStr = (date: Date) => {
         selectedUtcHrs + 1
     } (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`;
 };
+
+export const toScheduleSlotRangeStr = (date: Date) => {
+    const selectedHrs = date.getHours();
+    if (selectedHrs + 1 <= 12)
+        return `${selectedHrs} ${selectedHrs === 12 ? "AM" : ""} - ${selectedHrs + 1} ${selectedHrs < 12 ? "AM" : "PM"}`
+    if (selectedHrs === 12)
+        return `12 - 1 PM`
+    return `${selectedHrs - 12} - ${selectedHrs - 11} PM`
+}
 
 /// shows lagging by
 /// days or hours w.r.t current moment

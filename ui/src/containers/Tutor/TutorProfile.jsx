@@ -2,16 +2,9 @@ import React, {useCallback, useEffect, useState} from "react";
 import styled from "styled-components";
 import {grey1, grey6, pearl} from "../../utils/ShadesUtils";
 import {ResText14Regular, ResText14SemiBold, ResText16Regular, ResText16SemiBold,} from "../../utils/TextUtils";
-import {
-    ratings,
-    renderActorInfo,
-    renderNeedsTutoring,
-    renderTabs,
-    SlotInfo,
-    TabContent,
-} from "../Schedule/ScheduleView";
+import {renderActorInfo, renderNeedsTutoring, renderTabs, SlotInfo, TabContent,} from "../Schedule/ScheduleView";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
-import {toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
+import {getYearMonthDateHrsUtcFormat, toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {useParams} from "react-router";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -26,6 +19,8 @@ import {AppointmentStatus} from "../../enum/AppointmentEnum";
 import {createAppointment} from "../../redux/appointment/actions";
 import {AppointmentType} from "../../redux/appointment/types";
 import {selectAuth} from "../../redux/auth/reducer";
+import {openNotification} from "../../utils/Alert";
+import ViewTutorRatings from "./ViewTutorRatings";
 
 const {TextArea} = Input;
 
@@ -91,11 +86,16 @@ const TutorProfile = () => {
     const dispatch = useDispatch();
     const location = useLocation();
     const [loading, setLoading] = useState(true);
+    // date that user select in the calendar
     const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
+    // date time for slot that user select
     const [selectedSlot, setSelectedSlot] = useState(undefined);
     const [selectedSlotDate, setSelectedSlotDate] = useState(undefined);
+    // list of slots available for user to select
     const [availableSlots, setAvailableSlots] = useState([]);
+    // request object for appointment creation
     const [requestInput, setRequestInput] = useState({note: "", subjects: []});
+    // redux states
     const {loggedUser} = useSelector(selectAuth);
     const {user, aptsWithUser} = useSelector(selectUser);
 
@@ -107,7 +107,9 @@ const TutorProfile = () => {
             item.start + 1) // hrs start from 0 (since utc stars from 0)
         setSelectedSlot(item);
         setSelectedSlotDate(selectedDateTs);
-        console.log("selected slot date: ", selectedSlotDate,
+        console.log("selected slot: (could take time to state change)", selectedSlot,
+            "\navailableSlots: ", availableSlots,
+            "\nselected slot date (could take time to state change): ", selectedSlotDate,
             "\nlocal var for selectedSlotDate", selectedDateTs,
             "\nselected slot utc date: ", selectedSlotDate.toUTCString(),
             "\nselected slot utc date to local time: ", new Date(selectedSlotDate.toUTCString()),
@@ -140,14 +142,20 @@ const TutorProfile = () => {
     }, [dispatch]);
 
     const dispatchCreateApt = () => {
+        if (!selectedSlotDate)
+            return openNotification("No slots selected", "Please select a slot for tutoring")
         const req: AppointmentType = {
-            studentId: loggedUser.id,
             tutorId: id,
+            studentId: loggedUser.id,
             studentNote: requestInput["note"],
             tutoringOnList: requestInput["subjects"],
-            scheduledAt: new Date(), //todo: update this with selected slot date time
+            scheduledAt: getYearMonthDateHrsUtcFormat(selectedSlotDate),
         };
-        const callback = (apt: AppointmentType) => navigate(`/schedules/${apt.id}`);
+        console.log("creating apt req: ", req);
+        const callback = (apt: AppointmentType) => {
+            openNotification("Appointment request", "You have successfully created the appointment request.")
+            navigate(`/schedules/${apt.id}`);
+        };
         dispatch(createAppointment(req, callback));
     }
 
@@ -240,56 +248,7 @@ const TutorProfile = () => {
             //     </TabContent>
 
             default:
-                return (
-                    <TabContent>
-                        <ResText16SemiBold>
-                            Overall tutor ratings
-                        </ResText16SemiBold>
-                        <div className={"rate-tutor-content"}>
-                            <div
-                                className={
-                                    "rate-tutor-features h-start-top-flex"
-                                }
-                            >
-                                <ResText16Regular className={"text-grey2"}>
-                                    Tutoring skill
-                                </ResText16Regular>
-                                <ul className={"rate-tutor-options"}>
-                                    {ratings.map(item => (
-                                        <li className={item.className}>
-                                            {item.icon}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className={"rate-tutor-comment h-start-flex"}>
-                                <ResText16Regular className={"text-grey2"}>
-                                    Your comment{" "}
-                                    {
-                                        <img
-                                            width={20}
-                                            height={20}
-                                            style={{
-                                                marginLeft: 4,
-                                                marginBottom: "-4px",
-                                            }}
-                                            src={
-                                                process.env.PUBLIC_URL +
-                                                "/pouting_face.svg"
-                                            }
-                                        />
-                                    }{" "}
-                                </ResText16Regular>
-                                <Input
-                                    disabled={true}
-                                    rootClassName={"rate-tutor-input"}
-                                    size={"large"}
-                                    bordered
-                                />
-                            </div>
-                        </div>
-                    </TabContent>
-                );
+                return <ViewTutorRatings/>;
         }
     };
 
@@ -354,18 +313,18 @@ const TutorProfile = () => {
 
     const renderOtherReviews = () => (
         <TabContent>
-            <ResText16Regular className={"text-grey2"}>
-                Other reviews
-            </ResText16Regular>
-            <ul className={"ratings-other-reviews"}>
-                {new Array(3).fill(1).map((item, index) => (
-                    <li>
-                        <ResText14Regular key={index}>
-                            I am writing this review {item} for index {index}
-                        </ResText14Regular>
-                    </li>
-                ))}
-            </ul>
+            {/*<ResText16Regular className={"text-grey2"}>*/}
+            {/*    Other reviews*/}
+            {/*</ResText16Regular>*/}
+            {/*<ul className={"ratings-other-reviews"}>*/}
+            {/*    {new Array(3).fill(1).map((item, index) => (*/}
+            {/*        <li>*/}
+            {/*            <ResText14Regular key={index}>*/}
+            {/*                I am writing this review {item} for index {index}*/}
+            {/*            </ResText14Regular>*/}
+            {/*        </li>*/}
+            {/*    ))}*/}
+            {/*</ul>*/}
         </TabContent>
     );
 
