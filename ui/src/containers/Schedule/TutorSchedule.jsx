@@ -15,6 +15,7 @@ import {
     toHourMinStr,
     toMonthDateYearStr,
     toSlotRangeStr,
+    toJavaDate,
 } from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
 import { selectAppointment } from "../../redux/appointment/reducer";
@@ -114,7 +115,6 @@ const TutorSchedule = () => {
 
     const [requestInput, setRequestInput] = useState({
         note: "",
-        slot: [],
     });
     const [loading, setLoading] = useState(true);
     const [selectedCalendarDate, setSelectedCalendarDate] = useState(
@@ -161,10 +161,12 @@ const TutorSchedule = () => {
     };
 
     const dispatchUpdateApt = () => {
+        const formattedDate = toJavaDate(selectedSlotDate);
         const req = {
             id: appointment.id,
-            studentNote: requestInput["note"],
-            studentId: appointment.studentId,
+            status: appointment.status,
+            statusMessage: requestInput.note,
+            // scheduledAt: formattedDate,
         };
         dispatch(updateAppointment(req));
     };

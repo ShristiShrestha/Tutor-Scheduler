@@ -14,6 +14,17 @@ export function toDateStr(date) {
     return `${dateObj.toDateString()} ${dateObj.toTimeString()}`;
 }
 
+export function toJavaDate(date) {
+    let utcString = date.toUTCString();
+    const utcDate = new Date(utcString);
+    const day = ("0" + utcDate.getDate()).slice(-2);
+    const month = ("0" + (utcDate.getMonth() + 1)).slice(-2);
+    const year = utcDate.getFullYear();
+    const hours = ("0" + utcDate.getHours()).slice(-2);
+    const minutes = ("0" + utcDate.getMinutes()).slice(-2);
+    return `${year}-${month}-${day} ${hours}:${minutes} z`;
+}
+
 export function getDateFormatWrtDotLocale(locale: string) {
     const mapper = {
         en: "YYYY.MM.DD",
@@ -105,6 +116,19 @@ export function getDottedDateShortTimeFormat(locale: string) {
     return "DD.MM.YYYY HH:mm::ss";
 }
 
+export function getDateJavaFormat(locale: string) {
+    const mapper = {
+        en: "YYYY-MM-DD HH:mm",
+        // TODO: Add date format for other languages
+    };
+    // @ts-ignore
+    if (mapper[locale]) {
+        // @ts-ignore
+        return mapper[locale];
+    }
+    return "YYYY-MM-DD HH:mm";
+}
+
 export function getDateMonthFormat(locale: string) {
     const mapper = {
         en: "MM/DD",
@@ -121,7 +145,7 @@ export function getDateMonthFormat(locale: string) {
 export const getDateByNdays = (
     currentDate: Date,
     goBack: boolean,
-    skipDayNo: number
+    skipDayNo: number,
 ) => {
     const skipBy = skipDayNo * 24 * 60 * 60 * 1000 * (goBack ? -1 : 1);
     return new Date(currentDate.getTime() + skipBy);
@@ -155,11 +179,21 @@ export const toSlotRangeStr = (date: Date) => {
     const selectedHrs = date.getHours();
     const selectedUtcHrs = date.getUTCHours();
     if (selectedHrs + 1 <= 12)
-        return `${selectedHrs} - ${selectedHrs + 1} (local hrs) | ${selectedUtcHrs} - ${selectedUtcHrs + 1} (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`
+        return `${selectedHrs} - ${
+            selectedHrs + 1
+        } (local hrs) | ${selectedUtcHrs} - ${
+            selectedUtcHrs + 1
+        } (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`;
     if (selectedHrs === 12)
-        return `12 - 1 (local hrs) | ${selectedUtcHrs} - ${selectedUtcHrs + 1} (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`
-    return `${selectedHrs - 12} - ${selectedHrs - 11} (local hrs) | ${selectedUtcHrs} - ${selectedUtcHrs + 1} (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`
-}
+        return `12 - 1 (local hrs) | ${selectedUtcHrs} - ${
+            selectedUtcHrs + 1
+        } (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`;
+    return `${selectedHrs - 12} - ${
+        selectedHrs - 11
+    } (local hrs) | ${selectedUtcHrs} - ${
+        selectedUtcHrs + 1
+    } (utc hrs) | (difference in mins ${date.getTimezoneOffset()})`;
+};
 
 /// shows lagging by
 /// days or hours w.r.t current moment
@@ -172,7 +206,7 @@ const getStr = (
     momentVal: any,
     timeStrSingle: string,
     momentStr: string,
-    preMomentStr = ""
+    preMomentStr = "",
 ) =>
     `${preMomentStr} ${getInitialStr(Math.abs(momentVal).toString())} ${
         Math.abs(momentVal.valueOf()) < 2
@@ -183,7 +217,7 @@ const getStr = (
 export const getDriftedDateStr = (
     momentVal: any,
     momentStr: any,
-    preMomentStr = ""
+    preMomentStr = "",
 ) => {
     if (momentVal >= 1)
         return getStr(momentVal.valueOf(), "day", momentStr, preMomentStr);
@@ -206,7 +240,7 @@ export const getDriftedDateStr = (
 export const driftDateStr = (dateStr: any, fromDateStr: any) => {
     let drift = driftFromToday(
         parseDateStrToDate(dateStr),
-        parseDateStrToDate(fromDateStr)
+        parseDateStrToDate(fromDateStr),
     );
     drift = toDays(drift);
     if (drift < 0) return getDriftedDateStr(Math.abs(drift.valueOf()), "");
@@ -230,7 +264,7 @@ export const addDays = (current: any, days: number) => {
 export const getDateRanges = (
     fromDate: any,
     dateFormatter: Function,
-    middleSteps = 5
+    middleSteps = 5,
 ) => {
     if (!!fromDate) {
         const fromDateTime = new Date(fromDate);
