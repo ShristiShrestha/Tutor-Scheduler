@@ -1,8 +1,24 @@
+import {UserDetailsType} from "../redux/user/types";
+import {UserRoles} from "../enum/UserEnum";
+
 export const expertises = [
     "Computer Vision",
     "Machine Learning",
     "Web Development",
 ];
+
+const tutor: UserDetailsType = {
+    id: 1,
+    name: "tutor1",
+    email: "tutor@lsu.edu",
+    isTutor: true,
+    roles: [{id: 0, name: UserRoles.TUTOR}],
+    rating: 3,
+    expertise: ["web", "machine learning"],
+    createdAt: new Date(),
+    ratedBy: 100,
+    description: "Lorem epsium veritically venteered, flex nut slchjeep sdue hussh"
+}
 export const data = [
     {
         name: "John Doe",

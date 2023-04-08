@@ -38,6 +38,8 @@ export const toEndDottedStr = (
     firstIndex = 0,
     // trailing_visible_max = 12,
 ) => {
+    if (!str)
+        return ""
     const leadingStr = str.toString().substring(firstIndex, leadingVisible);
     if (str.toString.length <= leadingVisible)
         return str

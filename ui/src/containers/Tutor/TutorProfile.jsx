@@ -1,12 +1,7 @@
-import React from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import styled from "styled-components";
-import { grey1, grey6, pearl } from "../../utils/ShadesUtils";
-import {
-    ResText14Regular,
-    ResText14SemiBold,
-    ResText16Regular,
-    ResText16SemiBold,
-} from "../../utils/TextUtils";
+import {grey1, grey6, pearl} from "../../utils/ShadesUtils";
+import {ResText14Regular, ResText14SemiBold, ResText16Regular, ResText16SemiBold,} from "../../utils/TextUtils";
 import {
     ratings,
     renderActorInfo,
@@ -15,46 +10,52 @@ import {
     SlotInfo,
     TabContent,
 } from "../Schedule/ScheduleView";
-import { CalendarOutlined, StarOutlined } from "@ant-design/icons";
-import { toMonthDateYearStr } from "../../utils/DateUtils";
+import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
+import {toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
-import { useParams } from "react-router";
-import { useLocation } from "react-router-dom";
-import { Checkbox, Col, Divider, Input, Row } from "antd";
+import {useParams} from "react-router";
+import {useLocation} from "react-router-dom";
+import {Checkbox, Col, Divider, Input, Row, Spin} from "antd";
 import MyButton from "../../components/Button/MyButton";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchAptWithUser, fetchUser} from "../../redux/user/actions";
+import {selectUser} from "../../redux/user/reducer";
+import {UserAppointmentParams} from "../../redux/user/types";
+import {calendarIntToMonth, getAvailableSlot} from "../../utils/ScheduleUtils";
+import {AppointmentStatus} from "../../enum/AppointmentEnum";
 
 const Wrapper = styled.div`
-    .ant-divider {
-        margin: 0;
-    }
+  .ant-divider {
+    margin: 0;
+  }
 
-    .ant-row {
-        margin: 0 !important;
-    }
+  .ant-row {
+    margin: 0 !important;
+  }
 
-    .ant-col {
-        height: fit-content;
-    }
+  .ant-col {
+    height: fit-content;
+  }
 `;
 
 const Header = styled.div`
-    padding: 12px 24px;
-    border-bottom: 1px solid ${grey6};
-    box-shadow: 0 24px #eaeaea;
+  padding: 12px 24px;
+  border-bottom: 1px solid ${grey6};
+  box-shadow: 0 24px #eaeaea;
 `;
 
 const Content = styled.div`
-    //padding: 24px;
-    background: white;
+  //padding: 24px;
+  background: white;
     // background: ${pearl};
-    height: calc(100vh - 48px);
-    overflow-y: auto;
-    position: relative;
-    padding-bottom: 120px;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+  position: relative;
+  padding-bottom: 120px;
 
-    .border-right {
-        border-right: 1px solid ${grey6};
-    }
+  .border-right {
+    border-right: 1px solid ${grey6};
+  }
 `;
 
 const getMenuItems = id => [
@@ -68,70 +69,82 @@ const getMenuItems = id => [
         key: "request-tutoring",
         link: `/profile/${id}/request-tutoring`,
         title: "Request for tutoring",
-        icon: <CalendarOutlined />,
+        icon: <CalendarOutlined/>,
     },
     {
         key: "view-tutor-ratings",
         link: `/profile/${id}/view-tutor-ratings`,
         title: "View tutor ratings",
-        icon: <StarOutlined />,
+        icon: <StarOutlined/>,
     },
 ];
 
-const availableSlots = [
-    {
-        key: "slot-0",
-        title: "12 - 1 PM",
-        "start-date": new Date(),
-        disabled: false,
-    },
-    {
-        key: "slot-1",
-        title: "1 - 2 PM",
-        "start-date": new Date(),
-        disabled: false,
-    },
-    {
-        key: "slot-2",
-        title: "2 - 3 PM",
-        "start-date": new Date(),
-        disabled: false,
-    },
-    {
-        key: "slot-3",
-        title: "3 - 4 PM",
-        "start-date": new Date(),
-        disabled: false,
-    },
-    {
-        key: "slot-4",
-        title: "4 - 5 PM",
-        "start-date": new Date(),
-        disabled: false,
-    },
-    {
-        key: "slot-5",
-        title: "5 - 6 PM",
-        "start-date": new Date(),
-        disabled: false,
-    },
-    {
-        key: "slot-6",
-        title: "6 - 7 PM",
-        "start-date": new Date(),
-        disabled: false,
-    },
-    {
-        key: "slot-7",
-        title: "7 - 8 PM",
-        "start-date": new Date(),
-        disabled: true,
-    },
-];
 
 const TutorProfile = () => {
-    const { id } = useParams();
+    const {id} = useParams();
+    const dispatch = useDispatch();
     const location = useLocation();
+    const [loading, setLoading] = useState(true);
+    const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
+    const [selectedSlot, setSelectedSlot] = useState(undefined);
+    const [selectedSlotDate, setSelectedSlotDate] = useState(undefined);
+    const [availableSlots, setAvailableSlots] = useState([]);
+
+    const {user, aptsWithUser} = useSelector(selectUser);
+
+    const handleSlotClick = (selected, item) => {
+        const selectedDateTs = new Date(selectedCalendarDate.getFullYear(),
+            selectedCalendarDate.getMonth(),
+            selectedCalendarDate.getDate(),
+            item.start + 1) // hrs start from 0 (since utc stars from 0)
+        setSelectedSlot(item);
+        setSelectedSlotDate(selectedDateTs);
+
+        console.log("selected slot date: ", selectedSlotDate,
+            "\nlocal var for selectedSlotDate", selectedDateTs,
+            "\nselected slot utc date: ", selectedSlotDate.toUTCString(),
+            "\nselected slot utc date to local time: ", new Date(selectedSlotDate.toUTCString()),
+        )
+        // else {
+        //     setSelectedSlot({});
+        //     selectedSlotDate(undefined);
+        // }
+    }
+
+    const dispatchFetchUser = useCallback(() => {
+        dispatch(fetchUser(id));
+        setLoading(false);
+    }, [dispatch]);
+
+    // todo: remove comment
+    // /user/:id/appointment?status=ACCEPTED&year=2023&month=0
+    // return all the ACCEPTED appointments for a given month of a year and
+    // do some manipulation to show all the other slots as available slots
+    const dispatchFetchAptsWithUser = useCallback(() => {
+        const today = new Date();
+        const params: UserAppointmentParams = {
+            status: AppointmentStatus.ACCEPTED,
+            year: `${today.getUTCFullYear()}`, // backend stores date in UTC format
+            month: calendarIntToMonth[today.getUTCMonth()] // // backend stores date in UTC format
+        };
+        dispatch(fetchAptWithUser(id, params))
+    }, [dispatch]);
+
+    const getAvailableSlotsFromAcceptedApts = () => {
+        const slots = getAvailableSlot(selectedCalendarDate, aptsWithUser);
+        setAvailableSlots(slots);
+    }
+
+    useEffect(() => {
+        if (!!id) {
+            dispatchFetchUser();
+            dispatchFetchAptsWithUser();
+        }
+    }, [dispatchFetchUser, dispatchFetchAptsWithUser]);
+
+    useEffect(() => {
+        getAvailableSlotsFromAcceptedApts();
+    }, [selectedCalendarDate]);
 
     const getDefaultTab = () => {
         const menuItems = getMenuItems(id);
@@ -153,8 +166,10 @@ const TutorProfile = () => {
         const today = new Date();
         switch (defaultTab) {
             case menuItems[0].key:
-                const onClick = date =>
+                const onClick = date => {
                     alert("hello, " + toMonthDateYearStr(new Date(date)));
+                    setSelectedCalendarDate(new Date(date));
+                };
                 return (
                     <TabContent>
                         <div
@@ -169,13 +184,13 @@ const TutorProfile = () => {
                                 <b>Today</b>
                                 <ResText16Regular
                                     className={"text-grey"}
-                                    style={{ marginLeft: 12 }}
+                                    style={{marginLeft: 12}}
                                 >
                                     {toMonthDateYearStr(today)}
                                 </ResText16Regular>
                             </ResText16SemiBold>
                         </div>
-                        <MyCalendar onClick={onClick} />
+                        <MyCalendar onClick={onClick}/>
                     </TabContent>
                 );
 
@@ -256,28 +271,37 @@ const TutorProfile = () => {
 
     const renderCurrentSlot = () => (
         <SlotInfo>
-            <ResText16Regular className={"text-grey2"}>
-                Showing slots for
-                <b
-                    style={{ marginLeft: 8, color: grey1 }}
-                >{`${toMonthDateYearStr(new Date())}`}</b>
-                <ul className={"slot-items"}>
-                    {availableSlots.map((item, index) => (
-                        <li>
-                            <Checkbox disabled={item.disabled} />
-                            <ResText14Regular>{item.title}</ResText14Regular>
-                        </li>
-                    ))}
-                </ul>
-                <div className={"send-slot-request h-start-top-flex"}>
-                    <ResText16Regular>
-                        By confirming the request, you confirm that this is only
-                        a request for tutoring and the tutor may decline to
-                        provide service.
-                    </ResText16Regular>
-                    <MyButton type={"primary"}>Send Request</MyButton>
-                </div>
-            </ResText16Regular>
+            <div className={"vertical-start-flex selected-slots-info"}>
+                <ResText14Regular className={"text-grey2"}>
+                    Showing slots for
+                    <b style={{marginLeft: 8, color: grey1}}>
+                        {`${toMonthDateYearStr(selectedCalendarDate)}`}
+                    </b>
+                </ResText14Regular>
+                {selectedSlotDate && <ResText14Regular className={"text-grey2 text-underlined"}>
+                    You selected {`${toMonthDateYearStr(selectedSlotDate)} ${toSlotRangeStr(selectedSlotDate)}`}
+                </ResText14Regular>}
+            </div>
+            <ul className={"slot-items"}>
+                {availableSlots.map((item, index) => (
+                    <li key={`available-slot-apt-${index}`}>
+                        <Checkbox
+                            checked={!!selectedSlot && selectedSlot["title"] === item.title}
+                            disabled={!item.available}
+                            onChange={(e) => handleSlotClick(e.target.checked, item)}/>
+                        <ResText14Regular>{item.title}</ResText14Regular>
+                    </li>
+                ))}
+            </ul>
+            <div className={"send-slot-request h-start-top-flex"}>
+                <ResText16Regular>
+                    By confirming the request, you confirm that this is only
+                    a request for tutoring and the tutor may decline to
+                    provide the tutoring service.
+                </ResText16Regular>
+                <MyButton type={"primary"}>Send Request</MyButton>
+            </div>
+
         </SlotInfo>
     );
 
@@ -308,30 +332,32 @@ const TutorProfile = () => {
             <Header>
                 <ResText14SemiBold>Tutor Profile</ResText14SemiBold>
             </Header>
-            <Content>
-                <div>
-                    {renderActorInfo()}
-                    {renderNeedsTutoring("Specializations", "")}
-                </div>
+            <Spin spinning={loading}>
+                <Content>
+                    <div>
+                        {renderActorInfo(user)}
+                        {renderNeedsTutoring(user, "Specializations", "")}
+                    </div>
 
-                <Row gutter={[24, 24]}>
-                    <Col xxl={16} md={24} className={"border-right no-padding"}>
-                        {renderTabs(
-                            getDefaultTab(),
-                            () => renderMenuComponent(),
-                            getMenuItems(id),
-                        )}
-                    </Col>
-                    <Col
-                        xxl={8}
-                        md={24}
-                        className={"h-start-top-flex no-padding"}
-                    >
-                        <Divider type={"horizontal"} />
-                        {renderSlotView(getDefaultTab()[0])}
-                    </Col>
-                </Row>
-            </Content>
+                    <Row gutter={[24, 24]}>
+                        <Col xxl={16} md={24} className={"border-right no-padding"}>
+                            {renderTabs(
+                                getDefaultTab(),
+                                () => renderMenuComponent(),
+                                getMenuItems(id),
+                            )}
+                        </Col>
+                        <Col
+                            xxl={8}
+                            md={24}
+                            className={"h-start-top-flex no-padding"}
+                        >
+                            <Divider type={"horizontal"}/>
+                            {renderSlotView(getDefaultTab()[0])}
+                        </Col>
+                    </Row>
+                </Content>
+            </Spin>
         </Wrapper>
     );
 };

@@ -1,14 +1,16 @@
 import Search from "../../components/Search/Search";
-import {data} from "../../static_data/tutors";
 import TutorCard from "../../components/Card/TutorCard";
 import {ResText14SemiBold} from "../../utils/TextUtils";
 import styled from "styled-components";
 import {grey6} from "../../utils/ShadesUtils";
-import {Col, Row} from "antd";
+import {Col, Row, Spin} from "antd";
 import {Link} from "react-router-dom";
-import React from "react";
-import {UserDetailsType} from "../../redux/user/types";
+import React, {useCallback, useEffect, useState} from "react";
+import {UserParams, UserSortKeys} from "../../redux/user/types";
 import {UserRoles} from "../../enum/UserEnum";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchUsers} from "../../redux/user/actions";
+import {selectUser} from "../../redux/user/reducer";
 
 const Wrapper = styled.div`
   position: relative;
@@ -44,19 +46,29 @@ const TutorsList = styled.div`
   padding: 24px;
 `;
 
-const tutor: UserDetailsType = {
-    id: 1,
-    name: "tutor1",
-    email: "tutor@lsu.edu",
-    isTutor: true,
-    roles: [UserRoles.TUTOR],
-    rating: 3,
-    expertise: ["web", "machine learning"],
-    createdAt: Date(),
-    ratedBy: 100,
-    description: "Lorem epsium veritically venteered, flex nut slchjeep sdue hussh"
-}
+
 export default function FindTutors() {
+    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(true);
+    const {users} = useSelector(selectUser);
+    const getUserParams = (): UserParams => {
+        return {
+            sortBy: UserSortKeys.rating,
+            role: UserRoles.TUTOR,
+        }
+    }
+
+    const fetchTutors = useCallback(() => {
+        const tutorsParams = getUserParams();
+        dispatch(fetchUsers(tutorsParams));
+        setLoading(false);
+    }, [dispatch]); // will create function inside callback only if dispatch has changed
+
+    useEffect(() => {
+        fetchTutors();
+    }, [fetchTutors]); // will call fetchTutors if fetchApts function has changed
+
+
     return (
         <Wrapper className={"h-vertically-centered-flex"}>
             <Header>
@@ -70,17 +82,19 @@ export default function FindTutors() {
                     <Col span={8}/>
                 </Row>
             </Header>
-            <TutorsList>
-                <Row gutter={[24, 24]} wrap={true}>
-                    {data.map((item, index) => (
-                        <Col key={"find-tutors-" + index} span={6}>
-                            <Link to={"/profile/" + index + "/request-tutoring"}>
-                                <TutorCard {...tutor}/>
-                            </Link>
-                        </Col>
-                    ))}
-                </Row>
-            </TutorsList>
+            <Spin spinning={loading}>
+                <TutorsList>
+                    <Row gutter={[24, 24]} wrap={true}>
+                        {users.map((item, index) => (
+                            <Col key={"find-tutors-" + index} span={6}>
+                                <Link to={"/profile/" + item.id + "/request-tutoring"}>
+                                    <TutorCard {...item}/>
+                                </Link>
+                            </Col>
+                        ))}
+                    </Row>
+                </TutorsList>
+            </Spin>
         </Wrapper>
     );
 }

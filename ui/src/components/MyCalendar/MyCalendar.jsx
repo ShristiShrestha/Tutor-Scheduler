@@ -31,9 +31,15 @@ const MyCalendar = ({onClick}) => {
         );
     };
 
+    const disabledDates = (date) => {
+        const today = new Date();
+        return date && date.diff(today) < 0;
+    }
+
     return <Wrapper>
         <Calendar
-            dateCellRender={dateCellRender}
+            disabledDate={disabledDates}
+            // dateCellRender={dateCellRender}
             onSelect={(date) => onClick(date)}
             mode={"month"}
         />

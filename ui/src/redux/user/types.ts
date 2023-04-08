@@ -15,6 +15,19 @@ export const UPDATE_USER = "UPDATE_USER";
 
 /******************* props ************************/
 
+export enum UserFilterKeys {
+    name = "name",
+    email = "email",
+    expertise = "expertise"
+}
+
+export enum UserSortKeys {
+    name = "name",
+    nameReverse = "-name",
+    rating = "rating",
+    ratingReverse = "-rating"
+}
+
 export type UserParams = {
     sortBy?: string;
     filterKey?: string;
@@ -26,6 +39,8 @@ export type UserAppointmentParams = {
     status?: string;
     upcoming?: string;
     sortBy?: string;
+    year?: string;
+    month?: string;
 }
 
 export type UserMiniDetailsType = {
@@ -68,7 +83,8 @@ export type UserState = {
     // a particular user
     user?: UserDetailsType;
 
-    aptsWithUser: AppointmentType[], // scheduled apts with the profile tutor currently visitng
+    // scheduled apts for logged user with the tutor profile currently visiting
+    aptsWithUser: AppointmentType[],
 
     // stores list of users: could be list of tutors
     users: UserDetailsType[];

@@ -3,7 +3,6 @@ import React from "react";
 import styled from "styled-components";
 import {useParams} from "react-router";
 import {
-    ResText10Regular,
     ResText12Regular,
     ResText14Regular,
     ResText14SemiBold,
@@ -28,11 +27,12 @@ import {
 import {Avatar, Col, Divider, Input, Menu, Row, Tag} from "antd";
 import {Link, useLocation} from "react-router-dom";
 import {StatusTagList} from "../../components/Card/ScheduleCard";
-import {expertises} from "../../static_data/tutors";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {toMonthDateYearStr} from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
+import {UserDetailsType} from "../../redux/user/types";
+import {getUsername} from "../../utils/ScheduleUtils";
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -111,6 +111,11 @@ const NeedsTutoring = styled.div.attrs({
 export const SlotInfo = styled.div`
   padding: 24px 0 24px 24px;
 
+  .selected-slots-info {
+    align-items: start;
+    row-gap: 12px;
+  }
+
   .slot-items {
     list-style-type: none;
     padding: 0;
@@ -119,15 +124,13 @@ export const SlotInfo = styled.div`
       display: flex;
       padding: 0;
       column-gap: 12px;
-
-      .ant-checkbox {
-        width: 25px;
-        height: 25px;
-      }
+      margin-bottom: 8px;
     }
   }
 
   .send-slot-request {
+    max-width: 95%;
+    text-align: justify;
     column-gap: 20px !important;
     row-gap: 20px;
 
@@ -301,48 +304,53 @@ const getMenuItems = (id) => [
 ];
 
 //  ----------------- actor details -----------
-export const renderActorInfo = (title = "Tutor info") => <ScheduleActorInfo>
-    <ResText16SemiBold>{title}</ResText16SemiBold>
+export const renderActorInfo = (user: UserDetailsType, title = "Tutor info") => <ScheduleActorInfo>
+    <ResText14SemiBold>{title}</ResText14SemiBold>
     <div className={"h-start-flex actor-info-content"}>
         <Avatar shape="circle" size={64}/>
         <div className={"vertical-start-flex actor-profile-info"}>
             <ResText14SemiBold>
-                Shristi Shrestha{" "}
+                {getUsername(user) + " "}
                 <Link to={"/user/"}>
-                    <ResText12Regular>
+                    <ResText14Regular style={{marginLeft: 4}}>
                         View profile
-                    </ResText12Regular>
+                    </ResText14Regular>
                 </Link>
             </ResText14SemiBold>
-            <ResText14Regular className={"text-grey3"}>
-                Joined in Jan 24, 2023
-            </ResText14Regular>
+            {user && <ResText14Regular className={"text-grey2"}>
+                {"Joined in " + toMonthDateYearStr(new Date(user.createdAt))}
+            </ResText14Regular>}
         </div>
     </div>
 </ScheduleActorInfo>
 
 // ---------------- needs tutoring --------------
-export const renderNeedsTutoring = (title = "Needs tutoring in", noteTitle = "Student Note - ") => <NeedsTutoring>
-    <ResText16SemiBold>{title}</ResText16SemiBold>
-    <StatusTagList>
-        {expertises &&
-            expertises.map(expertise => (
-                <Tag style={{padding: "3px 10px"}}>
-                    <ResText10Regular>
-                        {expertise}
-                    </ResText10Regular>
-                </Tag>
-            ))}
-    </StatusTagList>
-    <div style={{marginTop: "1rem"}}>
-        <ResText14Regular className={"text-grey2"}>
-            {noteTitle}
-        </ResText14Regular>
-        <ResText14Regular>
-            <i>"I am looking for an easy and fun tutoring."</i>
-        </ResText14Regular>
-    </div>
-</NeedsTutoring>
+export const renderNeedsTutoring = (user: UserDetailsType,
+                                    title = "Needs tutoring in",
+                                    noteTitle = "Student Note - ",
+                                    studentNote ?: string,
+) => user &&
+    <NeedsTutoring>
+        <ResText14SemiBold>{title}</ResText14SemiBold>
+        <StatusTagList>
+            {user.expertise &&
+                user.expertise.map(expertise => (
+                    <Tag style={{padding: "3px 10px"}}>
+                        <ResText12Regular>
+                            {expertise}
+                        </ResText12Regular>
+                    </Tag>
+                ))}
+        </StatusTagList>
+        {(!!studentNote || !!user.description) && <div style={{marginTop: "1rem"}}>
+            <ResText14Regular className={"text-grey2"}>
+                {noteTitle}
+            </ResText14Regular>
+            <ResText14Regular>
+                <i>"{studentNote || user.description}"</i>
+            </ResText14Regular>
+        </div>}
+    </NeedsTutoring>
 
 export const renderTabs = (defaultTab, renderMenuComponent, menuItems) => {
     return <ScheduleDetailsTabs>

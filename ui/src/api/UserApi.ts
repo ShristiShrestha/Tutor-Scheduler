@@ -39,7 +39,7 @@ export const getUser = (id) => {
 // scheduled appointment with this tutor (user)
 export const getAptsWithUser = (id: number, params: UserAppointmentParams) => {
     return Api.apiCall<AppointmentType[]>({
-        url: `/user/${id}`,
+        url: `/user/${id}/appointment`,
         method: "GET",
         params: params
     });
