@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.fours.onlineschedulerapi.constants.AuthConstants.COOKIE_TOKEN_PREFIX;
+
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -37,7 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwtToken = null;
         // JWT Token is in the form "Bearer token". Remove Bearer word and get
         // only the Token
-        if (cookie != null && cookie.contains(AuthConstants.COOKIE_TOKEN_PREFIX)) {
+        if (cookie != null && cookie.contains(COOKIE_TOKEN_PREFIX)) {
             jwtToken = CookieService.getTokenFromCookieString(cookie);
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
@@ -47,7 +49,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 System.out.println("JWT Token has expired");
             }
         } else {
-            logger.warn("JWT Token does not begin with Bearer String");
+            logger.warn("Cookie does not contains " + COOKIE_TOKEN_PREFIX);
         }
 
         // Once we get the token validate it.

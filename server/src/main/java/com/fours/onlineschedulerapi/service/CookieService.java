@@ -27,7 +27,9 @@ public class CookieService {
             if (item.startsWith(COOKIE_TOKEN_PREFIX)) {
                 token = item.split("=")[1];
                 token = token.replace("Bearer ", "");
-                System.out.println("Token recieved: " + token);
+                System.out.println("Token received: " + token);
+            }else{
+                System.out.println("Cookie does not start with " + COOKIE_TOKEN_PREFIX);
             }
         }
 

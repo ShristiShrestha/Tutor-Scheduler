@@ -2,8 +2,10 @@ package com.fours.onlineschedulerapi.controller;
 
 import com.fours.onlineschedulerapi.auth.AuthService;
 import com.fours.onlineschedulerapi.auth.JwtUserDetailService;
+import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.model.JwtRequest;
 import com.fours.onlineschedulerapi.model.JwtResponse;
+import com.fours.onlineschedulerapi.model.User;
 import com.fours.onlineschedulerapi.service.AuthenticatedUserService;
 import com.fours.onlineschedulerapi.service.CookieService;
 import com.fours.onlineschedulerapi.utils.JwtTokenUtil;
@@ -51,13 +53,11 @@ public class AuthController {
     public ResponseEntity<?> getProfile() {
         final String userName = authenticatedUserService.getUsername();
 
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(userName);
+        final User userDetails = userDetailsService
+                .loadUser(userName);
 
         return new ResponseEntity<>(
-                new JwtResponse(
-                      userDetails.getUsername(), userDetails.getAuthorities()
-                ),
+                new UserDto(userDetails),
                 HttpStatus.OK
         );
     }
