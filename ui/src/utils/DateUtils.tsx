@@ -1,4 +1,7 @@
+import moment from 'moment';
+
 // parse  str to date object
+
 export const parseDate = (dateStr: any) => Date.parse(dateStr);
 
 ///
@@ -117,6 +120,14 @@ export function getDateMonthFormat(locale: string) {
     }
     return "MM/DD";
 }
+
+
+// expected schedule date string : scheduledAt": "2023-02-24 13:00 UTC"
+
+export const getYearMonthDateHrsUtcFormat = (date, format = "YYYY-MM-DD HH:mm UTC") => {
+    return moment(date).format(format);
+};
+
 
 export const getDateByNdays = (
     currentDate: Date,

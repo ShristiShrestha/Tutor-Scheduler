@@ -2,6 +2,18 @@ import {UserDetailsType} from "../redux/user/types";
 import {capitalize} from "./StringUtils";
 import {AppointmentType} from "../redux/appointment/types";
 
+/******************* user details ************************/
+export const getUsername = (user: UserDetailsType) => {
+    if (!!user && !!user.name)
+        return user.name
+    // const names = user.email.split("@")[0];
+    if (user && user.email.includes("@lsu.edu"))
+        return capitalize(user.email.replace("@lsu.edu", ""));
+    return "Unknown user"
+}
+
+/******************* date utils ************************/
+
 export const calendarIntToMonth = {
     0: "january",
     1: "february",
@@ -17,14 +29,6 @@ export const calendarIntToMonth = {
     11: "december"
 }
 
-export const getUsername = (user: UserDetailsType) => {
-    if (!!user && !!user.name)
-        return user.name
-    // const names = user.email.split("@")[0];
-    if (user && user.email.includes("@lsu.edu"))
-        return capitalize(user.email.replace("@lsu.edu", ""));
-    return "Unknown user"
-}
 
 /******************* get available slots from the list of accepted apts ************************/
 

@@ -11,7 +11,7 @@ import {
     TabContent,
 } from "../Schedule/ScheduleView";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
-import {toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
+import {getYearMonthDateHrsUtcFormat, toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {useParams} from "react-router";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -26,6 +26,7 @@ import {AppointmentStatus} from "../../enum/AppointmentEnum";
 import {createAppointment} from "../../redux/appointment/actions";
 import {AppointmentType} from "../../redux/appointment/types";
 import {selectAuth} from "../../redux/auth/reducer";
+import {openNotification} from "../../utils/Alert";
 
 const {TextArea} = Input;
 
@@ -91,11 +92,16 @@ const TutorProfile = () => {
     const dispatch = useDispatch();
     const location = useLocation();
     const [loading, setLoading] = useState(true);
+    // date that user select in the calendar
     const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
+    // date time for slot that user select
     const [selectedSlot, setSelectedSlot] = useState(undefined);
     const [selectedSlotDate, setSelectedSlotDate] = useState(undefined);
+    // list of slots available for user to select
     const [availableSlots, setAvailableSlots] = useState([]);
+    // request object for appointment creation
     const [requestInput, setRequestInput] = useState({note: "", subjects: []});
+    // redux states
     const {loggedUser} = useSelector(selectAuth);
     const {user, aptsWithUser} = useSelector(selectUser);
 
@@ -107,7 +113,9 @@ const TutorProfile = () => {
             item.start + 1) // hrs start from 0 (since utc stars from 0)
         setSelectedSlot(item);
         setSelectedSlotDate(selectedDateTs);
-        console.log("selected slot date: ", selectedSlotDate,
+        console.log("selected slot: (could take time to state change)", selectedSlot,
+            "\navailableSlots: ", availableSlots,
+            "\nselected slot date (could take time to state change): ", selectedSlotDate,
             "\nlocal var for selectedSlotDate", selectedDateTs,
             "\nselected slot utc date: ", selectedSlotDate.toUTCString(),
             "\nselected slot utc date to local time: ", new Date(selectedSlotDate.toUTCString()),
@@ -140,14 +148,20 @@ const TutorProfile = () => {
     }, [dispatch]);
 
     const dispatchCreateApt = () => {
+        if (!selectedSlotDate)
+            return openNotification("No slots selected", "Please select a slot for tutoring")
         const req: AppointmentType = {
-            studentId: loggedUser.id,
             tutorId: id,
+            studentId: loggedUser.id,
             studentNote: requestInput["note"],
             tutoringOnList: requestInput["subjects"],
-            scheduledAt: new Date(), //todo: update this with selected slot date time
+            scheduledAt: getYearMonthDateHrsUtcFormat(selectedSlotDate),
         };
-        const callback = (apt: AppointmentType) => navigate(`/schedules/${apt.id}`);
+        console.log("creating apt req: ", req);
+        const callback = (apt: AppointmentType) => {
+            openNotification("Appointment request", "You have successfully created the appointment request.")
+            navigate(`/schedules/${apt.id}`);
+        };
         dispatch(createAppointment(req, callback));
     }
 
