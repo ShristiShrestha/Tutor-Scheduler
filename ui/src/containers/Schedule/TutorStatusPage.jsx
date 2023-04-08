@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StatusTagList } from "../../components/Card/ScheduleCard";
-import { expertises } from "../../static_data/tutors";
 import styled from "styled-components";
 import {
     ResText12Regular,
@@ -8,8 +7,17 @@ import {
     ResText14SemiBold,
     ResText10Regular,
 } from "../../utils/TextUtils";
-import { Avatar, Col, Divider, Row, Tag, Input } from "antd";
+import { Col, Divider, Row, Tag, Input } from "antd";
 import { grey6 } from "../../utils/ShadesUtils";
+import { useParams } from "react-router-dom";
+import { selectAppointment } from "../../redux/appointment/reducer";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    fetchAppointment,
+    updateAppointment,
+} from "../../redux/appointment/actions";
+import { toMonthDateStr } from "../../utils/DateUtils";
+import { renderActorInfo } from "./ScheduleView";
 
 const Header = styled.div`
     width: 100%;
@@ -49,22 +57,11 @@ const ScheduleActorInfo = styled.div.attrs({
 })`
     max-width: 500px;
     margin-top: 20px;
-    padding: 24px;
+    padding: 5px;
     border: 1px solid ${grey6};
     background: white;
     border-radius: 8px;
-    column-gap: 24px;
     margin-bottom: 24px;
-
-    .actor-info-content {
-        margin-top: 12px;
-    }
-
-    .actor-profile-info {
-        margin-left: 16px;
-        row-gap: 2px;
-        align-items: start;
-    }
 `;
 
 const NeedsTutoring = styled.div.attrs({
@@ -88,7 +85,6 @@ const ResponseAppointment = styled.div.attrs({
     -webkit-box-align: start;
     width: 40vw;
     margin-left: 25px;
-
     .button-text {
         display: inline-block;
         padding: 7px 19px;
@@ -120,7 +116,46 @@ const ResponseAppointment = styled.div.attrs({
     }
 `;
 
-const TutorStatusPage = ({ isAccepted }) => {
+const TutorStatusPage = () => {
+    const id = useParams();
+    const dispatch = useDispatch();
+
+    const [loading, setLoading] = useState(true);
+    const [requestInput, setRequestInput] = useState({
+        note: "",
+    });
+
+    const { appointment } = useSelector(selectAppointment);
+
+    const dispatchFetchAppointment = useCallback(() => {
+        //@ts-ignore
+        dispatch(fetchAppointment(id.id));
+        setLoading(false);
+    }, [dispatch]);
+
+    const handleReqInput = (key, value) => {
+        setRequestInput({ ...requestInput, [key]: value });
+    };
+
+    const dispatchUpdateApt = status => {
+        console.log(requestInput["note"], id);
+        console.log(status);
+        const req = {
+            id: appointment.id,
+            statusMessage: requestInput["note"],
+            status: status,
+        };
+
+        dispatch(updateAppointment(req));
+    };
+
+    useEffect(() => {
+        if (!!id) {
+            // getAvailableSlotsFromAcceptedApts();
+            dispatchFetchAppointment();
+        }
+    }, [dispatchFetchAppointment]);
+
     return (
         <Wrapper>
             <Header>
@@ -131,11 +166,11 @@ const TutorStatusPage = ({ isAccepted }) => {
                                 marginTop: "10px",
                             }}
                         >
-                            My Schedule - Schedule #ID 329982
+                            My Schedule - Schedule #ID {appointment?.id}
                         </ResText14SemiBold>
 
                         <ResText14SemiBold style={{ float: "right" }}>
-                            {isAccepted ? (
+                            {appointment?.status == "ACCEPTED" ? (
                                 <Tag
                                     color="green"
                                     style={{
@@ -168,7 +203,9 @@ const TutorStatusPage = ({ isAccepted }) => {
                 <ResText14SemiBold>Schedule for</ResText14SemiBold>
                 <Divider type={"vertical"} />
                 <ResText14Regular className={"text-grey3"}>
-                    11 May - 3 Slots
+                    {appointment &&
+                        toMonthDateStr(new Date(appointment?.updatedAt))}
+                    - 3 Slots
                 </ResText14Regular>
                 <Divider type={"vertical"} />
                 <Tag
@@ -180,7 +217,7 @@ const TutorStatusPage = ({ isAccepted }) => {
                         textAlign: "center",
                     }}
                 >
-                    10-11AM{" "}
+                    10-11AM
                 </Tag>
                 <Tag
                     color="green"
@@ -207,22 +244,10 @@ const TutorStatusPage = ({ isAccepted }) => {
                 <div className="arrange-div">
                     <div>
                         <ScheduleActorInfo>
-                            <ResText14SemiBold>Student Info</ResText14SemiBold>
-                            <div className={"h-start-flex actor-info-content"}>
-                                <Avatar shape="circle" size={64} />
-                                <div
-                                    className={
-                                        "vertical-start-flex actor-profile-info"
-                                    }
-                                >
-                                    <ResText14SemiBold>
-                                        Shristi Shrestha
-                                    </ResText14SemiBold>
-                                    <ResText14Regular className={"text-grey3"}>
-                                        Joined in Jan 24, 2023
-                                    </ResText14Regular>
-                                </div>
-                            </div>
+                            {renderActorInfo(
+                                appointment?.student,
+                                "Student Info",
+                            )}
                         </ScheduleActorInfo>
 
                         <NeedsTutoring>
@@ -230,35 +255,40 @@ const TutorStatusPage = ({ isAccepted }) => {
                                 Needs tutoring in
                             </ResText14SemiBold>
                             <StatusTagList>
-                                {expertises &&
-                                    expertises.map(expertise => (
-                                        <Tag>
-                                            <ResText12Regular>
-                                                {expertise}
-                                            </ResText12Regular>
-                                        </Tag>
-                                    ))}
+                                {appointment &&
+                                    appointment?.tutoringOnList?.map(
+                                        expertise => (
+                                            <Tag>
+                                                <ResText12Regular>
+                                                    {expertise}
+                                                </ResText12Regular>
+                                            </Tag>
+                                        ),
+                                    )}
                             </StatusTagList>
                             <div style={{ marginTop: "1rem" }}>
                                 <ResText12Regular className={"text-grey2"}>
-                                    Note -
-                                </ResText12Regular>
-                                <ResText12Regular>
-                                    Note - Lorem impsum is simply dummy text of
-                                    the printing and typesetting industry. Lorem
-                                    inpuum has been the indsutry staandrs test
-                                    ever.
+                                    Note - {appointment?.studentNote}- Lorem
+                                    impsum is simply dummy text of the printing
+                                    and typesetting industry. Lorem inpuum has
+                                    been the indsutry staandrs test ever.
                                 </ResText12Regular>
                             </div>
                         </NeedsTutoring>
                     </div>
 
-                    {!isAccepted && (
+                    {appointment?.status == "PENDING" && (
                         <ResponseAppointment>
-                            <ResText14Regular className="button-green button-text default-margin-right select-item">
+                            <ResText14Regular
+                                className="button-green button-text default-margin-right select-item"
+                                onClick={() => dispatchUpdateApt("ACCEPTED")}
+                            >
                                 Accept
                             </ResText14Regular>
-                            <ResText14Regular className="button-red button-text select-item">
+                            <ResText14Regular
+                                className="button-red button-text select-item"
+                                onClick={() => dispatchUpdateApt("REJECTED")}
+                            >
                                 Reject
                             </ResText14Regular>
                             <ResText14SemiBold>
@@ -267,6 +297,13 @@ const TutorStatusPage = ({ isAccepted }) => {
                             <Input.TextArea
                                 className="comment-textarea"
                                 autoSize={{ minRows: 6, maxRows: 10 }}
+                                onChange={e => {
+                                    e.stopPropagation();
+                                    handleReqInput(
+                                        "note",
+                                        e.currentTarget.value,
+                                    );
+                                }}
                             />
                             <ResText10Regular className={"text-red"}>
                                 Please provide a rejection message
