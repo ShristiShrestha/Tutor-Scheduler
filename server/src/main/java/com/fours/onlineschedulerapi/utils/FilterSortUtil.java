@@ -29,6 +29,10 @@ public class FilterSortUtil {
                                 !Collections.disjoint(expertiseList,
                                         user.getExpertise().stream().map(ex -> ex.toLowerCase()).collect(Collectors.toList())))
                         .collect(Collectors.toList());
+            case "role":
+                List<String> roles = Arrays.asList(filterValue.split(","));
+                return users.stream()
+                        .filter(user -> user.hasRoles(roles)).collect(Collectors.toList());
             default:
                 return users;
         }

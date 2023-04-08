@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -32,6 +33,12 @@ public class UserDto {
     private Integer ratedBy;
 
     private Map<Float,Integer> ratingByNumbers;
+
+    public Boolean hasRoles(List<String> roles){
+        List<String> userRolesNames = this.roles.stream().map(Role::getName).collect(Collectors.toList());
+        List<String> expectedRolesNotMatched = roles.stream().filter(role -> !userRolesNames.contains(role)).collect(Collectors.toList());
+        return expectedRolesNotMatched.size() == 0;
+    }
 
     public UserDto(User user) {
         this.id = user.getId();
