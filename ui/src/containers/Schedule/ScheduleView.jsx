@@ -138,6 +138,23 @@ export const SlotInfo = styled.div`
       align-self: end;
     }
   }
+
+  .select-needs-tutoring-in {
+    row-gap: 12px;
+    align-items: start;
+    margin: 32px 0;
+  }
+
+  .tutoring-notes {
+    row-gap: 12px;
+    align-items: start;
+    margin: 32px 0;
+
+    .ant-input {
+      font-style: normal;
+      width: 95%;
+    }
+  }
 `
 
 const ScheduleDetailsTabs = styled.div`

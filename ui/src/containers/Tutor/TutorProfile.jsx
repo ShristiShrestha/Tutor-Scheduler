@@ -14,8 +14,8 @@ import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {useParams} from "react-router";
-import {useLocation} from "react-router-dom";
-import {Checkbox, Col, Divider, Input, Row, Spin} from "antd";
+import {useLocation, useNavigate} from "react-router-dom";
+import {Checkbox, Col, Divider, Input, Row, Select, Spin} from "antd";
 import MyButton from "../../components/Button/MyButton";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchAptWithUser, fetchUser} from "../../redux/user/actions";
@@ -23,6 +23,11 @@ import {selectUser} from "../../redux/user/reducer";
 import {UserAppointmentParams} from "../../redux/user/types";
 import {calendarIntToMonth, getAvailableSlot} from "../../utils/ScheduleUtils";
 import {AppointmentStatus} from "../../enum/AppointmentEnum";
+import {createAppointment} from "../../redux/appointment/actions";
+import {AppointmentType} from "../../redux/appointment/types";
+import {selectAuth} from "../../redux/auth/reducer";
+
+const {TextArea} = Input;
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -82,6 +87,7 @@ const getMenuItems = id => [
 
 const TutorProfile = () => {
     const {id} = useParams();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
     const [loading, setLoading] = useState(true);
@@ -89,9 +95,11 @@ const TutorProfile = () => {
     const [selectedSlot, setSelectedSlot] = useState(undefined);
     const [selectedSlotDate, setSelectedSlotDate] = useState(undefined);
     const [availableSlots, setAvailableSlots] = useState([]);
-
+    const [requestInput, setRequestInput] = useState({note: "", subjects: []});
+    const {loggedUser} = useSelector(selectAuth);
     const {user, aptsWithUser} = useSelector(selectUser);
 
+    /******************* handle events ************************/
     const handleSlotClick = (selected, item) => {
         const selectedDateTs = new Date(selectedCalendarDate.getFullYear(),
             selectedCalendarDate.getMonth(),
@@ -99,18 +107,19 @@ const TutorProfile = () => {
             item.start + 1) // hrs start from 0 (since utc stars from 0)
         setSelectedSlot(item);
         setSelectedSlotDate(selectedDateTs);
-
         console.log("selected slot date: ", selectedSlotDate,
             "\nlocal var for selectedSlotDate", selectedDateTs,
             "\nselected slot utc date: ", selectedSlotDate.toUTCString(),
             "\nselected slot utc date to local time: ", new Date(selectedSlotDate.toUTCString()),
         )
-        // else {
-        //     setSelectedSlot({});
-        //     selectedSlotDate(undefined);
-        // }
     }
 
+    const handleReqInput = (key, value: string | string[]) => {
+        console.log(`request input value: `, value);
+        setRequestInput({...requestInput, [key]: value});
+    };
+
+    /******************* dispatches ************************/
     const dispatchFetchUser = useCallback(() => {
         dispatch(fetchUser(id));
         setLoading(false);
@@ -130,11 +139,28 @@ const TutorProfile = () => {
         dispatch(fetchAptWithUser(id, params))
     }, [dispatch]);
 
+    const dispatchCreateApt = () => {
+        const req: AppointmentType = {
+            studentId: loggedUser.id,
+            tutorId: id,
+            studentNote: requestInput["note"],
+            tutoringOnList: requestInput["subjects"],
+            scheduledAt: new Date(), //todo: update this with selected slot date time
+        };
+        const callback = (apt: AppointmentType) => navigate(`/schedules/${apt.id}`);
+        dispatch(createAppointment(req, callback));
+    }
+
+    /******************* get local values ************************/
     const getAvailableSlotsFromAcceptedApts = () => {
         const slots = getAvailableSlot(selectedCalendarDate, aptsWithUser);
         setAvailableSlots(slots);
     }
+    const getExpertiseOptions = () => !!user ? user.expertise.map(item => {
+        return {label: item, value: item}
+    }) : []
 
+    /******************* use effects ************************/
     useEffect(() => {
         if (!!id) {
             dispatchFetchUser();
@@ -145,6 +171,7 @@ const TutorProfile = () => {
     useEffect(() => {
         getAvailableSlotsFromAcceptedApts();
     }, [selectedCalendarDate]);
+
 
     const getDefaultTab = () => {
         const menuItems = getMenuItems(id);
@@ -173,10 +200,7 @@ const TutorProfile = () => {
                 return (
                     <TabContent>
                         <div
-                            className={
-                                "h-justified-flex medium-vertical-margin"
-                            }
-                        >
+                            className={"h-justified-flex medium-vertical-margin"}>
                             <ResText16Regular>
                                 Pick a date and slot time for tutoring.
                             </ResText16Regular>
@@ -293,15 +317,38 @@ const TutorProfile = () => {
                     </li>
                 ))}
             </ul>
+            {user && <div className={"vertical-start-flex select-needs-tutoring-in"}>
+                <ResText14Regular>Needs tutoring in</ResText14Regular>
+                <Select
+                    mode="multiple"
+                    allowClear
+                    style={{width: '95%'}}
+                    placeholder="Select tutoring topics..."
+                    onChange={value => handleReqInput("subjects", value)}
+                    options={getExpertiseOptions()}
+                />
+            </div>}
+            {user && <div className={"vertical-start-flex tutoring-notes"}>
+                <ResText14Regular>Add a note (optional)</ResText14Regular>
+                <TextArea size={"large"}
+                          onChange={(e) => {
+                              // console.log("input write change: ", e, e.currentTarget.value)
+                              e.stopPropagation();
+                              handleReqInput("note", e.currentTarget.value);
+                          }}
+                          placeholder={"Add a note to the tutor..."}/>
+            </div>}
             <div className={"send-slot-request h-start-top-flex"}>
                 <ResText16Regular>
                     By confirming the request, you confirm that this is only
                     a request for tutoring and the tutor may decline to
                     provide the tutoring service.
                 </ResText16Regular>
-                <MyButton type={"primary"}>Send Request</MyButton>
+                <MyButton type={"primary"}
+                          onClick={() => dispatchCreateApt()}>
+                    Send Request
+                </MyButton>
             </div>
-
         </SlotInfo>
     );
 

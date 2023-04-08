@@ -112,7 +112,7 @@ const ScheduleCard = (apt: AppointmentType) => {
                 <div className={"tutor-profile-info"}>
                     <ResText14SemiBold>{apt.tutor}</ResText14SemiBold>
                     <ResText12Regular>
-                        <span className={"text-grey1"}>{apt.tutorDesc || `Freelancer developer`}</span>
+                        <span className={"text-grey1"}>{apt.tutor.description || `Freelancer developer`}</span>
                         <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>
                         <StarOutlined style={{marginRight: 3}}/> <span>{`${apt.rating}`}</span>
                         <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>

@@ -1,36 +1,28 @@
 import {
+    ACCEPT_APPOINTMENT,
     AppointmentParams,
     AppointmentType,
     CREATE_APPOINTMENT,
+    DELETE_APPOINTMENT,
     FETCH_APPOINTMENT,
     FETCH_APPOINTMENTS,
     RATE_APPOINTMENT,
+    REJECT_APPOINTMENT,
     SET_APPOINTMENT,
     SET_APPOINTMENTS,
     UPDATE_APPOINTMENT,
     UPDATE_APPOINTMENTS_RECEIVED,
-    DELETE_APPOINTMENT,
-    ACCEPT_APPOINTMENT,
-    REJECT_APPOINTMENT,
 } from "./types";
-import { MyThunkDispatch } from "../common/types";
-import { actionFailure, actionStart, actionSuccess } from "../common/actions";
-import { AppointmentFetchType } from "../../enum/AppointmentEnum";
-import {
-    getApts,
-    getOneApt,
-    postApt,
-    putApt,
-    putAptsReceived,
-    putRateApt,
-    deleteApt,
-} from "../../api/AppointmentApi";
+import {MyThunkDispatch} from "../common/types";
+import {actionFailure, actionStart, actionSuccess} from "../common/actions";
+import {AppointmentFetchType} from "../../enum/AppointmentEnum";
+import {deleteApt, getApts, getOneApt, postApt, putApt, putAptsReceived, putRateApt,} from "../../api/AppointmentApi";
 
 /******************* state ************************/
 export function setAppointment(apt: AppointmentType) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_APPOINTMENT));
-        dispatch({ type: SET_APPOINTMENT, payload: apt });
+        dispatch({type: SET_APPOINTMENT, payload: apt});
         dispatch(actionSuccess(SET_APPOINTMENT, apt));
     };
 }
@@ -39,23 +31,24 @@ export function setAppointments(
     apts: AppointmentType[],
     type: AppointmentFetchType,
 ) {
-    const payload = { apts: apts, type: type };
+    const payload = {apts: apts, type: type};
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_APPOINTMENTS));
-        dispatch({ type: SET_APPOINTMENTS, payload: payload });
+        dispatch({type: SET_APPOINTMENTS, payload: payload});
         dispatch(actionSuccess(SET_APPOINTMENTS, payload));
     };
 }
 
 /******************* api calls ************************/
 
-export function createAppointment(apt: AppointmentType) {
+export function createAppointment(apt: AppointmentType, callback: Function) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(CREATE_APPOINTMENT));
         postApt(apt)
             .then(apt => {
                 dispatch(actionSuccess(CREATE_APPOINTMENT, apt));
                 dispatch(setAppointment(apt));
+                callback && callback(apt);
             })
             .catch(err => {
                 dispatch(actionFailure(CREATE_APPOINTMENT, err));
