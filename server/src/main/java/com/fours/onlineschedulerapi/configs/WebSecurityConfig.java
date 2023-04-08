@@ -91,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .antMatchers("/auth/login").permitAll()
             .antMatchers("/user/signup").permitAll()
-//                .antMatchers("/user/profile").permitAll()
+                .antMatchers("/auth/profile").permitAll()
             .anyRequest().authenticated()
             .and()
             .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
