@@ -16,6 +16,7 @@ import {
     toMonthDateYearStr,
     toSlotRangeStr,
     toJavaDate,
+    getYearMonthDateHrsUtcFormat,
 } from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
 import { selectAppointment } from "../../redux/appointment/reducer";
@@ -161,12 +162,14 @@ const TutorSchedule = () => {
     };
 
     const dispatchUpdateApt = () => {
-        const formattedDate = toJavaDate(selectedSlotDate);
+        const formattedDate = getYearMonthDateHrsUtcFormat(
+            selectedSlotDate.toUTCString(),
+        );
         const req = {
             id: appointment.id,
             status: appointment.status,
             statusMessage: requestInput.note,
-            // scheduledAt: formattedDate,
+            scheduledAt: formattedDate,
         };
         dispatch(updateAppointment(req));
     };
@@ -228,7 +231,6 @@ const TutorSchedule = () => {
                         >
                             My Schedule - Schedule #ID {appointment?.id}
                         </ResText14SemiBold>
-
                         <ResText14SemiBold style={{ float: "right" }}>
                             <Tag
                                 color={"blue"}
