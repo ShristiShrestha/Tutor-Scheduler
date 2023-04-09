@@ -479,6 +479,7 @@ export default function ScheduleView() {
     });
     // list of slots available for user to select
     const [availableSlots, setAvailableSlots] = useState([]);
+    const [showRespondModal, setShowRespondModal] = useState(false);
 
     const {loggedUser} = useSelector(selectAuth);
     const {appointment} = useSelector(selectAppointment);
@@ -530,12 +531,11 @@ export default function ScheduleView() {
             status: tutorUpdateReq.status,
         };
         const onSuccess = (apt) => {
-            handleTutorUpdateReq("status", undefined);
             openNotification("Request successful", "Appointment status updated to ", apt.status, AlertType.SUCCESS);
+            setShowRespondModal(false);
         };
-
         const onError = () => openNotification("Request unsuccessful", "Failed to update appointment status to ", tutorUpdateReq.status, AlertType.ERROR);
-        dispatch(updateAppointment(req));
+        dispatch(updateAppointment(req, onSuccess, onError));
     };
 
     const dispatchUpdateAptSchedule = () => {
@@ -609,14 +609,12 @@ export default function ScheduleView() {
             setTutorUpdateReq({...tutorUpdateReq, scheduledAt: selectedDateTs});
         } else
             setTutorUpdateReq({...tutorUpdateReq, [key]: value});
-    };
 
-    const handleRespond = (status?: AppointmentStatus) => {
-        console.log("handle respond: ", tutorUpdateReq);
-        if (!!status) {
-            handleTutorUpdateReq("status", status);
+        // tutor is responding
+        if (key === "status") {
+            setShowRespondModal(true);
         }
-    }
+    };
 
     const getScheduledSlot = () => scheduledSlots.filter(item => !item.available);
 
@@ -788,10 +786,9 @@ export default function ScheduleView() {
                 <ResText14SemiBold className={"text-grey1"}>Respond </ResText14SemiBold>
                 <Dropdown.Button style={{marginRight: 12}}
                                  trigger={["click"]}
-                                 onClick={() => handleRespond()}
                                  overlay={respondMenu}>
                     <ResText12Regular
-                        onClick={() => handleRespond(tutorUpdateReq.status || respondMenuItems[0].value)}>{selectedRespondStr}</ResText12Regular>
+                        onClick={() => handleTutorUpdateReq("status", tutorUpdateReq.status || respondMenuItems[0].value)}>{selectedRespondStr}</ResText12Regular>
                 </Dropdown.Button>
             </>
         return <></>
@@ -829,10 +826,10 @@ export default function ScheduleView() {
                 </Content>
             </Spin>
             {!isStudent && appointment &&
-                <Modal width={"40vw"} visible={!!tutorUpdateReq.status}
+                <Modal width={"40vw"} visible={showRespondModal}
                        okButtonProps={null}
                        cancelButtonProps={null}
-                       onCancel={() => handleTutorUpdateReq("status", undefined)}
+                       onCancel={() => setShowRespondModal(false)}
                        footer={null}>
                     <ResponseAppointment>
                         {appointment.scheduledAt &&
@@ -858,7 +855,10 @@ export default function ScheduleView() {
                                 />
                             </div>}
                         <div className={"h-end-flex respond-submit"}>
-                            <MyButton htmlType={"submit"} type={"primary"} onClick={() => dispatchUpdateAptStatus()}>
+                            <MyButton htmlType={"submit"} type={"primary"}
+                                      disabled={tutorUpdateReq.status === AppointmentStatus.REJECTED
+                                          && (!tutorUpdateReq.note || tutorUpdateReq.note.length === 0)}
+                                      onClick={() => dispatchUpdateAptStatus()}>
                                 <ResText12SemiBold>Submit changes</ResText12SemiBold>
                             </MyButton>
                         </div>

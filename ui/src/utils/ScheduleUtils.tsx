@@ -9,7 +9,7 @@ export const getUsername = (user: UserDetailsType) => {
     if (!!user && !!user.name)
         return user.name
     // const names = user.email.split("@")[0];
-    if (user && user.email.includes("@lsu.edu"))
+    if (!!user && user.email.includes("@lsu.edu"))
         return capitalize(user.email.replace("@lsu.edu", ""));
     return "Unknown user"
 }
