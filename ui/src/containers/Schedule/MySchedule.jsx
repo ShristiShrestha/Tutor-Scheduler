@@ -102,7 +102,7 @@ export default function MySchedule() {
                             <Col key={"accepted-upcoming-apts-key-" + item.id}
                                  xxl={6} xl={8} lg={8} md={12} sm={24} xs={24}>
                                 <Link to={"/schedules/" + item.id}>
-                                    <ScheduleCard {...item}/>
+                                    <ScheduleCard loggedUserId={loggedUser?.id} {...item}/>
                                 </Link>
                             </Col>
                         ))}
@@ -122,7 +122,7 @@ export default function MySchedule() {
                                 <Col key={"other-apts-key-" + item.id}
                                      xxl={6} xl={8} lg={12} md={12} sm={24} xs={24}>
                                     <Link to={"/schedules/" + item.id}>
-                                        <ScheduleCard {...item}/>
+                                        <ScheduleCard loggedUserId={loggedUser?.id} {...item}/>
                                     </Link>
                                 </Col>
                             ))}

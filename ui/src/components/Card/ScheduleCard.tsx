@@ -4,7 +4,7 @@ import styled from "styled-components";
 import {ResText10Regular, ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
 import {amethyst, grey1, grey2, grey3, grey6,} from "../../utils/ShadesUtils";
 import {AppointmentType} from "../../redux/appointment/types";
-import {toMonthDateStr, toScheduleSlotRangeStr} from "../../utils/DateUtils";
+import {toMonthDateStr, toMonthDateYearStr, toScheduleSlotRangeStr} from "../../utils/DateUtils";
 import {AppointmentStatus} from "../../enum/AppointmentEnum";
 import {StarOutlined} from "@ant-design/icons";
 import {toEndDottedStr} from "../../utils/StringUtils";
@@ -93,10 +93,12 @@ export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode)
     return <Tag color={color}>{renderText || text} </Tag>;
 };
 
-const ScheduleCard = (apt: AppointmentType) => {
+const ScheduleCard = (apt: AppointmentType, loggedUserId?: number) => {
     if (!apt) return <div> no apt </div>
+    console.log("schedule card: ", apt, loggedUserId);
     const showingTutoringIn = apt ? (apt.tutoringOnList && apt.tutoringOnList.length > 2 ? apt.tutoringOnList.slice(0, 2) : apt.tutoringOnList) : [];
-
+    const isStudent = !!loggedUserId && apt.studentId === loggedUserId && apt.student.id === loggedUserId;
+    const showingName = !isStudent ? (apt.student.name || apt.student.email) : (apt.tutor.name || apt.tutor.email);
     return (
         <Card>
             <StatusInfo className={"h-justified-flex"}>
@@ -114,14 +116,16 @@ const ScheduleCard = (apt: AppointmentType) => {
             <TutorInfo>
                 <Avatar shape="circle" size={64}/>
                 <div className={"tutor-profile-info"}>
-                    <ResText14SemiBold>{apt.tutor.name || apt.tutor.email}</ResText14SemiBold>
-                    <ResText12Regular>
-                        {/*<span className={"text-grey1"}>{apt.tutor.description || `Freelancer developer`}</span>*/}
-                        {/*<Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>*/}
-                        <StarOutlined style={{marginRight: 3}}/> <span>{`${apt.rating}`}</span>
-                        <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>
-                        <span>0 ratings</span>
-                    </ResText12Regular>
+                    <ResText14SemiBold>{showingName}</ResText14SemiBold>
+                    {isStudent ? <ResText12Regular>
+                            {/*<span className={"text-grey1"}>{apt.tutor.description || `Freelancer developer`}</span>*/}
+                            {/*<Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>*/}
+                            <StarOutlined style={{marginRight: 3}}/> <span>{`${apt.rating}`}</span>
+                            <Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>
+                            <span>0 ratings</span>
+                        </ResText12Regular> :
+                        <ResText12Regular className={"text-grey3"}>Joined
+                            in {toMonthDateYearStr(new Date(apt.student.createdAt))}</ResText12Regular>}
                 </div>
             </TutorInfo>
             {apt.studentNote && <Desc>
