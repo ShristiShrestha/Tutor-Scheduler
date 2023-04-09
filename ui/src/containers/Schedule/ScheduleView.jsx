@@ -24,7 +24,7 @@ import {
     seaFoam,
     snow
 } from "../../utils/ShadesUtils";
-import {Avatar, Checkbox, Col, Divider, Input, Menu, Row, Spin, Tag} from "antd";
+import {Avatar, Badge, Checkbox, Col, Divider, Menu, Row, Spin, Tag} from "antd";
 import {Link, useLocation} from "react-router-dom";
 import {StatusTagList} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
@@ -33,9 +33,11 @@ import MyButton from "../../components/Button/MyButton";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {UserDetailsType} from "../../redux/user/types";
 import {getScheduledSlots, getUsername, ratings} from "../../utils/ScheduleUtils";
-import {fetchAppointment} from "../../redux/appointment/actions";
+import {fetchAppointment, rateAppointment} from "../../redux/appointment/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {selectAppointment} from "../../redux/appointment/reducer";
+import {AlertType, openNotification} from "../../utils/Alert";
+import {AppointmentStatus} from "../../enum/AppointmentEnum";
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -241,6 +243,10 @@ export const TabContent = styled.div`
     }
   }
 
+  .rate-options-disabled {
+    cursor: not-allowed;
+  }
+
   .margin-btm-icon {
     max-width: 70px !important;
     max-height: 85px !important;
@@ -250,9 +256,19 @@ export const TabContent = styled.div`
     margin-bottom: 6px;
   }
 
+  .rate-very-bad-selected {
+    background: ${rose} !important;
+    border: 1px solid ${rose} !important;
+  }
+
   .rate-very-bad:hover {
     background: ${rose} !important;
     border: 1px solid ${rose} !important;
+  }
+
+  .rate-just-bad-selected {
+    background: ${lightRed} !important;
+    border: 1px solid ${crimson} !important;
   }
 
   .rate-just-bad:hover {
@@ -260,8 +276,18 @@ export const TabContent = styled.div`
     border: 1px solid ${crimson} !important;
   }
 
+  .rate-good-selected {
+    background: ${seaFoam} !important;
+    border: 1px solid ${green} !important;
+  }
+
   .rate-good:hover {
     background: ${seaFoam} !important;
+    border: 1px solid ${green} !important;
+  }
+
+  .rate-very-good-selected {
+    background: ${green} !important;
     border: 1px solid ${green} !important;
   }
 
@@ -297,6 +323,12 @@ const getMenuItems = (id) => [
         icon: <StarOutlined/>,
     },
 ];
+
+export const CalenderItem = styled.div`
+  height: 100%;
+  width: 100%;
+  padding-top: 20px;
+`;
 
 //  ----------------- actor details -----------
 export const renderActorInfo = (user: UserDetailsType, title = "Tutor info") => <ScheduleActorInfo>
@@ -376,13 +408,25 @@ export default function ScheduleView() {
     const [loading, setLoading] = useState(true);
     const {appointment} = useSelector(selectAppointment);
     const [scheduledSlots, setScheduledSlots] = useState([]);
-
+    const [rateRequest, setRateRequest] = useState({rating: undefined, comment: undefined});
+    const acceptedApt = appointment && appointment.status === AppointmentStatus.ACCEPTED;
+    const ratingOptions = Object.values(ratings);
 
     /******************* dispatches ************************/
     const dispatchFetchApt = useCallback(() => {
         dispatch(fetchAppointment(id));
         setLoading(false);
     }, [fetchAppointment]);
+
+    const dispatchRateTutor = useCallback(() => {
+        const handleErr = (err) => openNotification("Unsuccessful request",
+            "Failed to rate the tutor." + err, AlertType.ERROR)
+
+        if (!!rateRequest.rating)
+            dispatch(rateAppointment(id, rateRequest.rating, handleErr));
+        else
+            openNotification("Invalid rating", "Please select one of the ratings.")
+    }, [])
 
     /******************* use effects ************************/
     useEffect(() => {
@@ -399,6 +443,11 @@ export default function ScheduleView() {
     const fetchScheduledSlots = () => {
         const slots = getScheduledSlots(new Date(appointment.scheduledAt));
         setScheduledSlots(slots);
+    }
+
+    const handleRateChanges = (key, value) => {
+        setRateRequest({...rateRequest, [key]: value});
+        console.log("rate request: ", rateRequest);
     }
 
     /******************* render children ************************/
@@ -434,7 +483,6 @@ export default function ScheduleView() {
 
     // ---------------- schedule details and rate tutor --------------
 
-
     const renderMenuComponent = (menuItems = getMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
@@ -442,31 +490,51 @@ export default function ScheduleView() {
             case menuItems[1].key:
                 return <TabContent>
                     <ResText16SemiBold>
-                        Rate Tutor
+                        {acceptedApt ? "Rate Tutor" : "You can only rate the accepted appointment."}
                     </ResText16SemiBold>
-
                     <div className={"rate-tutor-content"}>
                         <div className={"rate-tutor-features h-start-top-flex"}>
                             <ResText16Regular className={"text-grey2"}>Tutoring skill</ResText16Regular>
                             <ul className={"rate-tutor-options"}>
-                                {Object.values(ratings).map(item => <li key={"rate-tutor-options-" + item.id}
-                                                                        className={item.className}>{item.icon}</li>)}
+                                {ratingOptions.map((item, index) => <li
+                                    key={"rate-tutor-options-" + item.id}
+                                    onClick={() => handleRateChanges("rating", index + 1)}
+                                    className={item.className + ((acceptedApt && (index + 1) === rateRequest.rating) ? "-selected" : "") + (!acceptedApt ? " rate-options-disabled" : "")}>{item.icon}</li>)}
                             </ul>
                         </div>
-                        <div className={"rate-tutor-comment h-start-flex"}>
-                            <ResText16Regular className={"text-grey2"}>Add comment (Optional)</ResText16Regular>
-                            <Input rootClassName={"rate-tutor-input"} size={"large"} bordered/>
-                        </div>
-
-                        <div className={"h-end-flex"}>
-                            <MyButton type={"primary"}>
+                        {/*<div className={"rate-tutor-comment h-start-flex"}>*/}
+                        {/*    <ResText16Regular className={"text-grey2"}>Add comment (Optional)</ResText16Regular>*/}
+                        {/*    <Input rootClassName={"rate-tutor-input"}*/}
+                        {/*           onChange={e => handleRateChanges("comment", e.currentTarget.value)}*/}
+                        {/*           size={"large"} bordered/>*/}
+                        {/*</div>*/}
+                        <div className={"h-start-flex"}>
+                            <MyButton type={"primary"} disabled={appointment.status !== AppointmentStatus.ACCEPTED}
+                                      onClick={() => dispatchRateTutor()}>
                                 <ResText14Regular>Submit your ratings</ResText14Regular>
                             </MyButton>
                         </div>
                     </div>
                 </TabContent>
+
             default:
-                const onClick = (date) => alert("hello, " + toMonthDateYearStr(new Date(date)));
+                const scheduledSlot = scheduledSlots.filter(item => !item.available);
+
+                const dateCellRender = (date) => {
+                    if (appointment && scheduledSlot.length > 0) {
+                        const cellDate = new Date(date);
+                        const scheduledDate = new Date(appointment.scheduledAt);
+                        const cellMatchesScheduledDate = cellDate.getDate() === scheduledDate.getDate() &&
+                            cellDate.getMonth() === scheduledDate.getMonth();
+                        if (cellMatchesScheduledDate)
+                            return <CalenderItem className={"h-centered-flex"}>
+                                <Badge status={"success"}
+                                       text={<ResText14Regular>{scheduledSlot[0].title}</ResText14Regular>}/>
+                            </CalenderItem>
+                    }
+                    return <></>
+                }
+
                 return (
                     <TabContent>
                         <ResText16SemiBold><b>Today</b>
@@ -475,7 +543,9 @@ export default function ScheduleView() {
                                 {toMonthDateYearStr(today)}
                             </ResText16Regular>
                         </ResText16SemiBold>
-                        <MyCalendar onClick={onClick}/>
+                        {appointment &&
+                            <MyCalendar dateCellRender={dateCellRender}
+                                        value={new Date(appointment.scheduledAt)}/>}
                     </TabContent>
                 );
         }

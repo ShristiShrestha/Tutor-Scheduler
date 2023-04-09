@@ -70,7 +70,7 @@ export function updateAppointment(apt: AppointmentType) {
     };
 }
 
-export function rateAppointment(id: number, rating: number) {
+export function rateAppointment(id: number, rating: number, onError?: Function) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(RATE_APPOINTMENT));
         putRateApt(id, rating)
@@ -80,6 +80,7 @@ export function rateAppointment(id: number, rating: number) {
             })
             .catch(err => {
                 dispatch(actionFailure(RATE_APPOINTMENT, err));
+                onError && onError(err);
             });
     };
 }

@@ -10,10 +10,13 @@ import {StarOutlined} from "@ant-design/icons";
 import {toEndDottedStr} from "../../utils/StringUtils";
 
 // styled components
-export const Card = styled.div`
+export const Card = styled.div<{
+    height?: string
+}>`
   padding: 16px 24px;
   border-radius: 12px;
   border: 1px solid ${grey6};
+  height: ${props => props.height ? props.height : "220px"};
 
   text {
     color: ${grey1};
@@ -128,7 +131,7 @@ const ScheduleCard = (apt: AppointmentType) => {
             </Desc>}
             <StatusTagList>
                 {!!apt.tutoringOnList &&
-                    apt.tutoringOnList.map(expertise => <Tag>{expertise}</Tag>)}
+                    apt.tutoringOnList.slice(0, 2).map(expertise => <Tag>{expertise}</Tag>)}
             </StatusTagList>
         </Card>
     );
