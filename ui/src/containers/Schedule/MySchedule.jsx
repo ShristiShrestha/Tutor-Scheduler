@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from "react";
 import ScheduleCard from "../../components/Card/ScheduleCard";
 import styled from "styled-components";
-import {ResText12Regular, ResText14Regular, ResText14SemiBold} from "../../utils/TextUtils";
+import {ResText12SemiBold, ResText14Regular, ResText14SemiBold} from "../../utils/TextUtils";
 import {Col, Row, Spin} from "antd";
 import {Link, useNavigate} from "react-router-dom";
 import {AppointmentParams} from "../../redux/appointment/types";
@@ -53,6 +53,7 @@ export default function MySchedule() {
     const [loading, setLoading] = useState(true);
     const {loggedUser} = useSelector(selectAuth);
     const {upcomingAppointments, otherAppointments} = useSelector(selectAppointment);
+    const isTutor = isLoggedTutor(loggedUser);
 
     const getAptParams = (upcoming?: boolean): AppointmentParams => {
         const today = new Date();
@@ -60,7 +61,7 @@ export default function MySchedule() {
         const year = today.getFullYear();
         const isTutor = isLoggedTutor(loggedUser);
         return {
-            // apts with this tutor
+            // apts requested by other users (as students) with this logged user
             tutorId: loggedUser && isTutor ? loggedUser.id : null,
             // apts created by this logged user as a student
             studentId: loggedUser && !isTutor ? loggedUser.id : null,
@@ -83,33 +84,39 @@ export default function MySchedule() {
         fetchApts();
     }, [fetchApts]); // will call fetchApts if fetchApts function has changed
 
+    const noAptsDesc = isTutor ? "You have not accepted any appointments yet. \nCheck if you have any pending requests." :
+        "There are no any appointments.\nFind tutors and request an appointment."
+    const onEmptyNavigateTo = isTutor ? "/notifications" : "/find-tutors";
+    const onEmptyNavigateToBtn = isTutor ? "Go to notifications" : "Find tutors";
     return (
         <Wrapper>
-            <Header><ResText14SemiBold className={"text-grey1"}>My Appointments</ResText14SemiBold></Header>
+            <Header>
+                <ResText14SemiBold className={"text-grey1"}>My Appointments</ResText14SemiBold>
+            </Header>
             <Spin spinning={loading}>
                 <Content>
+                    {upcomingAppointments.length > 0 &&
+                        <ResText14Regular>Upcoming Appointments ({upcomingAppointments.length})</ResText14Regular>}
                     {upcomingAppointments.length > 0 ? <Row gutter={[24, 24]} className={"schedules-upcoming"}>
                         {upcomingAppointments?.map((item, index) => (
-                            <Col key={"acpted-upcoming-apts-key-" + item.id}
+                            <Col key={"accepted-upcoming-apts-key-" + item.id}
                                  xxl={6} xl={8} lg={8} md={12} sm={24} xs={24}>
                                 <Link to={"/schedules/" + item.id}>
                                     <ScheduleCard {...item}/>
                                 </Link>
                             </Col>
                         ))}
-                    </Row> : otherAppointments.length === 0 ? <EmptyContent title={"Upcoming appointments"}
-                                                                            className={"empty-content"}
-                                                                            showEmptyIcon={true}
-                                                                            desc={"You have no accepted upcoming appointments. Find tutors and request an appointment."}
-                                                                            action={<MyButton type={"primary"}
-                                                                                              onClick={() => navigate("/find-tutors")}><ResText12Regular>Find
-                                                                                tutors</ResText12Regular></MyButton>}
+                    </Row> : otherAppointments.length === 0 ? <EmptyContent
+                        className={"empty-content"}
+                        showEmptyIcon={true}
+                        desc={noAptsDesc}
+                        action={<MyButton type={"primary"}
+                                          onClick={() => navigate(onEmptyNavigateTo)}><ResText12SemiBold>{onEmptyNavigateToBtn}</ResText12SemiBold></MyButton>}
                     /> : <></>}
 
-
-                    {otherAppointments &&
-                        <ResText14Regular>{upcomingAppointments.length === 0 ? "All Appointments" : "Other Appointments"}</ResText14Regular>}
-                    {otherAppointments && otherAppointments.length > 0 ?
+                    {otherAppointments.length > 0 &&
+                        <ResText14Regular>{upcomingAppointments.length === 0 ? `All Appointments` : `Other Appointments`} ({otherAppointments.length})</ResText14Regular>}
+                    {otherAppointments.length > 0 ?
                         <Row gutter={[24, 24]} className={"schedules-upcoming"}>
                             {otherAppointments.map((item, index) => (
                                 <Col key={"other-apts-key-" + item.id}

@@ -9,7 +9,7 @@ const Wrapper = styled.div`
   min-width: 100%;
   min-height: 300px;
   padding: 24px;
-  row-gap: 12px;
+  row-gap: 20px;
   background: #fcfcfc;
 `;
 export default function EmptyContent({title, desc, className, showEmptyIcon, action}) {
@@ -18,7 +18,7 @@ export default function EmptyContent({title, desc, className, showEmptyIcon, act
                                alt={"empty-content"}
                                src={process.env.PUBLIC_URL + '/empty_box.svg'}/>}
         {title && <ResText12SemiBold>{title}</ResText12SemiBold>}
-        <ResText12Regular>{desc}</ResText12Regular>
+        <ResText12Regular className={"wrap-word text-center text-grey2"}>{desc}</ResText12Regular>
         {!!action && action}
     </Wrapper>
 }

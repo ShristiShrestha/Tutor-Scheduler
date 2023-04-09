@@ -85,6 +85,8 @@ export default function FindTutors() {
         dispatchFetchTutors();
     }, [fetchUsers]); // will call dispatchFetchTutors if it has function has changed
 
+    const noTutorsDesc = !!searchQuery && searchQuery.length > 0 ? `We found 0 tutors with expertise in "${searchQuery}".`
+        : "There are no tutors. Please keep in touch.";
 
     return (
         <Wrapper className={"h-vertically-centered-flex"}>
@@ -108,7 +110,7 @@ export default function FindTutors() {
                 <Spin spinning={loading}>
                     {users.length > 0 ? <Row gutter={[24, 24]} wrap={true}>
                         {users.map((item, index) => (
-                            <Col key={"find-tutors-" + index} span={6}>
+                            <Col key={"find-tutors-" + index} xxl={6} xl={8} lg={12} md={12} sm={24}>
                                 <Link to={"/profile/" + item.id + "/request-tutoring"}>
                                     <TutorCard {...item}/>
                                 </Link>
@@ -116,7 +118,7 @@ export default function FindTutors() {
                         ))}
                     </Row> : <EmptyContent showEmptyIcon={true}
                                            className={"medium-vertical-margin"}
-                                           desc={`We found 0 tutors with expertise in "${searchQuery}".`}/>}
+                                           desc={noTutorsDesc}/>}
                 </Spin>
             </TutorsList>
         </Wrapper>
