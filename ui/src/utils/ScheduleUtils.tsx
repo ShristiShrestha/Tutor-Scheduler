@@ -2,6 +2,7 @@ import {UserDetailsType} from "../redux/user/types";
 import {capitalize} from "./StringUtils";
 import {AppointmentType} from "../redux/appointment/types";
 import React from "react";
+import {AppointmentStatus} from "../enum/AppointmentEnum";
 
 /******************* user details ************************/
 export const getUsername = (user: UserDetailsType) => {
@@ -105,14 +106,17 @@ export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = 
         const scheduledYear = scheduledDate.getUTCFullYear();
         return scheduledDay === selectedDay &&
             scheduledMonth === selectedMonth &&
-            scheduledYear === selectedYear
+            scheduledYear === selectedYear &&
+            apt.status === AppointmentStatus.ACCEPTED
     });
+
+    console.log("tmp: inside method ", acceptedAptsSlotsOnDate);
 
     // filter slots per day availability
     // slots are not in the accepted scheduled hours
     // then such slots are available
     if (acceptedAptsSlotsOnDate.length > 0) {
-        const scheduledDateTsAcceptedOnSelectedDay = acceptedAptsSlotsOnDate.map(item => new Date(item.scheduledAt).getUTCHours());
+        const scheduledDateTsAcceptedOnSelectedDay = acceptedAptsSlotsOnDate.map(item => new Date(item.scheduledAt).getHours());
         return SLOTS_PER_DAY.map(slotItem => {
             return {
                 ...slotItem,
@@ -120,11 +124,11 @@ export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = 
             }
         });
     }
-
-    // no appointments slots accepted for that day
-    if (acceptedAptsSlotsOnDate.length === 0) {
-        return SLOTS_PER_DAY;
-    }
+    //
+    // // no appointments slots accepted for that day
+    // if (acceptedAptsSlotsOnDate.length === 0) {
+    //     return SLOTS_PER_DAY;
+    // }
 
     // by default sending all slots as available
     return SLOTS_PER_DAY;

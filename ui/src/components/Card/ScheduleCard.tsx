@@ -82,7 +82,7 @@ export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode)
             break;
         case AppointmentStatus.ACCEPTED:
             color = "green";
-            text = "Approved";
+            text = "Accepted";
             break;
         default:
             color = "gray";

@@ -29,11 +29,11 @@ import {Avatar, Badge, Checkbox, Col, Divider, Dropdown, Input, Menu, Modal, Row
 import {Link, useLocation} from "react-router-dom";
 import {getStatusBox, StatusTagList} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
-import {toMonthDateYearStr} from "../../utils/DateUtils";
+import {getYearMonthDateHrsUtcFormat, toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
-import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
-import {UserDetailsType} from "../../redux/user/types";
-import {getScheduledSlots, getUsername, ratings} from "../../utils/ScheduleUtils";
+import {CalendarOutlined, InfoCircleOutlined, StarOutlined} from "@ant-design/icons";
+import {UserAppointmentParams, UserDetailsType} from "../../redux/user/types";
+import {calendarIntToMonth, getAvailableSlot, getScheduledSlots, getUsername, ratings} from "../../utils/ScheduleUtils";
 import {fetchAppointment, rateAppointment, updateAppointment} from "../../redux/appointment/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {selectAppointment} from "../../redux/appointment/reducer";
@@ -42,6 +42,8 @@ import {AppointmentStatus} from "../../enum/AppointmentEnum";
 import {capitalize} from "../../utils/StringUtils";
 import {isLoggedModerator, isLoggedStudent, isLoggedTutor} from "../../utils/AuthUtils";
 import {selectAuth} from "../../redux/auth/reducer";
+import {selectUser} from "../../redux/user/reducer";
+import {fetchAptWithUser} from "../../redux/user/actions";
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -131,6 +133,7 @@ export const SlotInfo = styled.div`
   .selected-slots-info {
     align-items: start;
     row-gap: 12px;
+    margin-top: 24px;
   }
 
   .slot-items {
@@ -474,6 +477,8 @@ export default function ScheduleView() {
         status: undefined,
         scheduledAt: undefined
     });
+    // list of slots available for user to select
+    const [availableSlots, setAvailableSlots] = useState([]);
 
     const {loggedUser} = useSelector(selectAuth);
     const {appointment} = useSelector(selectAppointment);
@@ -482,12 +487,30 @@ export default function ScheduleView() {
     const acceptedApt = appointment && appointment.status === AppointmentStatus.ACCEPTED;
     const isTutor = isLoggedTutor(loggedUser) && appointment && appointment.tutorId === loggedUser?.id;
     const isStudent = isLoggedStudent(loggedUser) && appointment && appointment.studentId === loggedUser?.id;
+    const isModerator = isLoggedModerator(loggedUser);
+    const {aptsWithUser} = useSelector(selectUser);
+
 
     /******************* dispatches ************************/
+
     const dispatchFetchApt = useCallback(() => {
         dispatch(fetchAppointment(id));
         setLoading(false);
     }, [fetchAppointment]);
+
+    // we are viewing apt scheduled for the tutorId
+    // fetch the tutor info and and all apointments
+    // created requested for that tutor
+    const dispatchFetchAptsWithUser = useCallback(() => {
+        const today = tutorUpdateReq.scheduledAt || new Date(appointment.scheduledAt);
+        const params: UserAppointmentParams = {
+            status: AppointmentStatus.ACCEPTED,
+            year: `${today.getUTCFullYear()}`, // backend stores date in UTC format
+            month: calendarIntToMonth[today.getUTCMonth()] // // backend stores date in UTC format
+        };
+        dispatch(fetchAptWithUser(appointment.tutorId, params))
+    }, [appointment]);
+
 
     const dispatchRateTutor = useCallback(() => {
         const handleErr = (err) => openNotification("Unsuccessful request",
@@ -514,17 +537,56 @@ export default function ScheduleView() {
         dispatch(updateAppointment(req));
     };
 
+    const dispatchUpdateAptSchedule = () => {
+        const req = {
+            id: appointment.id,
+            scheduledAt: getYearMonthDateHrsUtcFormat(tutorUpdateReq.scheduledAt)
+        }
+        const onSuccess = (apt) => {
+            openNotification("Request successful", "Appointment schedule updated to ", new Date(apt.scheduledAt), AlertType.SUCCESS);
+        };
+
+        const onError = () => openNotification("Request unsuccessful", "Failed to update appointment schedule to ", tutorUpdateReq.scheduledAt, AlertType.ERROR);
+        dispatch(updateAppointment(req));
+
+    }
+
     /******************* use effects ************************/
     useEffect(() => {
         dispatchFetchApt();
-    }, [dispatchFetchApt])
+    }, [id])
 
     useEffect(() => {
         if (appointment)
             fetchScheduledSlots();
     }, [appointment]);
 
+    useEffect(() => {
+        if (appointment) {
+            getAvailableSlotsFromAcceptedApts();
+        }
+    }, [appointment, tutorUpdateReq.scheduledAt]);
+
+    useEffect(() => {
+        if (appointment) {
+            dispatchFetchAptsWithUser();
+        }
+    }, [appointment]);
+
+    useEffect(() => {
+        if (appointment && !tutorUpdateReq.scheduledAt) {
+            setTutorUpdateReq({...tutorUpdateReq, scheduledAt: new Date(appointment.scheduledAt)});
+        }
+    }, [appointment])
+
     /******************* local variables ************************/
+
+    const getAvailableSlotsFromAcceptedApts = () => {
+        const findAvailableSlotsFor = tutorUpdateReq.scheduledAt || new Date(appointment.scheduledAt);
+        const slots = getAvailableSlot(findAvailableSlotsFor, aptsWithUser);
+        console.log("tmp: available slots for: ", slots, aptsWithUser);
+        setAvailableSlots(slots);
+    }
 
     const fetchScheduledSlots = () => {
         const slots = getScheduledSlots(new Date(appointment.scheduledAt));
@@ -537,7 +599,15 @@ export default function ScheduleView() {
     }
 
     const handleTutorUpdateReq = (key, value) => {
-        setTutorUpdateReq({...tutorUpdateReq, [key]: value});
+        const selectedCalendarDate = tutorUpdateReq.scheduledAt || appointment.scheduledAt;
+        if (key === "slotSelected") {
+            const selectedDateTs = new Date(selectedCalendarDate.getFullYear(),
+                selectedCalendarDate.getMonth(),
+                selectedCalendarDate.getDate(),
+                value.start);
+            setTutorUpdateReq({...tutorUpdateReq, scheduledAt: selectedDateTs});
+        } else
+            setTutorUpdateReq({...tutorUpdateReq, [key]: value});
     };
 
     const handleRespond = (status?: AppointmentStatus) => {
@@ -574,22 +644,52 @@ export default function ScheduleView() {
         return [menuItems[0].key];
     }
 
-    const renderSlotView = () => <SlotInfo>
-        <ResText16Regular className={"text-grey2"}>Appointment requested for
-            <b style={{marginLeft: 8, color: grey1}}>{`${toMonthDateYearStr(new Date(appointment.scheduledAt))}`}</b>
-        </ResText16Regular>
+    const renderSlotView = () => {
+        const scheduledDate = new Date(appointment.scheduledAt);
+        const showingSlotsForDate = tutorUpdateReq.scheduledAt || scheduledDate;
 
-        <ul className={"slot-items"}>
-            {scheduledSlots.map((item, index) => (
-                <li key={`scheduled-slot-apt-${index}`}>
-                    <Checkbox
-                        checked={!item.available}
-                        disabled={item.available}/>
-                    <ResText14Regular>{item.title}</ResText14Regular>
-                </li>
-            ))}
-        </ul>
-    </SlotInfo>
+        const disabledScheduledSlot = (item) => !item.available;
+        const newSelectedSlot = (item) => tutorUpdateReq.scheduledAt?.getHours() === item.start;
+
+        return <SlotInfo>
+            <ResText14Regular className={"text-grey2"}>Change schedule time to
+                <b style={{
+                    marginLeft: 8,
+                    color: grey1
+                }}>{`${toMonthDateYearStr(showingSlotsForDate)}`}</b>
+            </ResText14Regular>
+
+            <ResText14Regular
+                className={"text-grey2 full-block text-underlined medium-vertical-margin"}>
+                {toSlotRangeStr(showingSlotsForDate)}
+            </ResText14Regular>
+
+            <ul className={"slot-items"}>
+                {availableSlots.map((item, index) => (
+                    <li key={`scheduled-slot-apt-${index}`}>
+                        <Checkbox
+                            onChange={() => handleTutorUpdateReq("slotSelected", item)}
+                            checked={newSelectedSlot(item)}
+                            disabled={disabledScheduledSlot(item)}/>
+                        <ResText14Regular>{item.title}
+                            <i className={"text-grey3"}>{` ${disabledScheduledSlot(item) ? " (previously selected slot)" : ""}`}</i></ResText14Regular>
+                    </li>
+                ))}
+            </ul>
+
+            <div className={"selected-slots-info vertical-start-flex"}>
+                <ResText14Regular>
+                    <InfoCircleOutlined style={{fontSize: 16, marginRight: 6, color: "orange"}}/> You are about to
+                    change schedule time
+                    for this
+                    appointment.
+                </ResText14Regular>
+                <MyButton type={"primary"} onClick={() => dispatchUpdateAptSchedule()}>
+                    <ResText12SemiBold>Submit changes</ResText12SemiBold>
+                </MyButton>
+            </div>
+        </SlotInfo>
+    }
 
     // ---------------- schedule details and rate tutor --------------
 
@@ -657,7 +757,8 @@ export default function ScheduleView() {
                 </ResText16SemiBold>
                 {appointment &&
                     <MyCalendar dateCellRender={dateCellRender}
-                                value={new Date(appointment.scheduledAt)}/>}
+                                onClick={(date) => handleTutorUpdateReq("scheduledAt", new Date(date))}
+                                value={tutorUpdateReq.scheduledAt || new Date(appointment.scheduledAt)}/>}
             </TabContent>
         );
     };
@@ -694,6 +795,8 @@ export default function ScheduleView() {
         return <></>
     }
 
+    const showSlotView = isModerator && appointment && appointment.status === AppointmentStatus.PENDING;
+
     return (
         <Wrapper>
             <Header>
@@ -717,12 +820,9 @@ export default function ScheduleView() {
                                 getRoleBasedMenuItems(id),
                                 isStudent, renderStatus(), renderRespond())}
                         </Col>
-                        {/*<Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>*/}
-                        {/*    {renderActorInfo(appointment.tutor)}*/}
-                        {/*    {renderNeedsTutoring(appointment.tutoringOnList, appointment.studentNote)}*/}
-                        {/*    <Divider type={"horizontal"}/>*/}
-                        {/*    {renderSlotView()}*/}
-                        {/*</Col>*/}
+                        {showSlotView && <Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>
+                            {renderSlotView()}
+                        </Col>}
                     </Row>}
                 </Content>
             </Spin>
