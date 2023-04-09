@@ -375,6 +375,10 @@ h6 {
     word-break: break-word;
 }
 
+.text-italic {
+    font-style: italic !important;
+}
+
 .wrap-word {
     white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
     hyphens: auto; /* Mozilla */

@@ -1,7 +1,13 @@
 import React, {useCallback, useEffect, useState} from "react";
 import styled from "styled-components";
 import {grey1, grey6, pearl} from "../../utils/ShadesUtils";
-import {ResText14Regular, ResText14SemiBold, ResText16Regular, ResText16SemiBold,} from "../../utils/TextUtils";
+import {
+    ResText12Regular,
+    ResText14Regular,
+    ResText14SemiBold,
+    ResText16Regular,
+    ResText16SemiBold,
+} from "../../utils/TextUtils";
 import {renderActorInfo, renderNeedsTutoring, renderTabs, SlotInfo, TabContent,} from "../Schedule/ScheduleView";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {getYearMonthDateHrsUtcFormat, toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
@@ -202,7 +208,6 @@ const TutorProfile = () => {
         switch (defaultTab) {
             case menuItems[0].key:
                 const onClick = date => {
-                    alert("hello, " + toMonthDateYearStr(new Date(date)));
                     setSelectedCalendarDate(new Date(date));
                 };
                 return (
@@ -222,7 +227,7 @@ const TutorProfile = () => {
                                 </ResText16Regular>
                             </ResText16SemiBold>
                         </div>
-                        <MyCalendar onClick={onClick}/>
+                        <MyCalendar value={selectedCalendarDate} onClick={onClick}/>
                     </TabContent>
                 );
 
@@ -273,6 +278,8 @@ const TutorProfile = () => {
                             disabled={!item.available}
                             onChange={(e) => handleSlotClick(e.target.checked, item)}/>
                         <ResText14Regular>{item.title}</ResText14Regular>
+                        {!item.available &&
+                            <ResText12Regular className={"text-grey2 text-italic"}>(not available)</ResText12Regular>}
                     </li>
                 ))}
             </ul>
