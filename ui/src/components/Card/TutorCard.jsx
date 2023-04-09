@@ -34,6 +34,8 @@ const TutorCard = (tutor: UserDetailsType) => {
                             </ResText10Regular>
                         </Tag>
                     ))}
+                    <ResText10Regular
+                        className={"text-grey2"}>{tutor && tutor.expertise?.length > 2 && `+ ${tutor.expertise.length - 2} more`}</ResText10Regular>
                 </StatusTagList>
             </Card>
         )

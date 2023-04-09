@@ -1,7 +1,7 @@
 import React, {ReactNode} from "react";
 import {Avatar, Divider, Tag} from "antd";
 import styled from "styled-components";
-import {ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
+import {ResText10Regular, ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
 import {amethyst, grey1, grey2, grey3, grey6,} from "../../utils/ShadesUtils";
 import {AppointmentType} from "../../redux/appointment/types";
 import {toMonthDateStr, toScheduleSlotRangeStr} from "../../utils/DateUtils";
@@ -11,12 +11,14 @@ import {toEndDottedStr} from "../../utils/StringUtils";
 
 // styled components
 export const Card = styled.div<{
-    height?: string
+    height?: string,
+    minWidth?: string
 }>`
   padding: 16px 24px;
   border-radius: 12px;
   border: 1px solid ${grey6};
   height: ${props => props.height ? props.height : "220px"};
+  min-width: ${props => props.minWidth ? props.minWidth : "300px"};
 
   text {
     color: ${grey1};
@@ -93,7 +95,7 @@ export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode)
 
 const ScheduleCard = (apt: AppointmentType) => {
     if (!apt) return <div> no apt </div>
-    // @ts-ignore
+    const showingTutoringIn = apt ? (apt.tutoringOnList && apt.tutoringOnList.length > 2 ? apt.tutoringOnList.slice(0, 2) : apt.tutoringOnList) : [];
 
     return (
         <Card>
@@ -124,12 +126,13 @@ const ScheduleCard = (apt: AppointmentType) => {
             </TutorInfo>
             {apt.studentNote && <Desc>
                 <ResText12Regular className={"text-grey4"}>
-                    "{toEndDottedStr(apt.studentNote, 45)}"
+                    "{toEndDottedStr(apt.studentNote, 30)}"
                 </ResText12Regular>
             </Desc>}
             <StatusTagList>
-                {!!apt.tutoringOnList &&
-                    apt.tutoringOnList.slice(0, 2).map(expertise => <Tag>{expertise}</Tag>)}
+                {showingTutoringIn.map(expertise => <Tag>{expertise}</Tag>)}
+                <ResText10Regular
+                    className={"text-grey2"}>{apt && apt.tutoringOnList?.length > 2 && `+ ${apt.tutoringOnList.length - 2} more`}</ResText10Regular>
             </StatusTagList>
         </Card>
     );

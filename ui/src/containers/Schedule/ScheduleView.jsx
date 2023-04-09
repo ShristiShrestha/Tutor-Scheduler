@@ -694,7 +694,7 @@ export default function ScheduleView() {
 
     // ---------------- schedule details and rate tutor --------------
 
-    const canRate = (new Date()).getTime() > (new Date(appointment.scheduledAt));
+    const canRate = appointment && (new Date()).getTime() > (new Date(appointment.scheduledAt));
     const renderMenuComponent = (menuItems = getRoleBasedMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
