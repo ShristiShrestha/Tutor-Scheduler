@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from "react";
 import ScheduleCard from "../../components/Card/ScheduleCard";
 import styled from "styled-components";
-import {ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
+import {ResText12Regular, ResText14Regular, ResText14SemiBold} from "../../utils/TextUtils";
 import {Col, Row, Spin} from "antd";
 import {Link, useNavigate} from "react-router-dom";
 import {AppointmentParams} from "../../redux/appointment/types";
@@ -85,7 +85,7 @@ export default function MySchedule() {
 
     return (
         <Wrapper>
-            <Header><ResText14SemiBold>My Appointments</ResText14SemiBold></Header>
+            <Header><ResText14SemiBold className={"text-grey1"}>My Appointments</ResText14SemiBold></Header>
             <Spin spinning={loading}>
                 <Content>
                     {upcomingAppointments.length > 0 ? <Row gutter={[24, 24]} className={"schedules-upcoming"}>
@@ -108,7 +108,7 @@ export default function MySchedule() {
 
 
                     {otherAppointments &&
-                        <ResText14SemiBold>{upcomingAppointments.length === 0 ? "All appointments" : "Other appointments"}</ResText14SemiBold>}
+                        <ResText14Regular>{upcomingAppointments.length === 0 ? "All Appointments" : "Other Appointments"}</ResText14Regular>}
                     {otherAppointments && otherAppointments.length > 0 ?
                         <Row gutter={[24, 24]} className={"schedules-upcoming"}>
                             {otherAppointments.map((item, index) => (

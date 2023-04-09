@@ -24,9 +24,9 @@ import {
     seaFoam,
     snow
 } from "../../utils/ShadesUtils";
-import {Avatar, Badge, Checkbox, Col, Divider, Menu, Row, Spin, Tag} from "antd";
+import {Avatar, Badge, Checkbox, Col, Menu, Row, Spin, Tag} from "antd";
 import {Link, useLocation} from "react-router-dom";
-import {StatusTagList} from "../../components/Card/ScheduleCard";
+import {getStatusBox, StatusTagList} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {toMonthDateYearStr} from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
@@ -38,6 +38,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectAppointment} from "../../redux/appointment/reducer";
 import {AlertType, openNotification} from "../../utils/Alert";
 import {AppointmentStatus} from "../../enum/AppointmentEnum";
+import {capitalize} from "../../utils/StringUtils";
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -70,6 +71,10 @@ const Content = styled.div`
 
   .border-right {
     border-right: 1px solid ${grey6};
+  }
+
+  .border-top {
+    border-top: 1px solid ${grey6};
   }
 `;
 
@@ -174,6 +179,11 @@ const ScheduleDetailsTabs = styled.div`
     border-top: 1px solid ${grey6};
   }
 
+  .schedule-menu-header {
+    width: 100%;
+    border-bottom: 1px solid ${grey6};
+  }
+
   .schedules-menu > .ant-menu-item {
     padding-left: 36px;
     //padding-top: 6px;
@@ -193,7 +203,11 @@ const ScheduleDetailsTabs = styled.div`
   }
 
   .schedules-menu > .ant-menu-item-active {
-    border-bottom: 1px solid ${amethyst};
+    border-bottom: 2px solid ${amethyst} !important;
+  }
+
+  .schedules-menu > .ant-menu-item-selected {
+    border-bottom: 2px solid ${amethyst} !important;
   }
 `;
 
@@ -379,25 +393,34 @@ export const renderNeedsTutoring = (subjects: string[],
         </div>}
     </NeedsTutoring>
 
-export const renderTabs = (defaultTab, renderMenuComponent, menuItems) => {
+export const renderTabs = (defaultTab, renderMenuComponent, menuItems, status?: string) => {
     return <ScheduleDetailsTabs>
-        <Menu
-            mode={"horizontal"}
-            className={"schedules-menu"}
-            defaultSelectedKeys={defaultTab}
-            defaultOpenKeys={defaultTab}
-        >
-            {menuItems.map((item, index) => (
-                <Menu.Item key={item.key} icon={item.icon}
-                           className={index === menuItems.length - 1 ? "schedule-menu-last-item" : ""}>
-                    <Link to={item.link}>
-                        <ResText14Regular>
-                            {item.title}
-                        </ResText14Regular>
-                    </Link>
-                </Menu.Item>
-            ))}
-        </Menu>
+        <div className={"h-justified-flex schedule-menu-header"}>
+            <Menu
+                mode={"horizontal"}
+                style={{width: !status ? "100%" : "fit-content"}}
+                className={"schedules-menu"}
+                defaultSelectedKeys={defaultTab}
+                defaultOpenKeys={defaultTab}
+            >
+                {menuItems.map((item, index) => (
+                    <Menu.Item key={item.key} icon={item.icon}
+                               className={index === menuItems.length - 1 ? "schedule-menu-last-item" : ""}>
+                        <Link to={item.link}>
+                            <ResText14Regular>
+                                {item.title}
+                            </ResText14Regular>
+                        </Link>
+                    </Menu.Item>
+                ))}
+            </Menu>
+            {!!status && <div
+                style={{alignSelf: "center", display: "flex", columnGap: 12}}>
+                <i className={"text-grey3"}>Status</i>
+                {getStatusBox(status, <ResText12Regular>{capitalize(status)}
+                </ResText12Regular>)}
+            </div>}
+        </div>
         {renderMenuComponent()}
     </ScheduleDetailsTabs>
 }
@@ -489,12 +512,12 @@ export default function ScheduleView() {
         switch (defaultTab) {
             case menuItems[1].key:
                 return <TabContent>
-                    <ResText16SemiBold>
+                    <ResText14Regular>
                         {acceptedApt ? "Rate Tutor" : "You can only rate the accepted appointment."}
-                    </ResText16SemiBold>
+                    </ResText14Regular>
                     <div className={"rate-tutor-content"}>
                         <div className={"rate-tutor-features h-start-top-flex"}>
-                            <ResText16Regular className={"text-grey2"}>Tutoring skill</ResText16Regular>
+                            <ResText14Regular className={"text-grey2"}>Tutoring skill</ResText14Regular>
                             <ul className={"rate-tutor-options"}>
                                 {ratingOptions.map((item, index) => <li
                                     key={"rate-tutor-options-" + item.id}
@@ -554,19 +577,27 @@ export default function ScheduleView() {
 
     return (
         <Wrapper>
-            <Header><ResText14SemiBold>Schedule Details</ResText14SemiBold></Header>
+            <Header>
+                <ResText14SemiBold>Schedule Details</ResText14SemiBold>
+            </Header>
             <Spin spinning={loading}>
                 <Content>
-                    {appointment && <Row gutter={[24, 24]}>
+                    {appointment && <div>
+                        {renderActorInfo(appointment.tutor)}
+                        {renderNeedsTutoring(appointment.tutoringOnList, appointment.studentNote)}
+                    </div>}
+                    {appointment && <Row gutter={[24, 24]} className={"border-top"}>
                         <Col xxl={16} md={24} className={"border-right no-padding"}>
-                            {renderTabs(getDefaultTab(), () => renderMenuComponent(), getMenuItems(id))}
+                            {renderTabs(getDefaultTab(),
+                                () => renderMenuComponent(),
+                                getMenuItems(id), appointment?.status?.toString())}
                         </Col>
-                        <Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>
-                            {renderActorInfo(appointment.tutor)}
-                            {renderNeedsTutoring(appointment.tutoringOnList, appointment.studentNote)}
-                            <Divider type={"horizontal"}/>
-                            {renderSlotView()}
-                        </Col>
+                        {/*<Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>*/}
+                        {/*    {renderActorInfo(appointment.tutor)}*/}
+                        {/*    {renderNeedsTutoring(appointment.tutoringOnList, appointment.studentNote)}*/}
+                        {/*    <Divider type={"horizontal"}/>*/}
+                        {/*    {renderSlotView()}*/}
+                        {/*</Col>*/}
                     </Row>}
                 </Content>
             </Spin>

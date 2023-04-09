@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import {Avatar, Divider, Tag} from "antd";
 import styled from "styled-components";
 import {ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
@@ -69,7 +69,7 @@ export const StatusTagList = styled.div<{ padding?: string }>`
   }
 `;
 
-const getStatusBox = (status: AppointmentStatus) => {
+export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode) => {
     let color, text;
     switch (status) {
         case AppointmentStatus.REJECTED:
@@ -88,14 +88,16 @@ const getStatusBox = (status: AppointmentStatus) => {
             color = "gray";
             text = "Unknown";
     }
-
-    return <Tag color={color}>{text} </Tag>;
+    return <Tag color={color}>{renderText || text} </Tag>;
 };
 
 const ScheduleCard = (apt: AppointmentType) => {
     if (!apt) return <div> no apt </div>
+    // @ts-ignore
+
     return (
         <Card>
+
             <StatusInfo className={"h-justified-flex"}>
                 <div className={"h-start-flex data-slot-info"}>
                     {!!apt.createdAt &&
@@ -105,10 +107,7 @@ const ScheduleCard = (apt: AppointmentType) => {
                         <ResText12Regular> {toScheduleSlotRangeStr(new Date(apt.scheduledAt))}</ResText12Regular>}
                 </div>
                 {apt.status && (
-                    <span>
-                        {" "}
-                        {getStatusBox(apt.status)}
-                    </span>
+                    getStatusBox(apt.status)
                 )}
             </StatusInfo>
             <TutorInfo>
