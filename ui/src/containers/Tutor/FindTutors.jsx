@@ -1,16 +1,17 @@
-import Search from "../../components/Search/Search";
+import MySearch from "../../components/Search/MySearch";
 import TutorCard from "../../components/Card/TutorCard";
-import {ResText14SemiBold} from "../../utils/TextUtils";
+import {ResText14Regular, ResText14SemiBold} from "../../utils/TextUtils";
 import styled from "styled-components";
 import {grey6} from "../../utils/ShadesUtils";
 import {Col, Row, Spin} from "antd";
 import {Link} from "react-router-dom";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {UserParams, UserSortKeys} from "../../redux/user/types";
 import {UserRoles} from "../../enum/UserEnum";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchUsers} from "../../redux/user/actions";
 import {selectUser} from "../../redux/user/reducer";
+import EmptyContent from "../../components/NoContent/EmptyContent";
 
 const Wrapper = styled.div`
   position: relative;
@@ -39,34 +40,50 @@ const Header = styled.div`
 
 const TutorsList = styled.div`
   position: relative;
-  top: 56px; // height of find tutor header
+  top: 60px; // height of find tutor header
   height: calc(100vh - 112px);
   overflow-y: auto;
   margin-bottom: 120px;
-  padding: 24px;
+  padding: 12px 24px;
+  width: 100%;
+
+  .ant-row {
+    margin-top: 24px;
+  }
 `;
 
 
 export default function FindTutors() {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState(undefined);
+
     const {users} = useSelector(selectUser);
+
+    /******************* local params ************************/
     const getUserParams = (): UserParams => {
+        console.log("user params ", searchQuery);
         return {
             sortBy: UserSortKeys.rating,
             role: UserRoles.TUTOR,
+            filterKey: searchQuery ? "expertise" : undefined,
+            filterValue: searchQuery
         }
     }
 
-    const fetchTutors = useCallback(() => {
+    /******************* dispatches ************************/
+    const dispatchFetchTutors = () => {
         const tutorsParams = getUserParams();
+        console.log("calling fetch dispatch: ", searchQuery, tutorsParams);
         dispatch(fetchUsers(tutorsParams));
         setLoading(false);
-    }, [dispatch]); // will create function inside callback only if dispatch has changed
+    }; // will create function inside callback only if fetchUsers has changed
+
+    /******************* use effects ************************/
 
     useEffect(() => {
-        fetchTutors();
-    }, [fetchTutors]); // will call fetchTutors if fetchApts function has changed
+        dispatchFetchTutors();
+    }, [fetchUsers]); // will call dispatchFetchTutors if it has function has changed
 
 
     return (
@@ -77,14 +94,19 @@ export default function FindTutors() {
                         <ResText14SemiBold>Find Tutors</ResText14SemiBold>
                     </Col>
                     <Col span={8}>
-                        <Search/>
+                        <MySearch value={searchQuery}
+                                  onSearch={() => dispatchFetchTutors()}
+                                  onChange={e => setSearchQuery(e.currentTarget.value)}/>
                     </Col>
                     <Col span={8}/>
                 </Row>
             </Header>
-            <Spin spinning={loading}>
-                <TutorsList>
-                    <Row gutter={[24, 24]} wrap={true}>
+            <TutorsList>
+                <ResText14Regular>
+                    Showing tutors ({users.length})
+                </ResText14Regular>
+                <Spin spinning={loading}>
+                    {users.length > 0 ? <Row gutter={[24, 24]} wrap={true}>
                         {users.map((item, index) => (
                             <Col key={"find-tutors-" + index} span={6}>
                                 <Link to={"/profile/" + item.id + "/request-tutoring"}>
@@ -92,9 +114,11 @@ export default function FindTutors() {
                                 </Link>
                             </Col>
                         ))}
-                    </Row>
-                </TutorsList>
-            </Spin>
+                    </Row> : <EmptyContent showEmptyIcon={true}
+                                           className={"medium-vertical-margin"}
+                                           desc={`We found 0 tutors with expertise in "${searchQuery}".`}/>}
+                </Spin>
+            </TutorsList>
         </Wrapper>
     );
 }

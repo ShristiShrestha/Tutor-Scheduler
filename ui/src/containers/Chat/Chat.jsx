@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Search from "../../components/Search/Search";
+import MySearch from "../../components/Search/MySearch";
 import {ResText14SemiBold} from "../../utils/TextUtils";
 import {grey6} from "../../utils/ShadesUtils";
 import ListView from "../../components/ListView/ListView";
@@ -31,7 +31,7 @@ export default function Chat() {
     return <Wrapper>
         <Header className={"h-justified-flex"}>
             <ResText14SemiBold>Chat </ResText14SemiBold>
-            <Search/>
+            <MySearch/>
         </Header>
         <Content>
             <ListView/>
