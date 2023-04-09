@@ -29,20 +29,22 @@ const UserInfo = styled.div`
 
 const TopBar = () => {
     const navigate = useNavigate();
-    const {loggedUser} = useSelector(selectAuth);
+    const {loggedUser, authenticated} = useSelector(selectAuth);
 
     return (
         <Wrapper className={"h-justified-flex"}>
-            <AppName onClick={() => navigate("/")}>
-                <ResText16SemiBold>Online Scheduler</ResText16SemiBold>
-            </AppName>
-            <UserInfo>
-                <Avatar
-                    icon={<UserOutlined/>}
-                    style={{marginRight: "10px", cursor: "pointer"}}
-                />
-                <ResText14SemiBold>{(loggedUser && capitalize(loggedUser["name"])) || `Noname`}</ResText14SemiBold>
-            </UserInfo>
+            {authenticated && <>
+                <AppName onClick={() => navigate("/")}>
+                    <ResText16SemiBold>Online Scheduler</ResText16SemiBold>
+                </AppName>
+                <UserInfo>
+                    <Avatar
+                        icon={<UserOutlined/>}
+                        style={{marginRight: "10px", cursor: "pointer"}}
+                    />
+                    <ResText14SemiBold>{(loggedUser && capitalize(loggedUser["name"])) || `Noname`}</ResText14SemiBold>
+                </UserInfo>
+            </>}
         </Wrapper>
     );
 };

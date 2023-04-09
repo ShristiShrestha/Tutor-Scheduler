@@ -22,8 +22,8 @@ const Wrapper = styled.div`
 const LandingCard = styled.div`
   //background: white;
   padding: 24px;
-  //max-width: 500px;
-  //max-height: 500px;
+  max-width: 600px;
+  max-height: 500px;
   margin: auto;
   border: 1px solid ${amethyst};
   border-radius: 4px;
@@ -81,13 +81,12 @@ export default function LoginPage() {
         }
     }
 
-    console.log("login page: authenticated", authenticated)
     if (authenticated)
         navigate("/schedules");
 
     return (
         <Wrapper>
-            <LandingCard className={"centered-flex"}>
+            <LandingCard className={"h-centered-flex"}>
                 <Header4 className={"text-white"}>
                     Online Tutor Scheduler
                 </Header4>
@@ -95,7 +94,7 @@ export default function LoginPage() {
                     <u>Find</u> Tutors of your <u>choice</u>
                 </ResText16Regular>
 
-                <MyButton type={"secondary"} onClick={() => handleModal("login", true)}>
+                <MyButton style={{marginTop: 32}} type={"secondary"} onClick={() => handleModal("login", true)}>
                     <ResText16Regular>Login</ResText16Regular>
                 </MyButton>
                 <div onClick={() => handleModal("signup", true)} style={{cursor: "pointer"}}>
@@ -117,6 +116,13 @@ export default function LoginPage() {
                       className={"large-vertical-margin"}
                       onFinish={(values) => handleSubmit(item, values)}
                       autoComplete="off">
+                    {item === "signup" && <Form.Item
+                        label={<ResText14Regular className={"text-grey2"}>Name</ResText14Regular>}
+                        name="name"
+                        rules={[{required: true, message: 'Enter your name!'}]}
+                    >
+                        <Input/>
+                    </Form.Item>}
                     <Form.Item
                         label={<ResText14Regular className={"text-grey2"}>Email</ResText14Regular>}
                         name="email"

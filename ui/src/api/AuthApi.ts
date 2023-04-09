@@ -14,7 +14,7 @@ export const authenticate = () => {
 export const signup = (data) => {
     const signupData: SignupType = {
         ...data,
-        name: capitalize(data["email"]?.split("@")[0] || "no name"),
+        name: capitalize(data["name"] || data["email"]?.split("@")[0] || "no name"),
         isTutor: false,
     }
     return Api.apiCall<UserMiniDetailsType>({
