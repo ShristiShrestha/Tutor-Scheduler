@@ -127,6 +127,20 @@ const TutorProfile = () => {
         setRequestInput({...requestInput, [key]: value});
     };
 
+    /******************* validations ************************/
+    const validateAptCreation = () => {
+        let success = true;
+        if (!selectedSlotDate) {
+            openNotification("No slots selected", "Please select a slot for tutoring")
+            success = false;
+        }
+        if (requestInput.subjects.length === 0) {
+            openNotification("No subjects selected", "Please select at least one subject you need tutoring for.");
+            success = false;
+        }
+        return success
+    }
+
     /******************* dispatches ************************/
     const dispatchFetchUser = useCallback(() => {
         dispatch(fetchUser(id));
@@ -148,21 +162,23 @@ const TutorProfile = () => {
     }, [id]);
 
     const dispatchCreateApt = () => {
-        if (!selectedSlotDate)
-            return openNotification("No slots selected", "Please select a slot for tutoring")
-        const req: AppointmentType = {
-            tutorId: id,
-            studentId: loggedUser.id,
-            studentNote: requestInput["note"],
-            tutoringOnList: requestInput["subjects"],
-            scheduledAt: getYearMonthDateHrsUtcFormat(selectedSlotDate),
-        };
-        console.log("creating apt req: ", req);
-        const callback = (apt: AppointmentType) => {
-            openNotification("Appointment request", "You have successfully created the appointment request.")
-            navigate(`/schedules/${apt.id}`);
-        };
-        dispatch(createAppointment(req, callback));
+        const success = validateAptCreation();
+        if (success) {
+            const req: AppointmentType = {
+                tutorId: id,
+                studentId: loggedUser.id,
+                studentNote: requestInput["note"],
+                tutoringOnList: requestInput["subjects"],
+                scheduledAt: getYearMonthDateHrsUtcFormat(selectedSlotDate),
+            };
+            console.log("creating apt req: ", req);
+            const callback = (apt: AppointmentType) => {
+                openNotification("Appointment request", "You have successfully created the appointment request.")
+                navigate(`/schedules/${apt.id}`);
+            };
+            dispatch(createAppointment(req, callback));
+        } else
+            console.log("apt creation not success input req: ", requestInput);
     }
 
     /******************* get local values ************************/
