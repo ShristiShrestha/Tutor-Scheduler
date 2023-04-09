@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { SendOutlined } from "@ant-design/icons";
 import {
@@ -7,9 +7,14 @@ import {
     ResText12Regular,
 } from "../../utils/TextUtils";
 import { grey6 } from "../../utils/ShadesUtils";
+import { fetchMsgsWithUser } from "../../redux/chat/actions";
 import { messagesData } from "../.././static_data/Chat";
 import { List, Avatar, Input } from "antd";
 import MyButton from "../../components/Button/MyButton";
+import { useParams } from "react-router-dom";
+import { selectChat } from "../../redux/chat/reducer";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAuth } from "../../redux/auth/reducer";
 
 const Wrapper = styled.div``;
 
@@ -60,12 +65,38 @@ const ChatCard = styled.div`
 `;
 
 export default function ChatConversation() {
+    const dispatch = useDispatch();
+    const { sender_id } = useParams();
+    const { userMessages } = useSelector(selectChat);
+    const { loggedUser } = useSelector(selectAuth);
+
+    const [loading, setLoading] = useState(true);
+    const [msgUser, setMsgUser] = useState(undefined);
     const [inputValue, setInputValue] = useState("");
     const [messages, setMessages] = useState([]);
 
     const handleInputChange = event => {
         setInputValue(event.target.value);
     };
+
+    const dispatchFetchChat = () => {
+        dispatch(fetchMsgsWithUser(sender_id));
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        dispatchFetchChat();
+        if (!!userMessages && !msgUser) {
+            const convertedData = userMessages.map((item, index) => ({
+                id: index + 1,
+                message: item.message,
+                username: item.receiverEmail,
+                date: item.sentAt,
+                sender: item.senderEmail === loggedUser.email ? "me" : "other",
+            }));
+            setMsgUser(convertedData);
+        }
+    }, [fetchMsgsWithUser]);
 
     const handleSendMessage = () => {
         const newMessage = {
@@ -80,7 +111,7 @@ export default function ChatConversation() {
         const isSender = item.username === "sender";
         return (
             <List
-                dataSource={messagesData}
+                dataSource={msgUser}
                 bordered={false}
                 renderItem={(message, index) => (
                     <List.Item
@@ -171,7 +202,7 @@ export default function ChatConversation() {
     return (
         <Wrapper>
             <Header className={"h-justified-flex"}>
-                <ResText14SemiBold>Chat - Mr John Doe</ResText14SemiBold>
+                <ResText14SemiBold>Chat - {sender_id}</ResText14SemiBold>
             </Header>
             <Content>
                 <ChatCard>

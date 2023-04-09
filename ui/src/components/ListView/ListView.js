@@ -1,42 +1,36 @@
-import {List, Space} from "antd";
-import React, {useState} from "react";
-import {StarFilled, StarOutlined} from "@ant-design/icons";
+import { List, Space } from "antd";
+import React, { useState } from "react";
+import { StarFilled, StarOutlined } from "@ant-design/icons";
 import "./ListView.scss";
-import {ResText14Regular} from "../../utils/TextUtils";
+import { ResText14Regular } from "../../utils/TextUtils";
 import styled from "styled-components";
-import {grey6, yellow} from "../../utils/ShadesUtils";
-import {Link} from "react-router-dom";
-import {toEndDottedStr} from "../../utils/StringUtils";
-
-const data = Array.from({
-    length: 23,
-}).map((_, i) => ({
-    time: `9:${i}5 AM`,
-    title: `Mr. John Doe ${i}`,
-    avatar: `https://joesch.moe/api/v1/random?key=${i}`,
-    description: "Hi, Trying to get in contact with Tutor.",
-    content: "Seems somethings not working.",
-}));
+import { grey6, yellow } from "../../utils/ShadesUtils";
+import { Link } from "react-router-dom";
+import { toEndDottedStr } from "../../utils/StringUtils";
+import {
+    toHourMinStr,
+    toMonthDateYearStr,
+    getYearMonthDateHrsUtcFormat,
+} from "../../utils/DateUtils";
 
 const Wrapper = styled.div`
-  .anticon svg {
-    font-size: 18px;
-    cursor: pointer;
-    z-index: 1;
-  }
-
-  .ant-list-item {
-    border-bottom: 1px solid ${grey6} !important;
-
-    :hover {
-      background: #f8f8f8;
-      border-radius: 4px;
-      cursor: pointer;
+    .anticon svg {
+        font-size: 18px;
+        cursor: pointer;
+        z-index: 1;
     }
-  }
+
+    .ant-list-item {
+        border-bottom: 1px solid ${grey6} !important;
+        :hover {
+            background: #f8f8f8;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    }
 `;
 
-const ListItem = ({item}) => {
+const ListItem = ({ item }) => {
     const [checked, setChecked] = useState(false);
     const [starred, setStarred] = useState(false);
 
@@ -49,33 +43,33 @@ const ListItem = ({item}) => {
     };
 
     return (
-        <Link to={"/chat/users/0"}>
+        <Link to={`/chat/users/${item.email}`}>
             <List.Item>
-                <Space style={{marginRight: 12}}>
+                <Space style={{ marginRight: 12 }}>
                     {starred ? (
                         <StarFilled
                             onClick={handleStarClick}
-                            style={{color: yellow}}
+                            style={{ color: yellow }}
                         />
                     ) : (
-                        <StarOutlined onClick={handleStarClick}/>
+                        <StarOutlined onClick={handleStarClick} />
                     )}
                 </Space>
                 <ResText14Regular className={"listview-title text-grey1"}>
-                    {item.title}
+                    {item.email}
                 </ResText14Regular>
                 <ResText14Regular className="listview-field text-grey2">
-                    {toEndDottedStr(item.description, 20)}
+                    {toEndDottedStr(item.message, 20)}
                 </ResText14Regular>
                 <ResText14Regular className="listview-time">
-                    {item.time}{" "}
+                    {toHourMinStr(new Date(item.sentAt))}{" "}
                 </ResText14Regular>
             </List.Item>
         </Link>
     );
 };
 
-const ListView = () => {
+const ListView = data => {
     const [starred, setStarred] = useState(false);
 
     const handleStarClick = () => {
@@ -93,17 +87,17 @@ const ListView = () => {
             >
                 <ResText14Regular
                     className={"text-grey1"}
-                    style={{marginRight: "12px"}}
+                    style={{ marginRight: "12px" }}
                 >
-                    Recent {" "}
+                    Recent{" "}
                 </ResText14Regular>
                 {starred ? (
                     <StarFilled
-                        style={{color: yellow}}
+                        style={{ color: yellow }}
                         onClick={() => handleStarClick()}
                     />
                 ) : (
-                    <StarOutlined onClick={() => handleStarClick()}/>
+                    <StarOutlined onClick={() => handleStarClick()} />
                 )}
             </div>
             <List
@@ -116,8 +110,8 @@ const ListView = () => {
                     },
                     pageSize: 8,
                 }}
-                dataSource={data}
-                renderItem={item => <ListItem item={item}/>}
+                dataSource={data.data}
+                renderItem={item => <ListItem item={item} />}
             />
         </Wrapper>
     );

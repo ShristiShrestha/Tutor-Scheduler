@@ -1,9 +1,12 @@
-import {ChatState, SET_USER_CONV, SET_USERS_CONVS} from "./types";
+import { RootState } from "../common/types";
+import { ChatState, SET_USER_CONV, SET_USERS_CONVS } from "./types";
 
 const initialState: ChatState = {
     userMessages: [],
     usersMessages: {},
 };
+
+export const selectChat = (state: RootState) => state.chat;
 
 /******************* reducer ************************/
 export default function reducer(state = initialState, action: any): ChatState {
@@ -17,12 +20,10 @@ export default function reducer(state = initialState, action: any): ChatState {
         case SET_USERS_CONVS: {
             return {
                 ...state,
-                usersMessages: action.payload
-                // users: action.payload.content,
-                // usersPageConfig: action.payload.config,
+                usersMessages: action.payload,
             };
         }
         default:
-            return {...state};
+            return { ...state };
     }
 }
