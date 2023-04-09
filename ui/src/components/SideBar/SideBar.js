@@ -39,12 +39,11 @@ const SideBar = () => {
     const {loggedUser} = useSelector(selectAuth);
     const menuItems = () => {
         const roles = loggedUser.roles;
-
-        if (UserRoles.STUDENT in roles)
-            return [menus[0], menus[1], menus[3]]
-        if (UserRoles.TUTOR in roles)
-            return [menus[0], menus[2], menus[3]]
-        if (UserRoles.MODERATOR in roles) return [menus[1], menus[2]];
+        if (roles.includes(UserRoles.STUDENT))
+            return [menus[0], menus[1], menus[2]];
+        if (roles.includes(UserRoles.TUTOR))
+            return [menus[0], menus[1], menus[3]];
+        if (roles.includes(UserRoles.MODERATOR)) return [menus[1], menus[2]];
         return menus;
     };
 
