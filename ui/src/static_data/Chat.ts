@@ -1,0 +1,45 @@
+export const messagesData = [
+    {
+        id: 1,
+        image: "https://example.com/avatar1.jpg",
+        message: "Hey there!",
+        username: "Alice",
+        date: "2022-03-24T12:34:56.000Z",
+        sender: "me",
+    },
+    {
+        id: 2,
+        message: "Hi Alice! How are you?",
+        username: "Alice",
+        date: "2022-03-24T12:36:12.000Z",
+        sender: "me",
+    },
+    {
+        id: 3,
+        message: "I'm good, thanks for asking. How about you?",
+        username: "Alice",
+        date: "2022-03-24T12:37:04.000Z",
+        sender: "you",
+    },
+    {
+        id: 4,
+        message: "I'm doing well too, thanks!",
+        username: "Bob",
+        date: "2022-03-24T12:38:10.000Z",
+        sender: "me",
+    },
+    {
+        id: 5,
+        message: "Hey, did you see that new movie?",
+        username: "Alice",
+        date: "2022-03-24T12:39:21.000Z",
+        sender: "you",
+    },
+    {
+        id: 6,
+        message: "No, I haven't. Is it good?",
+        username: "Bob",
+        date: "2022-03-24T12:40:48.000Z",
+        sender: "you",
+    },
+];

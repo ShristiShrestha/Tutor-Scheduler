@@ -41,7 +41,7 @@ const pages = [
         component: <Chat />,
     },
     {
-        path: "/chat/users/sender_id",
+        path: "/chat/users/:sender_id",
         component: <ChatConversation />,
     },
     {
