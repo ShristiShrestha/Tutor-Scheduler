@@ -25,7 +25,7 @@ import {
     seaFoam,
     snow
 } from "../../utils/ShadesUtils";
-import {Avatar, Badge, Checkbox, Col, Divider, Dropdown, Input, Menu, Modal, Row, Spin, Tag} from "antd";
+import {Avatar, Badge, Checkbox, Col, Divider, Dropdown, Input, Menu, Modal, Row, Spin, Tag, Tooltip} from "antd";
 import {Link, useLocation} from "react-router-dom";
 import {getStatusBox, StatusTagList} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
@@ -428,7 +428,7 @@ const respondMenuItems = [
 ];
 
 export const renderTabs = (defaultTab, renderMenuComponent, menuItems,
-                           isStudent = true, status?: string,
+                           isStudent = true, renderStatus?: string,
                            renderRespond?: ReactNode) => {
 
     return <ScheduleDetailsTabs>
@@ -451,11 +451,10 @@ export const renderTabs = (defaultTab, renderMenuComponent, menuItems,
                     </Menu.Item>
                 ))}
             </Menu>
-            {!!status && <div
+            {!!renderStatus && <div
                 style={{alignSelf: "center", alignItems: "center", display: "flex", columnGap: 12}}>
                 {/*<i className={"text-grey3"}>Status</i>*/}
-                {getStatusBox(status, <ResText12Regular>{capitalize(status)}
-                </ResText12Regular>)}
+                {renderStatus}
                 {!isStudent && !!renderRespond && renderRespond}
             </div>}
         </div>
@@ -494,20 +493,18 @@ export default function ScheduleView() {
         const handleErr = (err) => openNotification("Unsuccessful request",
             "Failed to rate the tutor." + err, AlertType.ERROR)
 
-        if (!!rateRequest.rating)
+        if (!!rateRequest.rating && rateRequest.rating > 0)
             dispatch(rateAppointment(id, rateRequest.rating, handleErr));
         else
             openNotification("Invalid rating", "Please select one of the ratings.")
     }, [rateAppointment]);
 
     const dispatchUpdateAptStatus = () => {
-        console.log("update dispatch request: ", tutorUpdateReq);
         const req = {
             id: appointment.id,
             statusMessage: tutorUpdateReq.note,
             status: tutorUpdateReq.status,
         };
-        console.log("update dispatch request: ", req);
         const onSuccess = (apt) => {
             handleTutorUpdateReq("status", undefined);
             openNotification("Request successful", "Appointment status updated to ", apt.status, AlertType.SUCCESS);
@@ -671,6 +668,14 @@ export default function ScheduleView() {
         </Menu>
     );
 
+    const renderStatus = () => {
+        const text = <ResText12Regular> {appointment.status}</ResText12Regular>
+        if ([AppointmentStatus.ACCEPTED, AppointmentStatus.PENDING].includes(appointment.status))
+            return getStatusBox(appointment.status, text);
+        return <Tooltip
+            title={"Tutor response: " + appointment.statusMessage}>{getStatusBox(appointment.status, text)}</Tooltip>
+    }
+
     const renderRespond = () => {
         const selectedRespondStr = capitalize(tutorUpdateReq.status || respondMenuItems[0].value).toString().replace("ed", "")
 
@@ -710,7 +715,7 @@ export default function ScheduleView() {
                             {renderTabs(getDefaultTab(),
                                 () => renderMenuComponent(),
                                 getRoleBasedMenuItems(id),
-                                isStudent, appointment?.status?.toString(), renderRespond())}
+                                isStudent, renderStatus(), renderRespond())}
                         </Col>
                         {/*<Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>*/}
                         {/*    {renderActorInfo(appointment.tutor)}*/}
