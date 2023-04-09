@@ -100,9 +100,9 @@ export default function MySchedule() {
                     {upcomingAppointments.length > 0 ? <Row gutter={[24, 24]} className={"schedules-upcoming"}>
                         {upcomingAppointments?.map((item, index) => (
                             <Col key={"accepted-upcoming-apts-key-" + item.id}
-                                 xxl={6} xl={8} lg={8} md={12} sm={24} xs={24}>
+                                 xxl={6} xl={8} lg={12} md={12} sm={24} xs={24}>
                                 <Link to={"/schedules/" + item.id}>
-                                    <ScheduleCard loggedUserId={loggedUser?.id} {...item}/>
+                                    <ScheduleCard loggedUserId={loggedUser.id} apt={item}/>
                                 </Link>
                             </Col>
                         ))}
@@ -122,7 +122,7 @@ export default function MySchedule() {
                                 <Col key={"other-apts-key-" + item.id}
                                      xxl={6} xl={8} lg={12} md={12} sm={24} xs={24}>
                                     <Link to={"/schedules/" + item.id}>
-                                        <ScheduleCard loggedUserId={loggedUser?.id} {...item}/>
+                                        <ScheduleCard loggedUserId={loggedUser.id} apt={item}/>
                                     </Link>
                                 </Col>
                             ))}

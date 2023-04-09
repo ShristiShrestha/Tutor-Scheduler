@@ -93,7 +93,13 @@ export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode)
     return <Tag color={color}>{renderText || text} </Tag>;
 };
 
-const ScheduleCard = (apt: AppointmentType, loggedUserId?: number) => {
+type Props = {
+    apt: AppointmentType,
+    loggedUserId?: number
+}
+const ScheduleCard = (props: Props) => {
+    const {apt, loggedUserId} = props;
+
     if (!apt) return <div> no apt </div>
     console.log("schedule card: ", apt, loggedUserId);
     const showingTutoringIn = apt ? (apt.tutoringOnList && apt.tutoringOnList.length > 2 ? apt.tutoringOnList.slice(0, 2) : apt.tutoringOnList) : [];
