@@ -471,7 +471,7 @@ export default function ScheduleView() {
     const location = useLocation();
     const [loading, setLoading] = useState(true);
     const [scheduledSlots, setScheduledSlots] = useState([]);
-    const [rateRequest, setRateRequest] = useState({rating: undefined, comment: undefined});
+    const [rateRequest, setRateRequest] = useState({rating: -1, comment: ""});
     const [tutorUpdateReq, setTutorUpdateReq] = useState({
         note: "",
         status: undefined,
@@ -515,12 +515,13 @@ export default function ScheduleView() {
     const dispatchRateTutor = useCallback(() => {
         const handleErr = (err) => openNotification("Unsuccessful request",
             "Failed to rate the tutor." + err, AlertType.ERROR)
+        console.log("rating req : ", rateRequest);
 
-        if (!!rateRequest.rating && rateRequest.rating > 0)
+        if (rateRequest.rating > 0)
             dispatch(rateAppointment(id, rateRequest.rating, handleErr));
         else
             openNotification("Invalid rating", "Please select one of the ratings.")
-    }, [rateAppointment]);
+    }, [rateRequest]);
 
     const dispatchUpdateAptStatus = () => {
         const req = {
@@ -594,8 +595,8 @@ export default function ScheduleView() {
     }
 
     const handleRateChanges = (key, value) => {
+        console.log("rate change values", key, value);
         setRateRequest({...rateRequest, [key]: value});
-        console.log("rate request: ", rateRequest);
     }
 
     const handleTutorUpdateReq = (key, value) => {
@@ -693,6 +694,7 @@ export default function ScheduleView() {
 
     // ---------------- schedule details and rate tutor --------------
 
+    const canRate = (new Date()).getTime() > (new Date(appointment.scheduledAt));
     const renderMenuComponent = (menuItems = getRoleBasedMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
@@ -702,7 +704,7 @@ export default function ScheduleView() {
                 case menuItems[1].key:
                     return <TabContent>
                         <ResText14Regular>
-                            {acceptedApt ? "Rate Tutor" : "You can only rate the accepted appointment."}
+                            {(acceptedApt && canRate) ? "Rate Tutor" : !canRate ? "You have not attended the appointment yet." : "You can only rate the accepted appointment."}
                         </ResText14Regular>
                         <div className={"rate-tutor-content"}>
                             <div className={"rate-tutor-features h-start-top-flex"}>
