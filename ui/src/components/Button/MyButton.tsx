@@ -1,7 +1,7 @@
 import {Button} from "antd";
 import React from "react";
 import styled from "styled-components";
-import {amethyst, snow} from "../../utils/ShadesUtils";
+import {amethyst, orchid, snow} from "../../utils/ShadesUtils";
 
 const Wrapper = styled.div`
   .ant-btn {
@@ -26,6 +26,11 @@ const Wrapper = styled.div`
 
     :hover {
       background: ${amethyst};
+    }
+
+    :disabled {
+      color: white;
+      background: ${orchid};
     }
   }
 `;

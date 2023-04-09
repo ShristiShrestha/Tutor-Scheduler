@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback, useEffect, useState} from "react";
 
 import styled from "styled-components";
 import {useParams} from "react-router";
@@ -24,15 +24,21 @@ import {
     seaFoam,
     snow
 } from "../../utils/ShadesUtils";
-import {Avatar, Col, Divider, Input, Menu, Row, Tag} from "antd";
+import {Avatar, Badge, Checkbox, Col, Menu, Row, Spin, Tag} from "antd";
 import {Link, useLocation} from "react-router-dom";
-import {StatusTagList} from "../../components/Card/ScheduleCard";
+import {getStatusBox, StatusTagList} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {toMonthDateYearStr} from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {UserDetailsType} from "../../redux/user/types";
-import {getUsername, ratings} from "../../utils/ScheduleUtils";
+import {getScheduledSlots, getUsername, ratings} from "../../utils/ScheduleUtils";
+import {fetchAppointment, rateAppointment} from "../../redux/appointment/actions";
+import {useDispatch, useSelector} from "react-redux";
+import {selectAppointment} from "../../redux/appointment/reducer";
+import {AlertType, openNotification} from "../../utils/Alert";
+import {AppointmentStatus} from "../../enum/AppointmentEnum";
+import {capitalize} from "../../utils/StringUtils";
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -65,6 +71,10 @@ const Content = styled.div`
 
   .border-right {
     border-right: 1px solid ${grey6};
+  }
+
+  .border-top {
+    border-top: 1px solid ${grey6};
   }
 `;
 
@@ -169,6 +179,11 @@ const ScheduleDetailsTabs = styled.div`
     border-top: 1px solid ${grey6};
   }
 
+  .schedule-menu-header {
+    width: 100%;
+    border-bottom: 1px solid ${grey6};
+  }
+
   .schedules-menu > .ant-menu-item {
     padding-left: 36px;
     //padding-top: 6px;
@@ -188,7 +203,11 @@ const ScheduleDetailsTabs = styled.div`
   }
 
   .schedules-menu > .ant-menu-item-active {
-    border-bottom: 1px solid ${amethyst};
+    border-bottom: 2px solid ${amethyst} !important;
+  }
+
+  .schedules-menu > .ant-menu-item-selected {
+    border-bottom: 2px solid ${amethyst} !important;
   }
 `;
 
@@ -238,6 +257,10 @@ export const TabContent = styled.div`
     }
   }
 
+  .rate-options-disabled {
+    cursor: not-allowed;
+  }
+
   .margin-btm-icon {
     max-width: 70px !important;
     max-height: 85px !important;
@@ -247,9 +270,19 @@ export const TabContent = styled.div`
     margin-bottom: 6px;
   }
 
+  .rate-very-bad-selected {
+    background: ${rose} !important;
+    border: 1px solid ${rose} !important;
+  }
+
   .rate-very-bad:hover {
     background: ${rose} !important;
     border: 1px solid ${rose} !important;
+  }
+
+  .rate-just-bad-selected {
+    background: ${lightRed} !important;
+    border: 1px solid ${crimson} !important;
   }
 
   .rate-just-bad:hover {
@@ -257,8 +290,18 @@ export const TabContent = styled.div`
     border: 1px solid ${crimson} !important;
   }
 
+  .rate-good-selected {
+    background: ${seaFoam} !important;
+    border: 1px solid ${green} !important;
+  }
+
   .rate-good:hover {
     background: ${seaFoam} !important;
+    border: 1px solid ${green} !important;
+  }
+
+  .rate-very-good-selected {
+    background: ${green} !important;
     border: 1px solid ${green} !important;
   }
 
@@ -295,6 +338,12 @@ const getMenuItems = (id) => [
     },
 ];
 
+export const CalenderItem = styled.div`
+  height: 100%;
+  width: 100%;
+  padding-top: 20px;
+`;
+
 //  ----------------- actor details -----------
 export const renderActorInfo = (user: UserDetailsType, title = "Tutor info") => <ScheduleActorInfo>
     <ResText14SemiBold>{title}</ResText14SemiBold>
@@ -317,16 +366,16 @@ export const renderActorInfo = (user: UserDetailsType, title = "Tutor info") => 
 </ScheduleActorInfo>
 
 // ---------------- needs tutoring --------------
-export const renderNeedsTutoring = (user: UserDetailsType,
+export const renderNeedsTutoring = (subjects: string[],
+                                    studentNote ?: string,
                                     title = "Needs tutoring in",
                                     noteTitle = "Student Note - ",
-                                    studentNote ?: string,
-) => user &&
+) =>
     <NeedsTutoring>
         <ResText14SemiBold>{title}</ResText14SemiBold>
         <StatusTagList>
-            {user.expertise &&
-                user.expertise.map(expertise => (
+            {subjects &&
+                subjects.map(expertise => (
                     <Tag style={{padding: "3px 10px"}}>
                         <ResText12Regular>
                             {expertise}
@@ -334,43 +383,97 @@ export const renderNeedsTutoring = (user: UserDetailsType,
                     </Tag>
                 ))}
         </StatusTagList>
-        {(!!studentNote || !!user.description) && <div style={{marginTop: "1rem"}}>
+        {studentNote && <div style={{marginTop: "2rem"}}>
             <ResText14Regular className={"text-grey2"}>
                 {noteTitle}
             </ResText14Regular>
             <ResText14Regular>
-                <i>"{studentNote || user.description}"</i>
+                <i>"{studentNote}"</i>
             </ResText14Regular>
         </div>}
     </NeedsTutoring>
 
-export const renderTabs = (defaultTab, renderMenuComponent, menuItems) => {
+export const renderTabs = (defaultTab, renderMenuComponent, menuItems, status?: string) => {
     return <ScheduleDetailsTabs>
-        <Menu
-            mode={"horizontal"}
-            className={"schedules-menu"}
-            defaultSelectedKeys={defaultTab}
-            defaultOpenKeys={defaultTab}
-        >
-            {menuItems.map((item, index) => (
-                <Menu.Item key={item.key} icon={item.icon}
-                           className={index === menuItems.length - 1 ? "schedule-menu-last-item" : ""}>
-                    <Link to={item.link}>
-                        <ResText14Regular>
-                            {item.title}
-                        </ResText14Regular>
-                    </Link>
-                </Menu.Item>
-            ))}
-        </Menu>
+        <div className={"h-justified-flex schedule-menu-header"}>
+            <Menu
+                mode={"horizontal"}
+                style={{width: !status ? "100%" : "fit-content"}}
+                className={"schedules-menu"}
+                defaultSelectedKeys={defaultTab}
+                defaultOpenKeys={defaultTab}
+            >
+                {menuItems.map((item, index) => (
+                    <Menu.Item key={item.key} icon={item.icon}
+                               className={index === menuItems.length - 1 ? "schedule-menu-last-item" : ""}>
+                        <Link to={item.link}>
+                            <ResText14Regular>
+                                {item.title}
+                            </ResText14Regular>
+                        </Link>
+                    </Menu.Item>
+                ))}
+            </Menu>
+            {!!status && <div
+                style={{alignSelf: "center", display: "flex", columnGap: 12}}>
+                <i className={"text-grey3"}>Status</i>
+                {getStatusBox(status, <ResText12Regular>{capitalize(status)}
+                </ResText12Regular>)}
+            </div>}
+        </div>
         {renderMenuComponent()}
     </ScheduleDetailsTabs>
 }
 export default function ScheduleView() {
     const {id} = useParams();
+    const dispatch = useDispatch();
     const location = useLocation();
+    const [loading, setLoading] = useState(true);
+    const {appointment} = useSelector(selectAppointment);
+    const [scheduledSlots, setScheduledSlots] = useState([]);
+    const [rateRequest, setRateRequest] = useState({rating: undefined, comment: undefined});
+    const acceptedApt = appointment && appointment.status === AppointmentStatus.ACCEPTED;
+    const ratingOptions = Object.values(ratings);
 
+    /******************* dispatches ************************/
+    const dispatchFetchApt = useCallback(() => {
+        dispatch(fetchAppointment(id));
+        setLoading(false);
+    }, [fetchAppointment]);
 
+    const dispatchRateTutor = useCallback(() => {
+        const handleErr = (err) => openNotification("Unsuccessful request",
+            "Failed to rate the tutor." + err, AlertType.ERROR)
+
+        if (!!rateRequest.rating)
+            dispatch(rateAppointment(id, rateRequest.rating, handleErr));
+        else
+            openNotification("Invalid rating", "Please select one of the ratings.")
+    }, [])
+
+    /******************* use effects ************************/
+    useEffect(() => {
+        dispatchFetchApt();
+    }, [dispatchFetchApt])
+
+    useEffect(() => {
+        if (appointment)
+            fetchScheduledSlots();
+    }, [appointment]);
+
+    /******************* local variables ************************/
+
+    const fetchScheduledSlots = () => {
+        const slots = getScheduledSlots(new Date(appointment.scheduledAt));
+        setScheduledSlots(slots);
+    }
+
+    const handleRateChanges = (key, value) => {
+        setRateRequest({...rateRequest, [key]: value});
+        console.log("rate request: ", rateRequest);
+    }
+
+    /******************* render children ************************/
     const getDefaultTab = () => {
         const menuItems = getMenuItems(id)
         const pathname = location ? location.pathname : "/schedules/" + id;
@@ -385,13 +488,23 @@ export default function ScheduleView() {
     }
 
     const renderSlotView = () => <SlotInfo>
-        <ResText16Regular className={"text-grey2"}>Showing slots for
-            <b style={{marginLeft: 8, color: grey1}}>{`${toMonthDateYearStr(new Date())}`}</b>
+        <ResText16Regular className={"text-grey2"}>Appointment requested for
+            <b style={{marginLeft: 8, color: grey1}}>{`${toMonthDateYearStr(new Date(appointment.scheduledAt))}`}</b>
         </ResText16Regular>
+
+        <ul className={"slot-items"}>
+            {scheduledSlots.map((item, index) => (
+                <li key={`scheduled-slot-apt-${index}`}>
+                    <Checkbox
+                        checked={!item.available}
+                        disabled={item.available}/>
+                    <ResText14Regular>{item.title}</ResText14Regular>
+                </li>
+            ))}
+        </ul>
     </SlotInfo>
 
     // ---------------- schedule details and rate tutor --------------
-
 
     const renderMenuComponent = (menuItems = getMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
@@ -399,32 +512,52 @@ export default function ScheduleView() {
         switch (defaultTab) {
             case menuItems[1].key:
                 return <TabContent>
-                    <ResText16SemiBold>
-                        Rate Tutor
-                    </ResText16SemiBold>
-
+                    <ResText14Regular>
+                        {acceptedApt ? "Rate Tutor" : "You can only rate the accepted appointment."}
+                    </ResText14Regular>
                     <div className={"rate-tutor-content"}>
                         <div className={"rate-tutor-features h-start-top-flex"}>
-                            <ResText16Regular className={"text-grey2"}>Tutoring skill</ResText16Regular>
+                            <ResText14Regular className={"text-grey2"}>Tutoring skill</ResText14Regular>
                             <ul className={"rate-tutor-options"}>
-                                {Object.values(ratings).map(item => <li key={"rate-tutor-options-" + item.id}
-                                                                        className={item.className}>{item.icon}</li>)}
+                                {ratingOptions.map((item, index) => <li
+                                    key={"rate-tutor-options-" + item.id}
+                                    onClick={() => handleRateChanges("rating", index + 1)}
+                                    className={item.className + ((acceptedApt && (index + 1) === rateRequest.rating) ? "-selected" : "") + (!acceptedApt ? " rate-options-disabled" : "")}>{item.icon}</li>)}
                             </ul>
                         </div>
-                        <div className={"rate-tutor-comment h-start-flex"}>
-                            <ResText16Regular className={"text-grey2"}>Add comment (Optional)</ResText16Regular>
-                            <Input rootClassName={"rate-tutor-input"} size={"large"} bordered/>
-                        </div>
-
-                        <div className={"h-end-flex"}>
-                            <MyButton type={"primary"}>
+                        {/*<div className={"rate-tutor-comment h-start-flex"}>*/}
+                        {/*    <ResText16Regular className={"text-grey2"}>Add comment (Optional)</ResText16Regular>*/}
+                        {/*    <Input rootClassName={"rate-tutor-input"}*/}
+                        {/*           onChange={e => handleRateChanges("comment", e.currentTarget.value)}*/}
+                        {/*           size={"large"} bordered/>*/}
+                        {/*</div>*/}
+                        <div className={"h-start-flex"}>
+                            <MyButton type={"primary"} disabled={appointment.status !== AppointmentStatus.ACCEPTED}
+                                      onClick={() => dispatchRateTutor()}>
                                 <ResText14Regular>Submit your ratings</ResText14Regular>
                             </MyButton>
                         </div>
                     </div>
                 </TabContent>
+
             default:
-                const onClick = (date) => alert("hello, " + toMonthDateYearStr(new Date(date)));
+                const scheduledSlot = scheduledSlots.filter(item => !item.available);
+
+                const dateCellRender = (date) => {
+                    if (appointment && scheduledSlot.length > 0) {
+                        const cellDate = new Date(date);
+                        const scheduledDate = new Date(appointment.scheduledAt);
+                        const cellMatchesScheduledDate = cellDate.getDate() === scheduledDate.getDate() &&
+                            cellDate.getMonth() === scheduledDate.getMonth();
+                        if (cellMatchesScheduledDate)
+                            return <CalenderItem className={"h-centered-flex"}>
+                                <Badge status={"success"}
+                                       text={<ResText14Regular>{scheduledSlot[0].title}</ResText14Regular>}/>
+                            </CalenderItem>
+                    }
+                    return <></>
+                }
+
                 return (
                     <TabContent>
                         <ResText16SemiBold><b>Today</b>
@@ -433,7 +566,9 @@ export default function ScheduleView() {
                                 {toMonthDateYearStr(today)}
                             </ResText16Regular>
                         </ResText16SemiBold>
-                        <MyCalendar onClick={onClick}/>
+                        {appointment &&
+                            <MyCalendar dateCellRender={dateCellRender}
+                                        value={new Date(appointment.scheduledAt)}/>}
                     </TabContent>
                 );
         }
@@ -442,20 +577,30 @@ export default function ScheduleView() {
 
     return (
         <Wrapper>
-            <Header><ResText14SemiBold>Schedule Details</ResText14SemiBold></Header>
-            <Content>
-                <Row gutter={[24, 24]}>
-                    <Col xxl={16} md={24} className={"border-right no-padding"}>
-                        {renderTabs(getDefaultTab(), () => renderMenuComponent(), getMenuItems(id))}
-                    </Col>
-                    <Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>
-                        {renderActorInfo()}
-                        {renderNeedsTutoring()}
-                        <Divider type={"horizontal"}/>
-                        {renderSlotView()}
-                    </Col>
-                </Row>
-            </Content>
+            <Header>
+                <ResText14SemiBold>Schedule Details</ResText14SemiBold>
+            </Header>
+            <Spin spinning={loading}>
+                <Content>
+                    {appointment && <div>
+                        {renderActorInfo(appointment.tutor)}
+                        {renderNeedsTutoring(appointment.tutoringOnList, appointment.studentNote)}
+                    </div>}
+                    {appointment && <Row gutter={[24, 24]} className={"border-top"}>
+                        <Col xxl={16} md={24} className={"border-right no-padding"}>
+                            {renderTabs(getDefaultTab(),
+                                () => renderMenuComponent(),
+                                getMenuItems(id), appointment?.status?.toString())}
+                        </Col>
+                        {/*<Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>*/}
+                        {/*    {renderActorInfo(appointment.tutor)}*/}
+                        {/*    {renderNeedsTutoring(appointment.tutoringOnList, appointment.studentNote)}*/}
+                        {/*    <Divider type={"horizontal"}/>*/}
+                        {/*    {renderSlotView()}*/}
+                        {/*</Col>*/}
+                    </Row>}
+                </Content>
+            </Spin>
         </Wrapper>
     );
 }

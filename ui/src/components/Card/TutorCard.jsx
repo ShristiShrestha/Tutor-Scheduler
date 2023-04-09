@@ -10,7 +10,7 @@ const TutorCard = (tutor: UserDetailsType) => {
     const showingExpertises = tutor && tutor.expertise && tutor.expertise.length > 2 ? tutor.expertise.slice(0, 2) : tutor.expertise;
     if (!!tutor)
         return (
-            <Card>
+            <Card height={"170px"}>
                 <TutorInfo>
                     <Avatar size={64} icon={<UserOutlined/>}/>
                     <div className={"tutor-profile-info"}>

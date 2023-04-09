@@ -149,7 +149,11 @@ export function getDateMonthFormat(locale: string) {
 // expected schedule date string : scheduledAt": "2023-02-24 13:00 UTC"
 
 export const getYearMonthDateHrsUtcFormat = (date, format = "YYYY-MM-DD HH:mm UTC") => {
-    return moment(date).format(format);
+    return moment(date).utc().format(format);
+};
+
+export const getLocalDateFromUtcFormat = (date) => {
+    return moment(date).toDate();
 };
 
 

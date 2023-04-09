@@ -5,11 +5,10 @@ import {
     ResText14Regular,
     ResText14SemiBold,
 } from "../../utils/TextUtils";
-import { Col, Divider, Row, Tag, Input, Checkbox } from "antd";
+import { Checkbox, Col, Divider, Input, Row, Tag } from "antd";
 import { grey1, grey6 } from "../../utils/ShadesUtils";
 import { SendOutlined } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
 import {
     toHourMinStr,
@@ -22,9 +21,9 @@ import MyButton from "../../components/Button/MyButton";
 import { selectAppointment } from "../../redux/appointment/reducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
+    deleteAppointment,
     fetchAppointment,
     updateAppointment,
-    deleteAppointment,
 } from "../../redux/appointment/actions";
 import { selectAuth } from "../../redux/auth/reducer";
 import { renderActorInfo, SlotInfo } from "./ScheduleView";
@@ -42,9 +41,11 @@ const Header = styled.div`
     right: 0;
     padding: 0 24px;
     border-bottom: 1px solid ${grey6};
+
     .ant-row {
         width: 100%;
     }
+
     .ant-col {
         align-self: center;
     }
@@ -59,10 +60,12 @@ const Content = styled.div`
     margin-top: 30px;
     height: calc(100vh - 48px);
     overflow: auto;
+
     .arrange-div {
         display: flex;
         justify-content: space-between;
     }
+
     .delete-app {
         margin-left: 620px;
     }
@@ -98,9 +101,11 @@ const ContentCalendar = styled.div.attrs({
     margin-bottom: 24px;
     align-items: start;
     row-gap: 4px;
+
     .comment-textarea {
         border: 1px solid; /* Add a solid line to the bottom */
     }
+
     .select-slot {
         background-color: #d3adf7;
     }
@@ -139,7 +144,7 @@ const TutorSchedule = () => {
             selectedCalendarDate.getFullYear(),
             selectedCalendarDate.getMonth(),
             selectedCalendarDate.getDate(),
-            item.start + 1,
+            item.start,
         );
         setSelectedSlot(item);
         setSelectedSlotDate(selectedDateTs);
@@ -231,6 +236,7 @@ const TutorSchedule = () => {
                         >
                             My Schedule - Schedule #ID {appointment?.id}
                         </ResText14SemiBold>
+
                         <ResText14SemiBold style={{ float: "right" }}>
                             <Tag
                                 color={"blue"}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import {Avatar, Divider, Tag} from "antd";
 import styled from "styled-components";
 import {ResText12Regular, ResText14SemiBold} from "../../utils/TextUtils";
@@ -10,10 +10,13 @@ import {StarOutlined} from "@ant-design/icons";
 import {toEndDottedStr} from "../../utils/StringUtils";
 
 // styled components
-export const Card = styled.div`
+export const Card = styled.div<{
+    height?: string
+}>`
   padding: 16px 24px;
   border-radius: 12px;
   border: 1px solid ${grey6};
+  height: ${props => props.height ? props.height : "220px"};
 
   text {
     color: ${grey1};
@@ -66,7 +69,7 @@ export const StatusTagList = styled.div<{ padding?: string }>`
   }
 `;
 
-const getStatusBox = (status: AppointmentStatus) => {
+export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode) => {
     let color, text;
     switch (status) {
         case AppointmentStatus.REJECTED:
@@ -85,14 +88,16 @@ const getStatusBox = (status: AppointmentStatus) => {
             color = "gray";
             text = "Unknown";
     }
-
-    return <Tag color={color}>{text} </Tag>;
+    return <Tag color={color}>{renderText || text} </Tag>;
 };
 
 const ScheduleCard = (apt: AppointmentType) => {
     if (!apt) return <div> no apt </div>
+    // @ts-ignore
+
     return (
         <Card>
+
             <StatusInfo className={"h-justified-flex"}>
                 <div className={"h-start-flex data-slot-info"}>
                     {!!apt.createdAt &&
@@ -102,10 +107,7 @@ const ScheduleCard = (apt: AppointmentType) => {
                         <ResText12Regular> {toScheduleSlotRangeStr(new Date(apt.scheduledAt))}</ResText12Regular>}
                 </div>
                 {apt.status && (
-                    <span>
-                        {" "}
-                        {getStatusBox(apt.status)}
-                    </span>
+                    getStatusBox(apt.status)
                 )}
             </StatusInfo>
             <TutorInfo>
@@ -128,7 +130,7 @@ const ScheduleCard = (apt: AppointmentType) => {
             </Desc>}
             <StatusTagList>
                 {!!apt.tutoringOnList &&
-                    apt.tutoringOnList.map(expertise => <Tag>{expertise}</Tag>)}
+                    apt.tutoringOnList.slice(0, 2).map(expertise => <Tag>{expertise}</Tag>)}
             </StatusTagList>
         </Card>
     );
