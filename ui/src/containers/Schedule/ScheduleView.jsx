@@ -1,9 +1,10 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {ReactNode, useCallback, useEffect, useState} from "react";
 
 import styled from "styled-components";
 import {useParams} from "react-router";
 import {
     ResText12Regular,
+    ResText12SemiBold,
     ResText14Regular,
     ResText14SemiBold,
     ResText16Regular,
@@ -24,7 +25,7 @@ import {
     seaFoam,
     snow
 } from "../../utils/ShadesUtils";
-import {Avatar, Badge, Checkbox, Col, Menu, Modal, Row, Spin, Tag} from "antd";
+import {Avatar, Badge, Checkbox, Col, Divider, Dropdown, Input, Menu, Modal, Row, Spin, Tag} from "antd";
 import {Link, useLocation} from "react-router-dom";
 import {getStatusBox, StatusTagList} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
@@ -33,7 +34,7 @@ import MyButton from "../../components/Button/MyButton";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import {UserDetailsType} from "../../redux/user/types";
 import {getScheduledSlots, getUsername, ratings} from "../../utils/ScheduleUtils";
-import {fetchAppointment, rateAppointment} from "../../redux/appointment/actions";
+import {fetchAppointment, rateAppointment, updateAppointment} from "../../redux/appointment/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {selectAppointment} from "../../redux/appointment/reducer";
 import {AlertType, openNotification} from "../../utils/Alert";
@@ -330,6 +331,18 @@ export const TabContent = styled.div`
   }
 `;
 
+const ResponseAppointment = styled.div`
+  padding: 12px 24px;
+
+  .respond-reject-input {
+    margin: 12px 0;
+  }
+
+  .respond-submit {
+    margin-top: 24px;
+  }
+`;
+
 const getMenuItems = (id) => [
     {
         key: "schedule-view",
@@ -400,12 +413,29 @@ export const renderNeedsTutoring = (subjects: string[],
         </div>}
     </NeedsTutoring>
 
-export const renderTabs = (defaultTab, renderMenuComponent, menuItems, status?: string) => {
+
+const respondMenuItems = [
+    {
+        label: 'Accept',
+        key: 'respond-accept',
+        value: AppointmentStatus.ACCEPTED,
+    },
+    {
+        label: 'Reject',
+        key: 'respond-reject',
+        value: AppointmentStatus.REJECTED,
+    },
+];
+
+export const renderTabs = (defaultTab, renderMenuComponent, menuItems,
+                           isStudent = true, status?: string,
+                           renderRespond?: ReactNode) => {
+
     return <ScheduleDetailsTabs>
         <div className={"h-justified-flex schedule-menu-header"}>
             <Menu
                 mode={"horizontal"}
-                style={{width: "55%"}}
+                style={{width: "50%"}}
                 className={"schedules-menu"}
                 defaultSelectedKeys={defaultTab}
                 defaultOpenKeys={defaultTab}
@@ -422,26 +452,35 @@ export const renderTabs = (defaultTab, renderMenuComponent, menuItems, status?: 
                 ))}
             </Menu>
             {!!status && <div
-                style={{alignSelf: "center", display: "flex", columnGap: 12}}>
-                <i className={"text-grey3"}>Status</i>
+                style={{alignSelf: "center", alignItems: "center", display: "flex", columnGap: 12}}>
+                {/*<i className={"text-grey3"}>Status</i>*/}
                 {getStatusBox(status, <ResText12Regular>{capitalize(status)}
                 </ResText12Regular>)}
+                {!isStudent && !!renderRespond && renderRespond}
             </div>}
         </div>
         {renderMenuComponent()}
     </ScheduleDetailsTabs>
 }
+
 export default function ScheduleView() {
     const {id} = useParams();
     const dispatch = useDispatch();
     const location = useLocation();
     const [loading, setLoading] = useState(true);
-    const {appointment} = useSelector(selectAppointment);
     const [scheduledSlots, setScheduledSlots] = useState([]);
     const [rateRequest, setRateRequest] = useState({rating: undefined, comment: undefined});
-    const acceptedApt = appointment && appointment.status === AppointmentStatus.ACCEPTED;
-    const ratingOptions = Object.values(ratings);
+    const [tutorUpdateReq, setTutorUpdateReq] = useState({
+        note: "",
+        status: undefined,
+        scheduledAt: undefined
+    });
+
     const {loggedUser} = useSelector(selectAuth);
+    const {appointment} = useSelector(selectAppointment);
+
+    const ratingOptions = Object.values(ratings);
+    const acceptedApt = appointment && appointment.status === AppointmentStatus.ACCEPTED;
     const isTutor = isLoggedTutor(loggedUser) && appointment && appointment.tutorId === loggedUser?.id;
     const isStudent = isLoggedStudent(loggedUser) && appointment && appointment.studentId === loggedUser?.id;
 
@@ -459,7 +498,24 @@ export default function ScheduleView() {
             dispatch(rateAppointment(id, rateRequest.rating, handleErr));
         else
             openNotification("Invalid rating", "Please select one of the ratings.")
-    }, [])
+    }, [rateAppointment]);
+
+    const dispatchUpdateAptStatus = () => {
+        console.log("update dispatch request: ", tutorUpdateReq);
+        const req = {
+            id: appointment.id,
+            statusMessage: tutorUpdateReq.note,
+            status: tutorUpdateReq.status,
+        };
+        console.log("update dispatch request: ", req);
+        const onSuccess = (apt) => {
+            handleTutorUpdateReq("status", undefined);
+            openNotification("Request successful", "Appointment status updated to ", apt.status, AlertType.SUCCESS);
+        };
+
+        const onError = () => openNotification("Request unsuccessful", "Failed to update appointment status to ", tutorUpdateReq.status, AlertType.ERROR);
+        dispatch(updateAppointment(req));
+    };
 
     /******************* use effects ************************/
     useEffect(() => {
@@ -482,6 +538,19 @@ export default function ScheduleView() {
         setRateRequest({...rateRequest, [key]: value});
         console.log("rate request: ", rateRequest);
     }
+
+    const handleTutorUpdateReq = (key, value) => {
+        setTutorUpdateReq({...tutorUpdateReq, [key]: value});
+    };
+
+    const handleRespond = (status?: AppointmentStatus) => {
+        console.log("handle respond: ", tutorUpdateReq);
+        if (!!status) {
+            handleTutorUpdateReq("status", status);
+        }
+    }
+
+    const getScheduledSlot = () => scheduledSlots.filter(item => !item.available);
 
     const getRoleBasedMenuItems = (id) => {
         const allMenuItems = getMenuItems(id);
@@ -564,7 +633,7 @@ export default function ScheduleView() {
                     </TabContent>
             }
 
-        const scheduledSlot = scheduledSlots.filter(item => !item.available);
+        const scheduledSlot = getScheduledSlot();
 
         const dateCellRender = (date) => {
             if (appointment && scheduledSlot.length > 0) {
@@ -596,6 +665,29 @@ export default function ScheduleView() {
         );
     };
 
+    const respondMenu = (
+        <Menu onClick={(e) => handleTutorUpdateReq("status", e.key)}>
+            {respondMenuItems.map(item => <Menu.Item key={item.value}>{item.label}</Menu.Item>)}
+        </Menu>
+    );
+
+    const renderRespond = () => {
+        const selectedRespondStr = capitalize(tutorUpdateReq.status || respondMenuItems[0].value).toString().replace("ed", "")
+
+        if (appointment.status === AppointmentStatus.PENDING && !isStudent)
+            return <>
+                <Divider type={"vertical"}/>
+                <ResText14SemiBold className={"text-grey1"}>Respond </ResText14SemiBold>
+                <Dropdown.Button style={{marginRight: 12}}
+                                 trigger={["click"]}
+                                 onClick={() => handleRespond()}
+                                 overlay={respondMenu}>
+                    <ResText12Regular
+                        onClick={() => handleRespond(tutorUpdateReq.status || respondMenuItems[0].value)}>{selectedRespondStr}</ResText12Regular>
+                </Dropdown.Button>
+            </>
+        return <></>
+    }
 
     return (
         <Wrapper>
@@ -617,7 +709,8 @@ export default function ScheduleView() {
                         <Col xxl={16} md={24} className={"border-right no-padding"}>
                             {renderTabs(getDefaultTab(),
                                 () => renderMenuComponent(),
-                                getRoleBasedMenuItems(id), appointment?.status?.toString())}
+                                getRoleBasedMenuItems(id),
+                                isStudent, appointment?.status?.toString(), renderRespond())}
                         </Col>
                         {/*<Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>*/}
                         {/*    {renderActorInfo(appointment.tutor)}*/}
@@ -628,9 +721,42 @@ export default function ScheduleView() {
                     </Row>}
                 </Content>
             </Spin>
-            {isTutor && <Modal>
-
-            </Modal>}
+            {!isStudent && appointment &&
+                <Modal width={"40vw"} visible={!!tutorUpdateReq.status}
+                       okButtonProps={null}
+                       cancelButtonProps={null}
+                       onCancel={() => handleTutorUpdateReq("status", undefined)}
+                       footer={null}>
+                    <ResponseAppointment>
+                        {appointment.scheduledAt &&
+                            <ResText12Regular className={"text-break"}>You are about to
+                                respond <b>{tutorUpdateReq.status}</b> to the appointment scheduled
+                                for <b>{`${toMonthDateYearStr(new Date(appointment.scheduledAt))} ${getScheduledSlot()[0]?.title}`}</b>.
+                            </ResText12Regular>}
+                        {tutorUpdateReq.status === AppointmentStatus.REJECTED &&
+                            <div className={"respond-reject-input"}>
+                                <ResText12Regular className={"text-grey2"}>
+                                    Add a rejection message *
+                                </ResText12Regular>
+                                <Input.TextArea
+                                    className="comment-textarea"
+                                    autoSize={{minRows: 6, maxRows: 10}}
+                                    onChange={e => {
+                                        e.stopPropagation();
+                                        handleTutorUpdateReq(
+                                            "note",
+                                            e.currentTarget.value,
+                                        );
+                                    }}
+                                />
+                            </div>}
+                        <div className={"h-end-flex respond-submit"}>
+                            <MyButton htmlType={"submit"} type={"primary"} onClick={() => dispatchUpdateAptStatus()}>
+                                <ResText12SemiBold>Submit changes</ResText12SemiBold>
+                            </MyButton>
+                        </div>
+                    </ResponseAppointment>
+                </Modal>}
         </Wrapper>
     );
 }

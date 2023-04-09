@@ -1,12 +1,11 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import MySchedule from "../containers/Schedule/MySchedule";
 import FindTutors from "../containers/Tutor/FindTutors";
 import ScheduleView from "../containers/Schedule/ScheduleView";
 import TutorSchedule from "../containers/Schedule/TutorSchedule";
 import NotificationsPage from "../containers/Notification/NotificationsPage";
 import TutorProfile from "../containers/Tutor/TutorProfile";
-import TutorStatusPage from "../containers/Schedule/TutorStatusPage";
 import Chat from "../containers/Chat/Chat";
 import ChatConversation from "../containers/Chat/ChatConversation";
 import LoginPage from "../containers/Auth/LoginPage";
@@ -14,63 +13,59 @@ import LoginPage from "../containers/Auth/LoginPage";
 const pages = [
     {
         path: "/find-tutors",
-        component: <FindTutors />,
+        component: <FindTutors/>,
     },
     {
         path: "/tutor-schedule/:id",
-        component: <TutorSchedule />,
-    },
-    {
-        path: "/tutor-status/:id",
-        component: <TutorStatusPage />,
+        component: <TutorSchedule/>,
     },
     {
         path: "/schedules",
-        component: <MySchedule />,
+        component: <MySchedule/>,
     },
     {
         path: "/schedules/:id",
-        component: <ScheduleView />,
+        component: <ScheduleView/>,
     },
     {
         path: "/schedules/:id/rate-tutor",
-        component: <ScheduleView />,
+        component: <ScheduleView/>,
     },
     {
         path: "/chat",
-        component: <Chat />,
+        component: <Chat/>,
     },
     {
         path: "/chat/users/sender_id",
-        component: <ChatConversation />,
+        component: <ChatConversation/>,
     },
     {
         path: "/notifications",
-        component: <NotificationsPage />,
+        component: <NotificationsPage/>,
     },
     {
         path: "/profile/:id",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/profile/:id/details",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/profile/:id/request-tutoring",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/profile/:id/view-tutor-ratings",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/login",
-        component: <LoginPage />,
+        component: <LoginPage/>,
     },
     {
         path: "/",
-        component: <MySchedule />,
+        component: <MySchedule/>,
     },
 ];
 

@@ -56,16 +56,18 @@ export function createAppointment(apt: AppointmentType, callback: Function) {
     };
 }
 
-export function updateAppointment(apt: AppointmentType) {
+export function updateAppointment(apt: AppointmentType, onSuccess?: Function, onError?: Function) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(UPDATE_APPOINTMENT));
         putApt(apt)
             .then(apt => {
                 dispatch(actionSuccess(UPDATE_APPOINTMENT, apt));
                 dispatch(setAppointment(apt));
+                onSuccess && onSuccess(apt);
             })
             .catch(err => {
                 dispatch(actionFailure(UPDATE_APPOINTMENT, err));
+                onError && onError(err);
             });
     };
 }
