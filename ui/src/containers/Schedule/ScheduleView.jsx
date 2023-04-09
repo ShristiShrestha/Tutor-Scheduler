@@ -24,7 +24,7 @@ import {
     seaFoam,
     snow
 } from "../../utils/ShadesUtils";
-import {Avatar, Badge, Checkbox, Col, Menu, Row, Spin, Tag} from "antd";
+import {Avatar, Badge, Checkbox, Col, Menu, Modal, Row, Spin, Tag} from "antd";
 import {Link, useLocation} from "react-router-dom";
 import {getStatusBox, StatusTagList} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
@@ -39,6 +39,8 @@ import {selectAppointment} from "../../redux/appointment/reducer";
 import {AlertType, openNotification} from "../../utils/Alert";
 import {AppointmentStatus} from "../../enum/AppointmentEnum";
 import {capitalize} from "../../utils/StringUtils";
+import {isLoggedModerator, isLoggedStudent, isLoggedTutor} from "../../utils/AuthUtils";
+import {selectAuth} from "../../redux/auth/reducer";
 
 const Wrapper = styled.div`
   .ant-divider {
@@ -75,6 +77,10 @@ const Content = styled.div`
 
   .border-top {
     border-top: 1px solid ${grey6};
+  }
+
+  .schedule-actor-view-mod {
+    column-gap: 36px;
   }
 `;
 
@@ -182,6 +188,7 @@ const ScheduleDetailsTabs = styled.div`
   .schedule-menu-header {
     width: 100%;
     border-bottom: 1px solid ${grey6};
+    row-gap: 12px;
   }
 
   .schedules-menu > .ant-menu-item {
@@ -398,7 +405,7 @@ export const renderTabs = (defaultTab, renderMenuComponent, menuItems, status?: 
         <div className={"h-justified-flex schedule-menu-header"}>
             <Menu
                 mode={"horizontal"}
-                style={{width: !status ? "100%" : "fit-content"}}
+                style={{width: "55%"}}
                 className={"schedules-menu"}
                 defaultSelectedKeys={defaultTab}
                 defaultOpenKeys={defaultTab}
@@ -434,6 +441,9 @@ export default function ScheduleView() {
     const [rateRequest, setRateRequest] = useState({rating: undefined, comment: undefined});
     const acceptedApt = appointment && appointment.status === AppointmentStatus.ACCEPTED;
     const ratingOptions = Object.values(ratings);
+    const {loggedUser} = useSelector(selectAuth);
+    const isTutor = isLoggedTutor(loggedUser) && appointment && appointment.tutorId === loggedUser?.id;
+    const isStudent = isLoggedStudent(loggedUser) && appointment && appointment.studentId === loggedUser?.id;
 
     /******************* dispatches ************************/
     const dispatchFetchApt = useCallback(() => {
@@ -473,18 +483,29 @@ export default function ScheduleView() {
         console.log("rate request: ", rateRequest);
     }
 
+    const getRoleBasedMenuItems = (id) => {
+        const allMenuItems = getMenuItems(id);
+        if (isStudent)
+            return allMenuItems;
+        return [allMenuItems[0]];
+    }
+
     /******************* render children ************************/
     const getDefaultTab = () => {
-        const menuItems = getMenuItems(id)
-        const pathname = location ? location.pathname : "/schedules/" + id;
-        if (!!menuItems) {
-            const defaultOpenTabs = menuItems.filter(item => item["link"] === pathname);
-            if (defaultOpenTabs.length > 0) {
-                return defaultOpenTabs.map(item => item["key"]);
+        const allMenuItems = getRoleBasedMenuItems(id);
+        const menuItems = isStudent ? allMenuItems : [allMenuItems[0]];
+        if (isStudent) {
+            const pathname = location ? location.pathname : "/schedules/" + id;
+            if (!!menuItems) {
+                const defaultOpenTabs = menuItems.filter(item => item["link"] === pathname);
+                if (defaultOpenTabs.length > 0) {
+                    return defaultOpenTabs.map(item => item["key"]);
+                }
+                return [menuItems[0].key];
             }
-            return [menuItems[0].key];
+            return ""
         }
-        return ""
+        return [menuItems[0].key];
     }
 
     const renderSlotView = () => <SlotInfo>
@@ -506,72 +527,73 @@ export default function ScheduleView() {
 
     // ---------------- schedule details and rate tutor --------------
 
-    const renderMenuComponent = (menuItems = getMenuItems(id)) => {
+    const renderMenuComponent = (menuItems = getRoleBasedMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
-        switch (defaultTab) {
-            case menuItems[1].key:
-                return <TabContent>
-                    <ResText14Regular>
-                        {acceptedApt ? "Rate Tutor" : "You can only rate the accepted appointment."}
-                    </ResText14Regular>
-                    <div className={"rate-tutor-content"}>
-                        <div className={"rate-tutor-features h-start-top-flex"}>
-                            <ResText14Regular className={"text-grey2"}>Tutoring skill</ResText14Regular>
-                            <ul className={"rate-tutor-options"}>
-                                {ratingOptions.map((item, index) => <li
-                                    key={"rate-tutor-options-" + item.id}
-                                    onClick={() => handleRateChanges("rating", index + 1)}
-                                    className={item.className + ((acceptedApt && (index + 1) === rateRequest.rating) ? "-selected" : "") + (!acceptedApt ? " rate-options-disabled" : "")}>{item.icon}</li>)}
-                            </ul>
+
+        if (menuItems.length > 1)
+            switch (defaultTab) {
+                case menuItems[1].key:
+                    return <TabContent>
+                        <ResText14Regular>
+                            {acceptedApt ? "Rate Tutor" : "You can only rate the accepted appointment."}
+                        </ResText14Regular>
+                        <div className={"rate-tutor-content"}>
+                            <div className={"rate-tutor-features h-start-top-flex"}>
+                                <ResText14Regular className={"text-grey2"}>Tutoring skill</ResText14Regular>
+                                <ul className={"rate-tutor-options"}>
+                                    {ratingOptions.map((item, index) => <li
+                                        key={"rate-tutor-options-" + item.id}
+                                        onClick={() => handleRateChanges("rating", index + 1)}
+                                        className={item.className + ((acceptedApt && (index + 1) === rateRequest.rating) ? "-selected" : "") + (!acceptedApt ? " rate-options-disabled" : "")}>{item.icon}</li>)}
+                                </ul>
+                            </div>
+                            {/*<div className={"rate-tutor-comment h-start-flex"}>*/}
+                            {/*    <ResText16Regular className={"text-grey2"}>Add comment (Optional)</ResText16Regular>*/}
+                            {/*    <Input rootClassName={"rate-tutor-input"}*/}
+                            {/*           onChange={e => handleRateChanges("comment", e.currentTarget.value)}*/}
+                            {/*           size={"large"} bordered/>*/}
+                            {/*</div>*/}
+                            <div className={"h-start-flex"}>
+                                <MyButton type={"primary"} disabled={appointment.status !== AppointmentStatus.ACCEPTED}
+                                          onClick={() => dispatchRateTutor()}>
+                                    <ResText14Regular>Submit your ratings</ResText14Regular>
+                                </MyButton>
+                            </div>
                         </div>
-                        {/*<div className={"rate-tutor-comment h-start-flex"}>*/}
-                        {/*    <ResText16Regular className={"text-grey2"}>Add comment (Optional)</ResText16Regular>*/}
-                        {/*    <Input rootClassName={"rate-tutor-input"}*/}
-                        {/*           onChange={e => handleRateChanges("comment", e.currentTarget.value)}*/}
-                        {/*           size={"large"} bordered/>*/}
-                        {/*</div>*/}
-                        <div className={"h-start-flex"}>
-                            <MyButton type={"primary"} disabled={appointment.status !== AppointmentStatus.ACCEPTED}
-                                      onClick={() => dispatchRateTutor()}>
-                                <ResText14Regular>Submit your ratings</ResText14Regular>
-                            </MyButton>
-                        </div>
-                    </div>
-                </TabContent>
-
-            default:
-                const scheduledSlot = scheduledSlots.filter(item => !item.available);
-
-                const dateCellRender = (date) => {
-                    if (appointment && scheduledSlot.length > 0) {
-                        const cellDate = new Date(date);
-                        const scheduledDate = new Date(appointment.scheduledAt);
-                        const cellMatchesScheduledDate = cellDate.getDate() === scheduledDate.getDate() &&
-                            cellDate.getMonth() === scheduledDate.getMonth();
-                        if (cellMatchesScheduledDate)
-                            return <CalenderItem className={"h-centered-flex"}>
-                                <Badge status={"success"}
-                                       text={<ResText14Regular>{scheduledSlot[0].title}</ResText14Regular>}/>
-                            </CalenderItem>
-                    }
-                    return <></>
-                }
-
-                return (
-                    <TabContent>
-                        <ResText16SemiBold><b>Today</b>
-                            <ResText16Regular className={"text-grey"}
-                                              style={{marginLeft: 12}}>
-                                {toMonthDateYearStr(today)}
-                            </ResText16Regular>
-                        </ResText16SemiBold>
-                        {appointment &&
-                            <MyCalendar dateCellRender={dateCellRender}
-                                        value={new Date(appointment.scheduledAt)}/>}
                     </TabContent>
-                );
+            }
+
+        const scheduledSlot = scheduledSlots.filter(item => !item.available);
+
+        const dateCellRender = (date) => {
+            if (appointment && scheduledSlot.length > 0) {
+                const cellDate = new Date(date);
+                const scheduledDate = new Date(appointment.scheduledAt);
+                const cellMatchesScheduledDate = cellDate.getDate() === scheduledDate.getDate() &&
+                    cellDate.getMonth() === scheduledDate.getMonth();
+                if (cellMatchesScheduledDate)
+                    return <CalenderItem className={"h-centered-flex"}>
+                        <Badge status={"success"}
+                               text={<ResText14Regular>{scheduledSlot[0].title}</ResText14Regular>}/>
+                    </CalenderItem>
+            }
+            return <></>
         }
+
+        return (
+            <TabContent>
+                <ResText16SemiBold><b>Today</b>
+                    <ResText16Regular className={"text-grey"}
+                                      style={{marginLeft: 12}}>
+                        {toMonthDateYearStr(today)}
+                    </ResText16Regular>
+                </ResText16SemiBold>
+                {appointment &&
+                    <MyCalendar dateCellRender={dateCellRender}
+                                value={new Date(appointment.scheduledAt)}/>}
+            </TabContent>
+        );
     };
 
 
@@ -583,14 +605,19 @@ export default function ScheduleView() {
             <Spin spinning={loading}>
                 <Content>
                     {appointment && <div>
-                        {renderActorInfo(appointment.tutor)}
+                        <div className={"schedule-actor-view-mod h-justified-flex"}>
+                            {renderActorInfo(isTutor ? appointment.student : appointment.tutor,
+                                isTutor ? "Student Info" : "Tutor Info")}
+                            {isLoggedModerator(loggedUser) ? renderActorInfo(appointment.student,
+                                "Student Info") : <></>}
+                        </div>
                         {renderNeedsTutoring(appointment.tutoringOnList, appointment.studentNote)}
                     </div>}
                     {appointment && <Row gutter={[24, 24]} className={"border-top"}>
                         <Col xxl={16} md={24} className={"border-right no-padding"}>
                             {renderTabs(getDefaultTab(),
                                 () => renderMenuComponent(),
-                                getMenuItems(id), appointment?.status?.toString())}
+                                getRoleBasedMenuItems(id), appointment?.status?.toString())}
                         </Col>
                         {/*<Col xxl={8} md={24} className={"h-start-top-flex no-padding"}>*/}
                         {/*    {renderActorInfo(appointment.tutor)}*/}
@@ -601,6 +628,9 @@ export default function ScheduleView() {
                     </Row>}
                 </Content>
             </Spin>
+            {isTutor && <Modal>
+
+            </Modal>}
         </Wrapper>
     );
 }

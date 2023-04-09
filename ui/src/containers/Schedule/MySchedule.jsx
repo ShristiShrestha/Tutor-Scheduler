@@ -85,7 +85,7 @@ export default function MySchedule() {
     }, [fetchApts]); // will call fetchApts if fetchApts function has changed
 
     const noAptsDesc = isTutor ? "You have not accepted any appointments yet. \nCheck if you have any pending requests." :
-        "There are no any appointments.\nFind tutors and request an appointment."
+        "There are no appointments.\nFind tutors and request an appointment."
     const onEmptyNavigateTo = isTutor ? "/notifications" : "/find-tutors";
     const onEmptyNavigateToBtn = isTutor ? "Go to notifications" : "Find tutors";
     return (
