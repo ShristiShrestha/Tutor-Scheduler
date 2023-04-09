@@ -7,10 +7,10 @@ export const isLoggedTutor = (loggedUser: UserDetailsType) => {
 }
 
 export const isLoggedStudent = (loggedUser: UserDetailsType) => {
-    const hasStdRole = loggedUser ? loggedUser.roles.filter(item => item.name === UserRoles.TUTOR) : [];
+    const hasStdRole = loggedUser ? loggedUser.roles.filter(item => item.name === UserRoles.STUDENT) : [];
     return loggedUser && !loggedUser.isTutor && hasStdRole.length > 0;
 }
 export const isLoggedModerator = (loggedUser: UserDetailsType) => {
-    const hasModRole = loggedUser ? loggedUser.roles.filter(item => item.name === UserRoles.TUTOR) : [];
+    const hasModRole = loggedUser ? loggedUser.roles.filter(item => item.name === UserRoles.MODERATOR) : [];
     return loggedUser && !loggedUser.isTutor && hasModRole.length > 0;
 }

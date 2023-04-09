@@ -74,7 +74,7 @@ export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode)
     switch (status) {
         case AppointmentStatus.REJECTED:
             color = "red";
-            text = "Denied";
+            text = "Rejected";
             break;
         case AppointmentStatus.PENDING:
             color = "blue";
@@ -82,7 +82,7 @@ export const getStatusBox = (status: AppointmentStatus, renderText ?: ReactNode)
             break;
         case AppointmentStatus.ACCEPTED:
             color = "green";
-            text = "Approved";
+            text = "Accepted";
             break;
         default:
             color = "gray";
@@ -97,7 +97,6 @@ const ScheduleCard = (apt: AppointmentType) => {
 
     return (
         <Card>
-
             <StatusInfo className={"h-justified-flex"}>
                 <div className={"h-start-flex data-slot-info"}>
                     {!!apt.createdAt &&
@@ -125,7 +124,7 @@ const ScheduleCard = (apt: AppointmentType) => {
             </TutorInfo>
             {apt.studentNote && <Desc>
                 <ResText12Regular className={"text-grey4"}>
-                    "{toEndDottedStr(apt.studentNote, 36)}"
+                    "{toEndDottedStr(apt.studentNote, 45)}"
                 </ResText12Regular>
             </Desc>}
             <StatusTagList>

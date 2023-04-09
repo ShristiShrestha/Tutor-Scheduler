@@ -41,7 +41,7 @@ export const toEndDottedStr = (
     if (!str)
         return ""
     const leadingStr = str.toString().substring(firstIndex, leadingVisible);
-    if (str.toString.length <= leadingVisible)
+    if (str.toString().length <= leadingVisible)
         return str
     return `${leadingStr}...`;
 };

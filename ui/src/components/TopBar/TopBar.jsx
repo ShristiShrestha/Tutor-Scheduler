@@ -1,9 +1,11 @@
 import {Avatar} from "antd";
-import {DownOutlined, UserOutlined} from "@ant-design/icons";
+import {UserOutlined} from "@ant-design/icons";
 import {ResText14SemiBold, ResText16SemiBold} from "../../utils/TextUtils";
 import styled from "styled-components";
 import {useSelector} from "react-redux";
 import {selectAuth} from "../../redux/auth/reducer";
+import {useNavigate} from "react-router-dom";
+import {capitalize} from "../../utils/StringUtils";
 
 const Wrapper = styled.div`
   line-height: inherit;
@@ -13,6 +15,7 @@ const Wrapper = styled.div`
 
 const AppName = styled.div`
   align-self: center;
+  cursor: pointer;
 `;
 
 const UserInfo = styled.div`
@@ -25,10 +28,12 @@ const UserInfo = styled.div`
 `;
 
 const TopBar = () => {
+    const navigate = useNavigate();
     const {loggedUser} = useSelector(selectAuth);
+
     return (
         <Wrapper className={"h-justified-flex"}>
-            <AppName>
+            <AppName onClick={() => navigate("/")}>
                 <ResText16SemiBold>Online Scheduler</ResText16SemiBold>
             </AppName>
             <UserInfo>
@@ -36,8 +41,7 @@ const TopBar = () => {
                     icon={<UserOutlined/>}
                     style={{marginRight: "10px", cursor: "pointer"}}
                 />
-                <ResText14SemiBold>{(loggedUser && loggedUser["username"]) || `Noname`}</ResText14SemiBold>
-                <DownOutlined style={{cursor: "pointer"}}/>
+                <ResText14SemiBold>{(loggedUser && capitalize(loggedUser["name"])) || `Noname`}</ResText14SemiBold>
             </UserInfo>
         </Wrapper>
     );

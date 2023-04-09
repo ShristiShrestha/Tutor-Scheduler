@@ -380,9 +380,9 @@ h6 {
     hyphens: auto; /* Mozilla */
     white-space: -o-pre-wrap; /* Opera 7 */
     white-space: pre-wrap; /* CSS3 */
-    word-wrap: break-word; /* Internet Explorer 5.5+ */
-    word-break: break-word;
-    white-space: normal;
+    /*word-wrap: break-word; !* Internet Explorer 5.5+ *!*/
+    /*word-break: break-word;*/
+    /*white-space: normal;*/
     line-height: initial;
 }
 
@@ -392,6 +392,15 @@ h6 {
     white-space: -o-pre-wrap; /* Opera 7 */
     white-space: pre; /* CSS3 */
     line-height: initial;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.text-center {
+    text-align: center;
+    display: flex;
 }
 
 /* ============================================= */
@@ -522,8 +531,8 @@ a:not([href]):not([class]) {
 
 .ant-input {
     /* border: none; */
-    font-style: italic;
-    border-bottom: 1px solid #e0e0e0;
+    /*font-style: italic;*/
+    border: 1px solid #e0e0e0;
     background: transparent;
 }
 

@@ -139,7 +139,7 @@ const TutorProfile = () => {
             month: calendarIntToMonth[today.getUTCMonth()] // // backend stores date in UTC format
         };
         dispatch(fetchAptWithUser(id, params))
-    }, [dispatch]);
+    }, [id]);
 
     const dispatchCreateApt = () => {
         if (!selectedSlotDate)

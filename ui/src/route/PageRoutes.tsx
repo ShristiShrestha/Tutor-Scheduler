@@ -6,7 +6,6 @@ import ScheduleView from "../containers/Schedule/ScheduleView";
 import TutorSchedule from "../containers/Schedule/TutorSchedule";
 import NotificationsPage from "../containers/Notification/NotificationsPage";
 import TutorProfile from "../containers/Tutor/TutorProfile";
-import TutorStatusPage from "../containers/Schedule/TutorStatusPage";
 import Chat from "../containers/Chat/Chat";
 import ChatConversation from "../containers/Chat/ChatConversation";
 import LoginPage from "../containers/Auth/LoginPage";
@@ -19,10 +18,6 @@ const pages = [
     {
         path: "/tutor-schedule/:id",
         component: <TutorSchedule />,
-    },
-    {
-        path: "/tutor-status/:id",
-        component: <TutorStatusPage />,
     },
     {
         path: "/schedules",

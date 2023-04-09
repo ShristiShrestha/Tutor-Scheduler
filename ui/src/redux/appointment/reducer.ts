@@ -1,7 +1,7 @@
 import {AppointmentState, AppointmentType, SET_APPOINTMENT, SET_APPOINTMENTS} from "./types";
 import {AppointmentFetchType, AppointmentStatus} from "../../enum/AppointmentEnum";
 import {RootState} from "../common/types";
-import {sortArrByKey, SortOrder, SortValueType} from "../../utils/SortUtils";
+import {sortArrByKey, SortValueType} from "../../utils/SortUtils";
 
 const initialState: AppointmentState = {
     otherAppointments: [],
@@ -21,13 +21,13 @@ export const filterAcceptedAptsUpcoming = (upcoming: AppointmentType[]): Appoint
 
 export const filterOtherAptsThanUpcoming = (allApts: AppointmentType[], upcoming: AppointmentType[]): AppointmentType[] => {
     if (upcoming.length === 0)
-        return sortArrByKey(allApts, "scheduledAt", SortValueType.DATE, SortOrder.DESC);
+        return sortArrByKey(allApts, "scheduledAt", SortValueType.DATE);
     if (allApts.length === 0)
         return [];
     const upcomingIds = upcoming.map(item => item.id);
     const otherApts = allApts.filter(item => !upcomingIds.includes(item.id));
     if (otherApts.length > 0)
-        return sortArrByKey(otherApts, "scheduledAt", SortValueType.DATE, SortOrder.DESC);
+        return sortArrByKey(otherApts, "scheduledAt", SortValueType.DATE);
     return otherApts;
 }
 
