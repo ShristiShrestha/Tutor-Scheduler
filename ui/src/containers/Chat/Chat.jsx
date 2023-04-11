@@ -8,6 +8,8 @@ import { fetchMsgsWithUsers } from "../../redux/chat/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectChat } from "../../redux/chat/reducer";
 import { selectAuth } from "../../redux/auth/reducer";
+import { fetchUsers } from "../../redux/user/actions";
+import { selectUser } from "../../redux/user/reducer";
 
 const Wrapper = styled.div``;
 
@@ -35,38 +37,54 @@ export default function Chat() {
     const dispatch = useDispatch();
     const { loggedUser } = useSelector(selectAuth);
     const { usersMessages } = useSelector(selectChat);
-
+    const { users } = useSelector(selectUser);
     const [loading, setLoading] = useState(true);
     const [msgUser, setMsgUser] = useState(undefined);
 
     const dispatchFetchChat = () => {
-        dispatch(fetchMsgsWithUsers());
+        // TODO: a query to fetch all users
+        dispatch(fetchUsers("TUTOR"));
+        dispatch(fetchUsers("STUDENT"));
         setLoading(false);
+        dispatch(fetchMsgsWithUsers());
     };
 
     useEffect(() => {
         dispatchFetchChat();
-        if (!!Object.keys(usersMessages) && !!loggedUser) {
-            let msg = Object.values(usersMessages).flat();
-            const filterUser = msg.map(item => {
-                return {
-                    ...item,
-                    email:
-                        item.senderEmail === loggedUser.email
-                            ? item.receiverEmail
-                            : item.senderEmail,
-                };
-            });
-
-            const uniqueUser = filterUser.reduce((finalArr, current) => {
-                let obj = finalArr.find(item => item.email === current.email);
-                if (obj) return finalArr;
-                return finalArr.concat([current]);
-            }, []);
-
-            setMsgUser(uniqueUser);
-        }
     }, [fetchMsgsWithUsers]);
+
+    useEffect(() => {
+        let msg = Object.values(usersMessages).flat();
+        const filterUser = msg.map(item => {
+            return {
+                ...item,
+                email:
+                    item.senderEmail === loggedUser.email
+                        ? item.receiverEmail
+                        : item.senderEmail,
+            };
+        });
+
+        let uniqueUser = filterUser.reduce((acc, current) => {
+            const index = acc.findIndex(item => item.email === current.email);
+            if (index === -1) {
+                acc.push(current);
+            } else if (current.id > acc[index].id) {
+                acc[index] = current;
+            }
+            return acc;
+        }, []);
+
+        uniqueUser.sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt));
+        uniqueUser = uniqueUser.map(user => {
+            const matchingUser = users.find(u => u.email === user.email);
+            return {
+                ...user,
+                name: matchingUser ? matchingUser.name : null,
+            };
+        });
+        setMsgUser(uniqueUser);
+    }, [usersMessages, users]);
 
     return (
         <Wrapper>

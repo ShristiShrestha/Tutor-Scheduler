@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { SendOutlined } from "@ant-design/icons";
 import {
@@ -7,14 +7,15 @@ import {
     ResText12Regular,
 } from "../../utils/TextUtils";
 import { grey6 } from "../../utils/ShadesUtils";
-import { fetchMsgsWithUser } from "../../redux/chat/actions";
-import { messagesData } from "../.././static_data/Chat";
+import { fetchMsgsWithUser, sendMessage } from "../../redux/chat/actions";
 import { List, Avatar, Input } from "antd";
 import MyButton from "../../components/Button/MyButton";
 import { useParams } from "react-router-dom";
 import { selectChat } from "../../redux/chat/reducer";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuth } from "../../redux/auth/reducer";
+import { selectUser } from "../../redux/user/reducer";
+import { toHourMinStr, toMonthDateYearStr } from "../../utils/DateUtils";
 
 const Wrapper = styled.div``;
 
@@ -28,20 +29,15 @@ const Header = styled.div`
     padding: 0 24px;
     display: flex;
     align-items: center;
-    position: fixed;
-    top: 48px;
-    left: 200px;
-    right: 0;
     border-bottom: 1px solid ${grey6};
 `;
 
 const Content = styled.div`
     padding: 0px 24px;
-    margin-top: 60px;
-    position: relative;
-    height: calc(100vh - 250px);
-    overflow-y: auto;
     margin-bottom: 120px;
+    .header-date {
+        margin: 20px 0 5px 2px;
+    }
 `;
 
 const ChatCard = styled.div`
@@ -49,18 +45,25 @@ const ChatCard = styled.div`
     border-radius: 12px;
     border: 1px solid rgb(242, 242, 242);
     margin-top: 12px;
+    height: calc(100vh - 250px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
 
     .input-messagebox {
-        margin-top: 16px;
         position: fixed;
         bottom: 0px;
-        height: 100px;
         background-color: white;
-        width: 67%;
+        width: calc(100vw - 300px);
         margin-bottom: 25px;
     }
     .ant-list-item {
         border: none !important;
+    }
+    .text-area{
+        flex: 1,
+        resize: none;
+        border-radius: 5px 0 0 5px;
     }
 `;
 
@@ -69,11 +72,11 @@ export default function ChatConversation() {
     const { sender_id } = useParams();
     const { userMessages } = useSelector(selectChat);
     const { loggedUser } = useSelector(selectAuth);
+    const { users } = useSelector(selectUser);
 
     const [loading, setLoading] = useState(true);
     const [msgUser, setMsgUser] = useState(undefined);
     const [inputValue, setInputValue] = useState("");
-    const [messages, setMessages] = useState([]);
 
     const handleInputChange = event => {
         setInputValue(event.target.value);
@@ -86,29 +89,37 @@ export default function ChatConversation() {
 
     useEffect(() => {
         dispatchFetchChat();
-        if (!!userMessages && !msgUser) {
-            const convertedData = userMessages.map((item, index) => ({
-                id: index + 1,
-                message: item.message,
-                username: item.receiverEmail,
-                date: item.sentAt,
-                sender: item.senderEmail === loggedUser.email ? "me" : "other",
-            }));
-            setMsgUser(convertedData);
-        }
     }, [fetchMsgsWithUser]);
 
-    const handleSendMessage = () => {
-        const newMessage = {
+    useMemo(() => {
+        let convertedData = userMessages.map((item, index) => ({
+            id: index + 1,
+            message: item.message,
+            username: item.receiverEmail,
+            date: item.sentAt,
+            sender: item.senderEmail === loggedUser.email ? "me" : "other",
+        }));
+        convertedData = convertedData.map(user => {
+            const matchingUser = users.find(u => u.email === user.username);
+            return {
+                ...user,
+                name: matchingUser ? matchingUser.name : null,
+            };
+        });
+        setMsgUser(convertedData);
+    }, [userMessages]);
+
+    const postMsg = () => {
+        const msg = {
             message: inputValue,
-            sender: "user",
+            senderEmail: loggedUser.email,
+            receiverEmail: sender_id,
         };
-        setMessages([...messages, newMessage]);
         setInputValue("");
+        dispatch(sendMessage(msg));
     };
 
     const renderItem = item => {
-        const isSender = item.username === "sender";
         return (
             <List
                 dataSource={msgUser}
@@ -118,56 +129,66 @@ export default function ChatConversation() {
                         style={{
                             flexDirection: "column",
                             alignItems:
-                                message.sender !== "me"
+                                message && message.sender != "me"
                                     ? "flex-end"
                                     : "flex-start",
                             flexDirection:
-                                message.sender !== "me" ? "row-reverse" : "row",
+                                message && message.sender != "me"
+                                    ? "row-reverse"
+                                    : "row",
                         }}
                     >
                         <div
                             style={{
                                 flexDirection: "column",
                                 alignItems:
-                                    message.sender !== "me"
+                                    message && message.sender != "me"
                                         ? "flex-end"
                                         : "flex-start",
                                 flexDirection:
-                                    message.sender !== "me"
+                                    message && message.sender != "me"
                                         ? "row-reverse"
                                         : "row",
                             }}
                         >
                             {index === 0 ||
-                            message.sender !==
-                                messagesData[index - 1].sender ? (
-                                <Avatar
-                                    src={`https://i.pravatar.cc/150?u=${message.sender}`}
-                                />
+                            (message &&
+                                message.sender !==
+                                    msgUser[index - 1].sender) ? (
+                                <Avatar />
                             ) : null}
 
                             {index === 0 ||
-                            message.sender !==
-                                messagesData[index - 1].sender ? (
+                            message.sender !== msgUser[index - 1].sender ? (
                                 <Message
                                     style={{
                                         marginTop: "-35px",
-                                        backgroundColor:
-                                            message.sender === "me"
-                                                ? "#e6f7ff"
-                                                : "#f5f5f5",
-                                        marginRight:
-                                            message.sender === "me"
-                                                ? "8px"
-                                                : "40px",
-                                        marginLeft:
-                                            message.sender === "me"
-                                                ? "40px"
-                                                : "8px",
                                     }}
                                 >
                                     <ResText12Regular>
-                                        {message.message}
+                                        <ResText12Regular
+                                            style={{
+                                                padding: "12px",
+                                                backgroundColor:
+                                                    message.sender === "me"
+                                                        ? "#e6f7ff"
+                                                        : "#f5f5f5",
+                                                marginRight:
+                                                    message.sender === "me"
+                                                        ? "8px"
+                                                        : "8px",
+                                                marginLeft:
+                                                    message.sender === "me"
+                                                        ? "40px"
+                                                        : "30px",
+                                            }}
+                                        >
+                                            {message.message}
+                                        </ResText12Regular>
+                                        {toMonthDateYearStr(
+                                            new Date(message.date),
+                                        )}
+                                        , {toHourMinStr(new Date(message.date))}
                                     </ResText12Regular>
                                 </Message>
                             ) : (
@@ -180,10 +201,10 @@ export default function ChatConversation() {
                                         marginRight:
                                             message.sender === "me"
                                                 ? "8px"
-                                                : "40px",
+                                                : "120px",
                                         marginLeft:
                                             message.sender === "me"
-                                                ? "40px"
+                                                ? "45px"
                                                 : "8px",
                                     }}
                                 >
@@ -202,28 +223,30 @@ export default function ChatConversation() {
     return (
         <Wrapper>
             <Header className={"h-justified-flex"}>
-                <ResText14SemiBold>Chat - {sender_id}</ResText14SemiBold>
+                <ResText14SemiBold>
+                    Chat -
+                    {msgUser && msgUser.length ? msgUser[0].name : sender_id}
+                </ResText14SemiBold>
             </Header>
             <Content>
-                <ChatCard>
+                <div className={"header-date"}>
                     <ResText12Regular>Showing Since</ResText12Regular>{" "}
-                    <ResText12SemiBold>Jan 10, 2022</ResText12SemiBold>
-                    <List
-                        itemLayout="horizontal"
-                        dataSource={messagesData}
-                        renderItem={renderItem}
-                    />
+                    <ResText12SemiBold>
+                        {msgUser && msgUser.length
+                            ? toMonthDateYearStr(new Date(msgUser[0].date))
+                            : null}
+                        {/* {msgUser.lengthtoMonthDateYearStr(new Date(msgUser[0].date))} */}
+                    </ResText12SemiBold>
+                </div>
+                <ChatCard>
+                    {msgUser && renderItem(msgUser)}
                     <div className="input-messagebox">
                         <Input.Group
                             compact
                             style={{ display: "flex", alignItems: "center" }}
                         >
                             <Input.TextArea
-                                style={{
-                                    flex: 1,
-                                    resize: "none",
-                                    borderRadius: "5px 0 0 5px",
-                                }}
+                                className={"text-area"}
                                 rows={2}
                                 value={inputValue}
                                 onChange={handleInputChange}
@@ -233,6 +256,7 @@ export default function ChatConversation() {
                                 type="primary"
                                 style={{ borderRadius: "0 5px 5px 0" }}
                                 htmlType="submit"
+                                onClick={() => postMsg()}
                             >
                                 Send <SendOutlined />
                             </MyButton>

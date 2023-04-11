@@ -7,11 +7,7 @@ import styled from "styled-components";
 import { grey6, yellow } from "../../utils/ShadesUtils";
 import { Link } from "react-router-dom";
 import { toEndDottedStr } from "../../utils/StringUtils";
-import {
-    toHourMinStr,
-    toMonthDateYearStr,
-    getYearMonthDateHrsUtcFormat,
-} from "../../utils/DateUtils";
+import { toHourMinStr, toMonthDateYearStr } from "../../utils/DateUtils";
 
 const Wrapper = styled.div`
     .anticon svg {
@@ -56,13 +52,14 @@ const ListItem = ({ item }) => {
                     )}
                 </Space>
                 <ResText14Regular className={"listview-title text-grey1"}>
-                    {item.email}
+                    {toEndDottedStr(item.name, 5)}
                 </ResText14Regular>
                 <ResText14Regular className="listview-field text-grey2">
                     {toEndDottedStr(item.message, 20)}
                 </ResText14Regular>
                 <ResText14Regular className="listview-time">
-                    {toHourMinStr(new Date(item.sentAt))}{" "}
+                    {toMonthDateYearStr(new Date(item.sentAt))},
+                    {toHourMinStr(new Date(item.sentAt))}
                 </ResText14Regular>
             </List.Item>
         </Link>
@@ -89,7 +86,7 @@ const ListView = data => {
                     className={"text-grey1"}
                     style={{ marginRight: "12px" }}
                 >
-                    Recent{" "}
+                    Recent
                 </ResText14Regular>
                 {starred ? (
                     <StarFilled
