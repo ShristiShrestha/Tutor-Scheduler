@@ -39,7 +39,7 @@ const ListItem = ({ item }) => {
     };
 
     return (
-        <Link to={`/chat/users/${item.email}`}>
+        <Link to={`/chat/${item.id}`}>
             <List.Item>
                 <Space style={{ marginRight: 12 }}>
                     {starred ? (

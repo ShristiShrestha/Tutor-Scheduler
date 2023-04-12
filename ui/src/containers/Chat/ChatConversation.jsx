@@ -70,7 +70,7 @@ const ChatCard = styled.div`
 export default function ChatConversation() {
     const dispatch = useDispatch();
     const { sender_id } = useParams();
-    const { userMessages } = useSelector(selectChat);
+    const { userMessages, usersMessages } = useSelector(selectChat);
     const { loggedUser } = useSelector(selectAuth);
     const { users } = useSelector(selectUser);
 
@@ -83,7 +83,17 @@ export default function ChatConversation() {
     };
 
     const dispatchFetchChat = () => {
-        dispatch(fetchMsgsWithUser(sender_id));
+        const userObj = Object.values(usersMessages)
+            .flat()
+            .find(obj => obj.id === parseInt(sender_id));
+
+        let email =
+            userObj.senderEmail === loggedUser.email
+                ? userObj.receiverEmail
+                : userObj.senderEmail;
+
+        dispatch(fetchMsgsWithUser(email));
+
         setLoading(false);
     };
 
