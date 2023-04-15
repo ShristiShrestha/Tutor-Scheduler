@@ -25,7 +25,7 @@ import {AppointmentStatus} from "../../enum/AppointmentEnum";
 import {createAppointment} from "../../redux/appointment/actions";
 import {AppointmentType} from "../../redux/appointment/types";
 import {selectAuth} from "../../redux/auth/reducer";
-import {openNotification} from "../../utils/Alert";
+import {AlertType, openNotification} from "../../utils/Alert";
 import ViewTutorRatings from "./ViewTutorRatings";
 
 const {TextArea} = Input;
@@ -123,7 +123,7 @@ const TutorProfile = () => {
     }
 
     const handleReqInput = (key, value: string | string[]) => {
-        console.log(`request input value: `, value);
+        console.log(`tutor request input value: `, value);
         setRequestInput({...requestInput, [key]: value});
     };
 
@@ -131,11 +131,15 @@ const TutorProfile = () => {
     const validateAptCreation = () => {
         let success = true;
         if (!selectedSlotDate) {
-            openNotification("No slots selected", "Please select a slot for tutoring")
+            openNotification("No slots selected",
+                "Please select a slot for tutoring",
+                AlertType.WARNING)
             success = false;
         }
         if (requestInput.subjects.length === 0) {
-            openNotification("No subjects selected", "Please select at least one subject you need tutoring for.");
+            openNotification("No subjects selected",
+                "Please select at least one subject you need tutoring for.",
+                AlertType.WARNING);
             success = false;
         }
         return success

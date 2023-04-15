@@ -3,7 +3,6 @@ import {authenticate} from "../api/AuthApi";
 import {Navigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {setAuth} from "../redux/auth/actions";
-import {openNotification} from "../utils/Alert";
 import {useNavigate} from "react-router";
 import {selectAuth} from "../redux/auth/reducer";
 
@@ -38,7 +37,7 @@ export default function useAuth(Component) {
             .catch(err => {
                 // eslint-disable-next-line no-console
                 console.error("Failed to authenticate", err);
-                openNotification("Failed to authorize", "Please login again!")
+                // openNotification("Failed to authorize", "Please login again!")
                 setAlertShown(false);
                 navigate("/login");
             })

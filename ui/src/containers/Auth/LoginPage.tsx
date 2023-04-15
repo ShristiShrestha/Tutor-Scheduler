@@ -8,7 +8,7 @@ import {capitalize} from "../../utils/StringUtils";
 import {authenticate, login, signup} from "../../api/AuthApi";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router";
-import {openNotification} from "../../utils/Alert";
+import {AlertType, openNotification} from "../../utils/Alert";
 import {setAuth} from "../../redux/auth/actions";
 import {selectAuth} from "../../redux/auth/reducer";
 
@@ -53,12 +53,17 @@ export default function LoginPage() {
         return navigate("/schedules");
     }
 
-    const handleErr = (item, err) => openNotification("Error on " + capitalize(item), "Error msg: " + err);
+    const handleErr = (item, err) => openNotification("Error on " + capitalize(item), err, AlertType.ERROR);
 
     // successful auth: todo:
     // tutor, student => schedules page by default
     // moderator => chat
     const handleSubmit = (item, formInput) => {
+        if (formInput["email"] && !formInput["email"].includes("@lsu.edu")) {
+            return openNotification("Invalid email",
+                "Make sure your email is associated with LSU account.",
+                AlertType.WARNING)
+        }
         switch (item) {
             case "login":
                 login(formInput).then(res => {
@@ -66,14 +71,14 @@ export default function LoginPage() {
                         .then(res1 => handleProfile(res1))
                         .catch(err => handleErr("login", err));
                 }).catch(err => {
-                    openNotification("Error on " + capitalize(item), "Error msg: " + err);
+                    openNotification("Error on " + capitalize(item), err, AlertType.ERROR);
                 })
                 break;
             case "signup":
                 signup(formInput).then(res => {
                     authenticate()
                         .then(res1 => handleProfile(res1))
-                        .catch(err => openNotification("Error on profile", "Please login again.", err));
+                        .catch(err => handleErr("sign up", err));
                 }).catch(err => handleErr("signup", err))
                 break;
             default:

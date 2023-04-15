@@ -514,14 +514,13 @@ export default function ScheduleView() {
 
 
     const dispatchRateTutor = useCallback(() => {
-        const handleErr = (err) => openNotification("Unsuccessful request",
-            "Failed to rate the tutor." + err, AlertType.ERROR)
+        const handleErr = (err) => openNotification("Failed to rate the tutor.", err, AlertType.ERROR)
         console.log("rating req : ", rateRequest);
 
         if (rateRequest.rating > 0)
             dispatch(rateAppointment(id, rateRequest.rating, handleErr));
         else
-            openNotification("Invalid rating", "Please select one of the ratings.")
+            openNotification("Invalid rating", "Please select one of the ratings.", AlertType.WARNING);
     }, [rateRequest]);
 
     const dispatchUpdateAptStatus = () => {
@@ -531,10 +530,12 @@ export default function ScheduleView() {
             status: tutorUpdateReq.status,
         };
         const onSuccess = (apt) => {
-            openNotification("Request successful", "Appointment status updated to ", apt.status, AlertType.SUCCESS);
+            openNotification("Request successful",
+                "Appointment status updated to ", apt.status, AlertType.SUCCESS);
             setShowRespondModal(false);
         };
-        const onError = () => openNotification("Request unsuccessful", "Failed to update appointment status to ", tutorUpdateReq.status, AlertType.ERROR);
+        const onError = (err) => openNotification("Failed to update appointment status to " + tutorUpdateReq.status,
+            err, AlertType.ERROR);
         dispatch(updateAppointment(req, onSuccess, onError));
     };
 
@@ -544,11 +545,13 @@ export default function ScheduleView() {
             scheduledAt: getYearMonthDateHrsUtcFormat(tutorUpdateReq.scheduledAt)
         }
         const onSuccess = (apt) => {
-            openNotification("Request successful", "Appointment schedule updated to ", new Date(apt.scheduledAt), AlertType.SUCCESS);
+            openNotification("Request successful",
+                "Appointment schedule updated to ", new Date(apt.scheduledAt), AlertType.SUCCESS);
         };
 
-        const onError = () => openNotification("Request unsuccessful", "Failed to update appointment schedule to ", tutorUpdateReq.scheduledAt, AlertType.ERROR);
-        dispatch(updateAppointment(req));
+        const onError = (err) => openNotification("Failed to update appointment schedule to " + tutorUpdateReq.scheduledAt,
+            err, AlertType.ERROR);
+        dispatch(updateAppointment(req, onSuccess, onError));
 
     }
 
