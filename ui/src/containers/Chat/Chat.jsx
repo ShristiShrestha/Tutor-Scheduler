@@ -10,9 +10,14 @@ import { selectChat } from "../../redux/chat/reducer";
 import { selectAuth } from "../../redux/auth/reducer";
 import { fetchUsers } from "../../redux/user/actions";
 import { selectUser } from "../../redux/user/reducer";
+import { PlusOutlined } from "@ant-design/icons";
+import MyButton from "../../components/Button/MyButton";
+import { sendMessage } from "../../redux/chat/actions";
+import { Form, Input, Modal, Select } from "antd";
+import { ResText14Regular, ResText16SemiBold } from "../../utils/TextUtils";
+import { Link } from "react-router-dom";
 
 const Wrapper = styled.div``;
-
 const Header = styled.div`
     height: 56px;
     padding: 0 24px;
@@ -39,7 +44,13 @@ export default function Chat() {
     const { usersMessages } = useSelector(selectChat);
     const { users } = useSelector(selectUser);
     const [loading, setLoading] = useState(true);
+    const [newMsg, setNewMsg] = useState(false);
     const [msgUser, setMsgUser] = useState(undefined);
+    const [requestInput, setRequestInput] = useState({
+        coordinator: "",
+        message: "",
+    });
+    const [modals, setModalOpen] = useState(false);
 
     const dispatchFetchChat = () => {
         // TODO: a query to fetch all users
@@ -83,16 +94,152 @@ export default function Chat() {
                 name: matchingUser ? matchingUser.name : null,
             };
         });
+
         setMsgUser(uniqueUser);
     }, [usersMessages, users]);
 
+    const getUserData = () =>
+        !!users
+            ? users.map(item => {
+                  return {
+                      label: item.name + " <" + item.email + "> ",
+                      value: item.name,
+                      key: item.id,
+                  };
+              })
+            : [];
+
+    const handleReqInput = (key, value) => {
+        if (key == "message") value = value.target.value;
+        setRequestInput({ ...requestInput, [key]: value });
+    };
+
+    const handleSubmit = async () => {
+        let receiver = users.find(
+            u => u.name === requestInput.coordinator,
+        ).email;
+
+        let msgObj = {
+            message: requestInput.message,
+            receiverEmail: receiver,
+            senderEmail: loggedUser.email,
+        };
+
+        setRequestInput("");
+        dispatch(sendMessage(msgObj));
+        setModalOpen(false);
+    };
+
     return (
         <Wrapper>
+            {newMsg}
             <Header className={"h-justified-flex"}>
                 <ResText14SemiBold>Chat </ResText14SemiBold>
                 <MySearch />
             </Header>
-            <Content>{msgUser && <ListView data={msgUser} />}</Content>
+            <Content>
+                {msgUser && <ListView data={msgUser} />}
+
+                <MyButton
+                    type="primary"
+                    style={{ borderRadius: "0 5px 5px 0" }}
+                    htmlType="submit"
+                >
+                    <Link to={`/chat/1`}>
+                        {" "}
+                        Start A New Chat <PlusOutlined />{" "}
+                    </Link>
+                </MyButton>
+
+                <Modal
+                    title={
+                        <ResText16SemiBold>Start a New Chat</ResText16SemiBold>
+                    }
+                    open={modals}
+                    footer={false}
+                    // onOk={() => setModalOpen(false)}
+                    onCancel={() => setModalOpen(false)}
+                >
+                    <Form
+                        name="basic"
+                        layout={"vertical"}
+                        labelCol={{ span: 24 }}
+                        wrapperCol={{ span: 24 }}
+                        style={{ maxWidth: 600 }}
+                        className={"large-vertical-margin"}
+                        // onFinish={values => handleSubmit(values)}
+                        // autoComplete="off"
+                    >
+                        <Form.Item
+                            label={
+                                <ResText14Regular className={"text-grey2"}>
+                                    Needs tutoring with
+                                </ResText14Regular>
+                            }
+                            name="coordinator"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Select a co-ordinator!",
+                                },
+                            ]}
+                        >
+                            <div
+                                className={
+                                    "vertical-start-flex select-needs-tutoring-in"
+                                }
+                            >
+                                <Select
+                                    allowClear
+                                    style={{ width: "95%" }}
+                                    placeholder="Select tutoring topics..."
+                                    onChange={value =>
+                                        handleReqInput("coordinator", value)
+                                    }
+                                    options={getUserData()}
+                                />
+                            </div>
+                        </Form.Item>
+
+                        <Form.Item
+                            label={
+                                <ResText14Regular className={"text-grey2"}>
+                                    Message
+                                </ResText14Regular>
+                            }
+                            name="message"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Enter your message!",
+                                },
+                            ]}
+                        >
+                            <Input.TextArea
+                                // className={"text-area"}
+                                // rows={2}
+                                // value={inputValue}
+                                onChange={value =>
+                                    handleReqInput("message", value)
+                                }
+                                placeholder="Type a message..."
+                            />
+                        </Form.Item>
+
+                        <Form.Item>
+                            <div className={"h-end-flex full-width"}>
+                                <MyButton
+                                    type="primary"
+                                    htmlType="submit"
+                                    onClick={handleSubmit}
+                                >
+                                    Send Message
+                                </MyButton>
+                            </div>
+                        </Form.Item>
+                    </Form>
+                </Modal>
+            </Content>
         </Wrapper>
     );
 }

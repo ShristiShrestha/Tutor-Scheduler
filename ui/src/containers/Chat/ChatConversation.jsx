@@ -8,14 +8,19 @@ import {
 } from "../../utils/TextUtils";
 import { grey6 } from "../../utils/ShadesUtils";
 import { fetchMsgsWithUser, sendMessage } from "../../redux/chat/actions";
-import { List, Avatar, Input } from "antd";
+import { List, Avatar, Input, Select } from "antd";
 import MyButton from "../../components/Button/MyButton";
 import { useParams } from "react-router-dom";
 import { selectChat } from "../../redux/chat/reducer";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuth } from "../../redux/auth/reducer";
 import { selectUser } from "../../redux/user/reducer";
-import { toHourMinStr, toMonthDateYearStr } from "../../utils/DateUtils";
+import EmptyContent from "../../components/NoContent/EmptyContent";
+import {
+    toDays,
+    toHourMinStr,
+    toMonthDateYearStr,
+} from "../../utils/DateUtils";
 
 const Wrapper = styled.div``;
 
@@ -77,6 +82,7 @@ export default function ChatConversation() {
     const [loading, setLoading] = useState(true);
     const [msgUser, setMsgUser] = useState(undefined);
     const [inputValue, setInputValue] = useState("");
+    const [inputReceiver, setRequestInput] = useState(undefined);
 
     const handleInputChange = event => {
         setInputValue(event.target.value);
@@ -86,14 +92,14 @@ export default function ChatConversation() {
         const userObj = Object.values(usersMessages)
             .flat()
             .find(obj => obj.id === parseInt(sender_id));
+        if (userObj) {
+            let email =
+                userObj.senderEmail === loggedUser.email
+                    ? userObj.receiverEmail
+                    : userObj.senderEmail;
 
-        let email =
-            userObj.senderEmail === loggedUser.email
-                ? userObj.receiverEmail
-                : userObj.senderEmail;
-
-        dispatch(fetchMsgsWithUser(email));
-
+            dispatch(fetchMsgsWithUser(email));
+        }
         setLoading(false);
     };
 
@@ -102,83 +108,144 @@ export default function ChatConversation() {
     }, [fetchMsgsWithUser]);
 
     useMemo(() => {
-        let convertedData = userMessages.map((item, index) => ({
-            id: index + 1,
-            message: item.message,
-            username: item.receiverEmail,
-            date: item.sentAt,
-            sender: item.senderEmail === loggedUser.email ? "me" : "other",
-        }));
-        convertedData = convertedData.map(user => {
-            const matchingUser = users.find(u => u.email === user.username);
-            return {
-                ...user,
-                name: matchingUser ? matchingUser.name : null,
-            };
-        });
-        setMsgUser(convertedData);
+        if (userMessages) {
+            let convertedData = userMessages.map((item, index) => ({
+                id: index + 1,
+                message: item.message,
+                username: item.receiverEmail,
+                date: item.sentAt,
+                sender: item.senderEmail === loggedUser.email ? "me" : "other",
+            }));
+            convertedData = convertedData.map(user => {
+                const matchingUser = users.find(u => u.email === user.username);
+                return {
+                    ...user,
+                    name: matchingUser ? matchingUser.name : null,
+                };
+            });
+            setMsgUser(convertedData);
+        }
     }, [userMessages]);
 
     const postMsg = () => {
         const msg = {
             message: inputValue,
             senderEmail: loggedUser.email,
-            receiverEmail: sender_id,
+            receiverEmail: userMessages.length
+                ? userMessages[0].senderEmail == loggedUser.email
+                    ? userMessages[0].receiverEmail
+                    : userMessages[0].senderEmail
+                : inputReceiver,
         };
         setInputValue("");
         dispatch(sendMessage(msg));
     };
 
+    const getUserData = () => {
+        if (users) {
+            let existingUser = Object.keys(usersMessages).map(
+                item => item.split(",")[0],
+            );
+
+            let users1 = users.filter(
+                item => !existingUser.includes(item.email),
+            );
+            let data = users1.map(item => {
+                return {
+                    label: item.name + " <" + item.email + "> ",
+                    value: item.email,
+                    key: item.email,
+                };
+            });
+            return data;
+        }
+        return [];
+    };
+
     const renderItem = item => {
         return (
-            <List
-                dataSource={msgUser}
-                bordered={false}
-                renderItem={(message, index) => (
-                    <List.Item
-                        style={{
-                            flexDirection: "column",
-                            alignItems:
-                                message && message.sender != "me"
-                                    ? "flex-end"
-                                    : "flex-start",
-                            flexDirection:
-                                message && message.sender != "me"
-                                    ? "row-reverse"
-                                    : "row",
-                        }}
-                    >
-                        <div
-                            style={{
-                                flexDirection: "column",
-                                alignItems:
-                                    message && message.sender != "me"
-                                        ? "flex-end"
-                                        : "flex-start",
-                                flexDirection:
-                                    message && message.sender != "me"
-                                        ? "row-reverse"
-                                        : "row",
-                            }}
-                        >
-                            {index === 0 ||
-                            (message &&
-                                message.sender !==
-                                    msgUser[index - 1].sender) ? (
-                                <Avatar />
-                            ) : null}
-
-                            {index === 0 ||
-                            message.sender !== msgUser[index - 1].sender ? (
-                                <Message
+            <div>
+                {msgUser.length ? (
+                    <List
+                        dataSource={msgUser}
+                        bordered={false}
+                        renderItem={(message, index) => (
+                            <List.Item
+                                style={{
+                                    flexDirection: "column",
+                                    alignItems:
+                                        message && message.sender != "me"
+                                            ? "flex-end"
+                                            : "flex-start",
+                                    flexDirection:
+                                        message && message.sender != "me"
+                                            ? "row-reverse"
+                                            : "row",
+                                }}
+                            >
+                                <div
                                     style={{
-                                        marginTop: "-35px",
+                                        flexDirection: "column",
+                                        alignItems:
+                                            message && message.sender != "me"
+                                                ? "flex-end"
+                                                : "flex-start",
+                                        flexDirection:
+                                            message && message.sender != "me"
+                                                ? "row-reverse"
+                                                : "row",
                                     }}
                                 >
-                                    <ResText12Regular>
-                                        <ResText12Regular
+                                    {index === 0 ||
+                                    (message &&
+                                        message.sender !==
+                                            msgUser[index - 1].sender) ? (
+                                        <Avatar />
+                                    ) : null}
+
+                                    {index === 0 ||
+                                    message.sender !==
+                                        msgUser[index - 1].sender ? (
+                                        <Message
                                             style={{
-                                                padding: "12px",
+                                                marginTop: "-35px",
+                                            }}
+                                        >
+                                            <ResText12Regular>
+                                                <ResText12Regular
+                                                    style={{
+                                                        padding: "12px",
+                                                        backgroundColor:
+                                                            message.sender ===
+                                                            "me"
+                                                                ? "#e6f7ff"
+                                                                : "#f5f5f5",
+                                                        marginRight:
+                                                            message.sender ===
+                                                            "me"
+                                                                ? "8px"
+                                                                : "8px",
+                                                        marginLeft:
+                                                            message.sender ===
+                                                            "me"
+                                                                ? "40px"
+                                                                : "30px",
+                                                    }}
+                                                >
+                                                    {message.message}
+                                                </ResText12Regular>
+                                                {toMonthDateYearStr(
+                                                    new Date(message.date),
+                                                )}
+                                                ,{" "}
+                                                {toHourMinStr(
+                                                    new Date(message.date),
+                                                )}
+                                            </ResText12Regular>
+                                        </Message>
+                                    ) : (
+                                        <Message
+                                            style={{
                                                 backgroundColor:
                                                     message.sender === "me"
                                                         ? "#e6f7ff"
@@ -186,61 +253,60 @@ export default function ChatConversation() {
                                                 marginRight:
                                                     message.sender === "me"
                                                         ? "8px"
-                                                        : "8px",
+                                                        : "120px",
                                                 marginLeft:
                                                     message.sender === "me"
-                                                        ? "40px"
-                                                        : "30px",
+                                                        ? "45px"
+                                                        : "8px",
                                             }}
                                         >
-                                            {message.message}
-                                        </ResText12Regular>
-                                        {toMonthDateYearStr(
-                                            new Date(message.date),
-                                        )}
-                                        , {toHourMinStr(new Date(message.date))}
-                                    </ResText12Regular>
-                                </Message>
-                            ) : (
-                                <Message
-                                    style={{
-                                        backgroundColor:
-                                            message.sender === "me"
-                                                ? "#e6f7ff"
-                                                : "#f5f5f5",
-                                        marginRight:
-                                            message.sender === "me"
-                                                ? "8px"
-                                                : "120px",
-                                        marginLeft:
-                                            message.sender === "me"
-                                                ? "45px"
-                                                : "8px",
-                                    }}
-                                >
-                                    <ResText12Regular>
-                                        {message.message}
-                                    </ResText12Regular>
-                                </Message>
-                            )}
-                        </div>
-                    </List.Item>
+                                            <ResText12Regular>
+                                                {message.message}
+                                            </ResText12Regular>
+                                        </Message>
+                                    )}
+                                </div>
+                            </List.Item>
+                        )}
+                    />
+                ) : (
+                    <EmptyContent
+                        className={"empty-content"}
+                        showEmptyIcon={true}
+                        desc={"Start a new conversation"}
+                    />
                 )}
-            />
+            </div>
         );
+    };
+    const handleReqInput = (key, value) => {
+        setRequestInput(value);
     };
 
     return (
         <Wrapper>
             <Header className={"h-justified-flex"}>
                 <ResText14SemiBold>
-                    Chat -
-                    {msgUser && msgUser.length ? msgUser[0].name : sender_id}
+                    {msgUser && msgUser.length ? (
+                        `Chat - ${msgUser[0].name}`
+                    ) : (
+                        <Select
+                            allowClear
+                            style={{ width: "95%" }}
+                            placeholder="Select cordinator..."
+                            onChange={value =>
+                                handleReqInput("coordinator", value)
+                            }
+                            options={getUserData()}
+                        />
+                    )}
                 </ResText14SemiBold>
             </Header>
             <Content>
                 <div className={"header-date"}>
-                    <ResText12Regular>Showing Since</ResText12Regular>{" "}
+                    {msgUser && msgUser.length ? (
+                        <ResText12Regular>Showing Since </ResText12Regular>
+                    ) : null}
                     <ResText12SemiBold>
                         {msgUser && msgUser.length
                             ? toMonthDateYearStr(new Date(msgUser[0].date))
