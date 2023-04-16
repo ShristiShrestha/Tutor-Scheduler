@@ -54,6 +54,7 @@ public class UserService {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
             String roleString = isTutor ? RoleConstants.TUTOR : RoleConstants.STUDENT;
+            roleString = user.getIsCoordinator() ? RoleConstants.COORDINATOR : roleString;
 
             if (isTutor) {
                 user.getTutor().setUser(user);
