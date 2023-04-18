@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import {grey1, grey6, pearl} from "../../utils/ShadesUtils";
+import { grey1, grey6, pearl } from "../../utils/ShadesUtils";
 import {
     ResText12Regular,
     ResText14Regular,
@@ -8,25 +8,37 @@ import {
     ResText16Regular,
     ResText16SemiBold,
 } from "../../utils/TextUtils";
-import {renderActorInfo, renderNeedsTutoring, renderTabs, SlotInfo, TabContent,} from "../Schedule/ScheduleView";
-import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
-import {getYearMonthDateHrsUtcFormat, toMonthDateYearStr, toSlotRangeStr} from "../../utils/DateUtils";
+import {
+    renderActorInfo,
+    renderNeedsTutoring,
+    renderTabs,
+    SlotInfo,
+    TabContent,
+} from "../Schedule/ScheduleView";
+import { CalendarOutlined, StarOutlined } from "@ant-design/icons";
+import {
+    getYearMonthDateHrsUtcFormat,
+    toMonthDateYearStr,
+    toSlotRangeStr,
+} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
-import {useParams} from "react-router";
-import {useLocation, useNavigate} from "react-router-dom";
-import {Checkbox, Col, Divider, Input, Row, Select, Spin} from "antd";
+import { useParams } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Checkbox, Col, Divider, Input, Row, Select, Spin } from "antd";
 import MyButton from "../../components/Button/MyButton";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchAptWithUser, fetchUser} from "../../redux/user/actions";
-import {selectUser} from "../../redux/user/reducer";
-import {UserAppointmentParams} from "../../redux/user/types";
-import {calendarIntToMonth, getAvailableSlot} from "../../utils/ScheduleUtils";
-import {AppointmentStatus} from "../../enum/AppointmentEnum";
-import {createAppointment} from "../../redux/appointment/actions";
-import {AppointmentType} from "../../redux/appointment/types";
-import {selectAuth} from "../../redux/auth/reducer";
-import {AlertType, openNotification} from "../../utils/Alert";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAptWithUser, fetchUser } from "../../redux/user/actions";
+import { selectUser } from "../../redux/user/reducer";
+import {
+    calendarIntToMonth,
+    getAvailableSlot,
+} from "../../utils/ScheduleUtils";
+import { AppointmentStatus } from "../../enum/AppointmentEnum";
+import { createAppointment } from "../../redux/appointment/actions";
+import { selectAuth } from "../../redux/auth/reducer";
+import { AlertType, openNotification } from "../../utils/Alert";
 import ViewTutorRatings from "./ViewTutorRatings";
+import { UserDetailsType } from "../../redux/user/types";
 
 const {TextArea} = Input;
 
@@ -64,27 +76,26 @@ const Content = styled.div`
   }
 `;
 
-const getMenuItems = id => [
-    // {
-    //     key: "profile-view",
-    //     link: `/profile/${id}/details`,
-    //     title: "Profile",
-    //     icon: <UserOutlined/>,
-    // },
-    {
-        key: "request-tutoring",
-        link: `/profile/${id}/request-tutoring`,
-        title: "Request for tutoring",
-        icon: <CalendarOutlined/>,
-    },
-    {
-        key: "view-tutor-ratings",
-        link: `/profile/${id}/view-tutor-ratings`,
-        title: "View tutor ratings",
-        icon: <StarOutlined/>,
-    },
-];
+const getMenuItems = (id, loggedUser?: UserDetailsType) => {
+    const items = [
+        {
+            key: "request-tutoring",
+            link: `/profile/${id}/request-tutoring`,
+            title: "Request for tutoring",
+            icon: <CalendarOutlined/>,
+        },
+        {
+            key: "view-tutor-ratings",
+            link: `/profile/${id}/view-tutor-ratings`,
+            title: "View ratings",
+            icon: <StarOutlined/>,
+        },
+    ];
 
+    const loggdUserIsTutor = !!loggedUser && id === loggedUser?.id?.toString();
+    if (loggdUserIsTutor) return [items[1]];
+    return items;
+};
 
 const TutorProfile = () => {
     const {id} = useParams();
@@ -93,36 +104,52 @@ const TutorProfile = () => {
     const location = useLocation();
     const [loading, setLoading] = useState(true);
     // date that user select in the calendar
-    const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
+    const [selectedCalendarDate, setSelectedCalendarDate] = useState(
+        new Date(),
+    );
     // date time for slot that user select
     const [selectedSlot, setSelectedSlot] = useState(undefined);
     const [selectedSlotDate, setSelectedSlotDate] = useState(undefined);
     // list of slots available for user to select
     const [availableSlots, setAvailableSlots] = useState([]);
     // request object for appointment creation
-    const [requestInput, setRequestInput] = useState({note: "", subjects: []});
+    const [requestInput, setRequestInput] = useState({
+        note: "",
+        subjects: [],
+    });
     // redux states
     const {loggedUser} = useSelector(selectAuth);
     const {user, aptsWithUser} = useSelector(selectUser);
 
+    const loggedUserIsTutor = loggedUser && loggedUser?.id?.toString() === id;
+
     /******************* handle events ************************/
     const handleSlotClick = (selected, item) => {
-        const selectedDateTs = new Date(selectedCalendarDate.getFullYear(),
+        const selectedDateTs = new Date(
+            selectedCalendarDate.getFullYear(),
             selectedCalendarDate.getMonth(),
             selectedCalendarDate.getDate(),
-            item.start)
+            item.start,
+        );
         setSelectedSlot(item);
         setSelectedSlotDate(selectedDateTs);
-        console.log("selected slot: (could take time to state change)", selectedSlot,
-            "\navailableSlots: ", availableSlots,
-            "\nselected slot date (could take time to state change): ", selectedSlotDate,
-            "\nlocal var for selectedSlotDate", selectedDateTs,
-            "\nselected slot utc date: ", selectedSlotDate?.toUTCString(),
-            "\nselected slot utc date to local time: ", new Date(selectedSlotDate.toUTCString()),
-        )
-    }
+        console.log(
+            "selected slot: (could take time to state change)",
+            selectedSlot,
+            "\navailableSlots: ",
+            availableSlots,
+            "\nselected slot date (could take time to state change): ",
+            selectedSlotDate,
+            "\nlocal var for selectedSlotDate",
+            selectedDateTs,
+            "\nselected slot utc date: ",
+            selectedSlotDate?.toUTCString(),
+            "\nselected slot utc date to local time: ",
+            new Date(selectedSlotDate.toUTCString()),
+        );
+    };
 
-    const handleReqInput = (key, value: string | string[]) => {
+    const handleReqInput = (key, value) => {
         console.log(`tutor request input value: `, value);
         setRequestInput({...requestInput, [key]: value});
     };
@@ -131,19 +158,23 @@ const TutorProfile = () => {
     const validateAptCreation = () => {
         let success = true;
         if (!selectedSlotDate) {
-            openNotification("No slots selected",
+            openNotification(
+                "No slots selected",
                 "Please select a slot for tutoring",
-                AlertType.WARNING)
+                AlertType.WARNING,
+            );
             success = false;
         }
         if (requestInput.subjects.length === 0) {
-            openNotification("No subjects selected",
+            openNotification(
+                "No subjects selected",
                 "Please select at least one subject you need tutoring for.",
-                AlertType.WARNING);
+                AlertType.WARNING,
+            );
             success = false;
         }
-        return success
-    }
+        return success;
+    };
 
     /******************* dispatches ************************/
     const dispatchFetchUser = useCallback(() => {
@@ -157,18 +188,19 @@ const TutorProfile = () => {
     // do some manipulation to show all the other slots as available slots
     const dispatchFetchAptsWithUser = useCallback(() => {
         const today = new Date();
-        const params: UserAppointmentParams = {
+        const params = {
             status: AppointmentStatus.ACCEPTED,
             year: `${today.getUTCFullYear()}`, // backend stores date in UTC format
-            month: calendarIntToMonth[today.getUTCMonth()] // // backend stores date in UTC format
+            month: calendarIntToMonth[today.getUTCMonth()], // // backend stores date in UTC format
         };
-        dispatch(fetchAptWithUser(id, params))
+        // @ts-ignore
+        dispatch(fetchAptWithUser(id, params));
     }, [id]);
 
     const dispatchCreateApt = () => {
         const success = validateAptCreation();
         if (success) {
-            const req: AppointmentType = {
+            const req = {
                 tutorId: id,
                 studentId: loggedUser.id,
                 studentNote: requestInput["note"],
@@ -176,23 +208,29 @@ const TutorProfile = () => {
                 scheduledAt: getYearMonthDateHrsUtcFormat(selectedSlotDate),
             };
             console.log("creating apt req: ", req);
-            const callback = (apt: AppointmentType) => {
-                openNotification("Appointment request", "You have successfully created the appointment request.")
+            const callback = apt => {
+                openNotification(
+                    "Appointment request",
+                    "You have successfully created the appointment request.",
+                );
                 navigate(`/schedules/${apt.id}`);
             };
             dispatch(createAppointment(req, callback));
         } else
             console.log("apt creation not success input req: ", requestInput);
-    }
+    };
 
     /******************* get local values ************************/
     const getAvailableSlotsFromAcceptedApts = () => {
         const slots = getAvailableSlot(selectedCalendarDate, aptsWithUser);
         setAvailableSlots(slots);
-    }
-    const getExpertiseOptions = () => !!user ? user.expertise.map(item => {
-        return {label: item, value: item}
-    }) : []
+    };
+    const getExpertiseOptions = () =>
+        !!user
+            ? user.expertise.map(item => {
+                return {label: item, value: item};
+            })
+            : [];
 
     /******************* use effects ************************/
     useEffect(() => {
@@ -206,9 +244,8 @@ const TutorProfile = () => {
         getAvailableSlotsFromAcceptedApts();
     }, [selectedCalendarDate]);
 
-
     const getDefaultTab = () => {
-        const menuItems = getMenuItems(id);
+        const menuItems = getMenuItems(id, loggedUser);
         const pathname = location ? location.pathname : "/profile/" + id;
         if (!!menuItems) {
             const defaultOpenTabs = menuItems.filter(
@@ -217,14 +254,20 @@ const TutorProfile = () => {
             if (defaultOpenTabs.length > 0) {
                 return defaultOpenTabs.map(item => item["key"]);
             }
+            console.log("default tab: ", pathname, menuItems);
+
             return [menuItems[0].key];
         }
         return [""];
     };
 
-    const renderMenuComponent = (menuItems = getMenuItems(id)) => {
+    const renderMenuComponent = (menuItems = getMenuItems(id, loggedUser)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
+
+        if (loggedUserIsTutor)
+            return <ViewTutorRatings/>
+
         switch (defaultTab) {
             case menuItems[0].key:
                 const onClick = date => {
@@ -233,7 +276,10 @@ const TutorProfile = () => {
                 return (
                     <TabContent>
                         <div
-                            className={"h-justified-flex medium-vertical-margin"}>
+                            className={
+                                "h-justified-flex medium-vertical-margin"
+                            }
+                        >
                             <ResText16Regular>
                                 Pick a date and slot time for tutoring.
                             </ResText16Regular>
@@ -247,7 +293,10 @@ const TutorProfile = () => {
                                 </ResText16Regular>
                             </ResText16SemiBold>
                         </div>
-                        <MyCalendar value={selectedCalendarDate} onClick={onClick}/>
+                        <MyCalendar
+                            value={selectedCalendarDate}
+                            onClick={onClick}
+                        />
                     </TabContent>
                 );
 
@@ -286,52 +335,73 @@ const TutorProfile = () => {
                         {`${toMonthDateYearStr(selectedCalendarDate)}`}
                     </b>
                 </ResText14Regular>
-                {selectedSlotDate && <ResText14Regular className={"text-grey2 text-underlined"}>
-                    You selected {`${toMonthDateYearStr(selectedSlotDate)} ${toSlotRangeStr(selectedSlotDate)}`}
-                </ResText14Regular>}
+                {selectedSlotDate && (
+                    <ResText14Regular className={"text-grey2 text-underlined"}>
+                        You selected{" "}
+                        {`${toMonthDateYearStr(
+                            selectedSlotDate,
+                        )} ${toSlotRangeStr(selectedSlotDate)}`}
+                    </ResText14Regular>
+                )}
             </div>
             <ul className={"slot-items"}>
                 {availableSlots.map((item, index) => (
                     <li key={`available-slot-apt-${index}`}>
                         <Checkbox
-                            checked={!!selectedSlot && selectedSlot["title"] === item.title}
+                            checked={
+                                !!selectedSlot &&
+                                selectedSlot["title"] === item.title
+                            }
                             disabled={!item.available}
-                            onChange={(e) => handleSlotClick(e.target.checked, item)}/>
+                            onChange={e =>
+                                handleSlotClick(e.target.checked, item)
+                            }
+                        />
                         <ResText14Regular>{item.title}</ResText14Regular>
-                        {!item.available &&
-                            <ResText12Regular className={"text-grey2 text-italic"}>(not available)</ResText12Regular>}
+                        {!item.available && (
+                            <ResText12Regular
+                                className={"text-grey2 text-italic"}
+                            >
+                                (not available)
+                            </ResText12Regular>
+                        )}
                     </li>
                 ))}
             </ul>
-            {user && <div className={"vertical-start-flex select-needs-tutoring-in"}>
-                <ResText14Regular>Needs tutoring in</ResText14Regular>
-                <Select
-                    mode="multiple"
-                    allowClear
-                    style={{width: '95%'}}
-                    placeholder="Select tutoring topics..."
-                    onChange={value => handleReqInput("subjects", value)}
-                    options={getExpertiseOptions()}
-                />
-            </div>}
-            {user && <div className={"vertical-start-flex tutoring-notes"}>
-                <ResText14Regular>Add a note (optional)</ResText14Regular>
-                <TextArea size={"large"}
-                          onChange={(e) => {
-                              // console.log("input write change: ", e, e.currentTarget.value)
-                              e.stopPropagation();
-                              handleReqInput("note", e.currentTarget.value);
-                          }}
-                          placeholder={"Add a note to the tutor..."}/>
-            </div>}
+            {user && (
+                <div className={"vertical-start-flex select-needs-tutoring-in"}>
+                    <ResText14Regular>Needs tutoring in</ResText14Regular>
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        style={{width: "95%"}}
+                        placeholder="Select tutoring topics..."
+                        onChange={value => handleReqInput("subjects", value)}
+                        options={getExpertiseOptions()}
+                    />
+                </div>
+            )}
+            {user && (
+                <div className={"vertical-start-flex tutoring-notes"}>
+                    <ResText14Regular>Add a note (optional)</ResText14Regular>
+                    <TextArea
+                        size={"large"}
+                        onChange={e => {
+                            // console.log("input write change: ", e, e.currentTarget.value)
+                            e.stopPropagation();
+                            handleReqInput("note", e.currentTarget.value);
+                        }}
+                        placeholder={"Add a note to the tutor..."}
+                    />
+                </div>
+            )}
             <div className={"send-slot-request h-start-top-flex"}>
                 <ResText16Regular>
-                    By confirming the request, you confirm that this is only
-                    a request for tutoring and the tutor may decline to
-                    provide the tutoring service.
+                    By confirming the request, you confirm that this is only a
+                    request for tutoring and the tutor may decline to provide
+                    the tutoring service.
                 </ResText16Regular>
-                <MyButton type={"primary"}
-                          onClick={() => dispatchCreateApt()}>
+                <MyButton type={"primary"} onClick={() => dispatchCreateApt()}>
                     Send Request
                 </MyButton>
             </div>
@@ -355,10 +425,13 @@ const TutorProfile = () => {
         </TabContent>
     );
 
-    const renderSlotView = tabOpened =>
-        tabOpened === "" || tabOpened === getMenuItems(id)[0].key
+    const renderSlotView = tabOpened => {
+        if (loggedUserIsTutor) return renderOtherReviews();
+        return tabOpened === "" ||
+        tabOpened === getMenuItems(id, loggedUser)[0].key
             ? renderCurrentSlot()
             : renderOtherReviews();
+    };
 
     return (
         <Wrapper>
@@ -368,16 +441,25 @@ const TutorProfile = () => {
             <Spin spinning={loading}>
                 <Content>
                     <div>
-                        {renderActorInfo(user)}
-                        {renderNeedsTutoring(user?.expertise || [], undefined, "Specializations", "")}
+                        {renderActorInfo(user, "Tutor info", loggedUser?.id)}
+                        {renderNeedsTutoring(
+                            user?.expertise || [],
+                            undefined,
+                            "Specializations",
+                            "",
+                        )}
                     </div>
 
                     <Row gutter={[24, 24]}>
-                        <Col xxl={16} md={24} className={"border-right no-padding"}>
+                        <Col
+                            xxl={16}
+                            md={24}
+                            className={"border-right no-padding"}
+                        >
                             {renderTabs(
                                 getDefaultTab(),
                                 () => renderMenuComponent(),
-                                getMenuItems(id),
+                                getMenuItems(id, loggedUser),
                             )}
                         </Col>
                         <Col
