@@ -1,48 +1,53 @@
 import React from "react";
-import {CalendarOutlined, NotificationOutlined, SearchOutlined, SendOutlined,} from "@ant-design/icons";
-import {Menu} from "antd";
-import {Link} from "react-router-dom";
+import {
+    CalendarOutlined,
+    NotificationOutlined,
+    SearchOutlined,
+    SendOutlined,
+} from "@ant-design/icons";
+import { Menu } from "antd";
+import { Link } from "react-router-dom";
 
 import "./SideBar.scss";
-import {ResText14Regular} from "../../utils/TextUtils";
-import {useSelector} from "react-redux";
-import {selectAuth} from "../../redux/auth/reducer";
-import {UserRoles} from "../../enum/UserEnum";
+import { ResText14Regular } from "../../utils/TextUtils";
+import { useSelector } from "react-redux";
+import { selectAuth } from "../../redux/auth/reducer";
+import { UserRoles } from "../../enum/UserEnum";
 
 const menus = [
     {
         key: "menu-my-schedule",
-        icon: <CalendarOutlined/>,
+        icon: <CalendarOutlined />,
         link: "/schedules",
         title: "My Schedule",
     },
     {
         key: "menu-find-tutors",
-        icon: <SearchOutlined/>,
+        icon: <SearchOutlined />,
         link: "/find-tutors",
         title: "Find Tutors",
     },
     {
         key: "menu-chat",
-        icon: <SendOutlined/>,
+        icon: <SendOutlined />,
         link: "/chat",
         title: "Chat",
     },
     {
         key: "menu-notifications",
-        icon: <NotificationOutlined/>,
+        icon: <NotificationOutlined />,
         link: "/notifications",
         title: "Notifications",
     },
 ];
 const SideBar = () => {
-    const {loggedUser} = useSelector(selectAuth);
+    const { loggedUser } = useSelector(selectAuth);
     const menuItems = () => {
         const roles = loggedUser.roles.map(item => item.name);
         if (roles.includes(UserRoles.STUDENT))
             return [menus[0], menus[1], menus[2]];
         if (roles.includes(UserRoles.TUTOR))
-            return [menus[0], menus[1], menus[3]];
+            return [menus[0], menus[1], menus[2], menus[3]];
         if (roles.includes(UserRoles.MODERATOR)) return [menus[1], menus[2]];
         return menus;
     };

@@ -143,11 +143,21 @@ export default function ChatConversation() {
 
     const getUserData = () => {
         if (users) {
+            let filteredUser;
+            if (loggedUser.roles[0].name == "COORDINATOR")
+                filteredUser = users.filter(item => {
+                    return item.roles.some(role => role.name !== "COORDINATOR");
+                });
+            else
+                filteredUser = users.filter(item => {
+                    return item.roles.some(role => role.name === "COORDINATOR");
+                });
+
             let existingUser = Object.keys(usersMessages).map(
                 item => item.split(",")[0],
             );
 
-            let users1 = users.filter(
+            let users1 = filteredUser.filter(
                 item => !existingUser.includes(item.email),
             );
             let data = users1.map(item => {
@@ -286,21 +296,17 @@ export default function ChatConversation() {
     return (
         <Wrapper>
             <Header className={"h-justified-flex"}>
-                <ResText14SemiBold>
-                    {msgUser && msgUser.length ? (
-                        `Chat - ${msgUser[0].name}`
-                    ) : (
-                        <Select
-                            allowClear
-                            style={{ width: "95%" }}
-                            placeholder="Select cordinator..."
-                            onChange={value =>
-                                handleReqInput("coordinator", value)
-                            }
-                            options={getUserData()}
-                        />
-                    )}
-                </ResText14SemiBold>
+                {msgUser && msgUser.length ? (
+                    `Chat - ${msgUser[0].name}`
+                ) : (
+                    <Select
+                        allowClear
+                        style={{ width: "20%" }}
+                        placeholder="Select cordinator..."
+                        onChange={value => handleReqInput("coordinator", value)}
+                        options={getUserData()}
+                    />
+                )}
             </Header>
             <Content>
                 <div className={"header-date"}>

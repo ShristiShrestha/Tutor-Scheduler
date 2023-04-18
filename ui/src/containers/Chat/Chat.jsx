@@ -54,8 +54,10 @@ export default function Chat() {
 
     const dispatchFetchChat = () => {
         // TODO: a query to fetch all users
-        dispatch(fetchUsers("TUTOR"));
+
         dispatch(fetchUsers("STUDENT"));
+        dispatch(fetchUsers("TUTOR"));
+        dispatch(fetchUsers("COORDINATOR"));
         setLoading(false);
         dispatch(fetchMsgsWithUsers());
     };
