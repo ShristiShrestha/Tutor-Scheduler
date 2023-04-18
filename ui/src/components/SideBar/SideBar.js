@@ -13,8 +13,9 @@ import { ResText14Regular } from "../../utils/TextUtils";
 import { useSelector } from "react-redux";
 import { selectAuth } from "../../redux/auth/reducer";
 import { UserRoles } from "../../enum/UserEnum";
+import { selectAppointment } from "../../redux/appointment/reducer";
 
-const menus = [
+const getMenus = numNotifications => [
     {
         key: "menu-my-schedule",
         icon: <CalendarOutlined />,
@@ -37,12 +38,22 @@ const menus = [
         key: "menu-notifications",
         icon: <NotificationOutlined />,
         link: "/notifications",
-        title: "Notifications",
+        title:
+            "Notifications " +
+            (numNotifications > 0 ? `(${numNotifications})` : ""),
     },
 ];
 const SideBar = () => {
     const { loggedUser } = useSelector(selectAuth);
+    const { notifications } = useSelector(selectAppointment);
+    const unSeenPendingNotifications = notifications.filter(
+        item =>
+            item.clientReceivedAt === undefined ||
+            item.clientReceivedAt === null,
+    ).length;
+
     const menuItems = () => {
+        const menus = getMenus(unSeenPendingNotifications);
         const roles = loggedUser.roles.map(item => item.name);
         if (roles.includes(UserRoles.STUDENT))
             return [menus[0], menus[1], menus[2]];

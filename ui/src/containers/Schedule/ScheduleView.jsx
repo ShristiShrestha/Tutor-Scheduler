@@ -419,7 +419,7 @@ export const renderActorInfo = (
             <div className={"vertical-start-flex actor-profile-info"}>
                 <ResText14SemiBold>
                     {getUsername(user) + " "}
-                    {loggedUserId && loggedUserId === user.id && (
+                    {loggedUserId && loggedUserId === user?.id && (
                         <Tag style={{ marginLeft: 6 }}>Me</Tag>
                     )}
                     {/*<Link to={"/user/"}>*/}

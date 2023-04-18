@@ -1,18 +1,17 @@
-import {UserDetailsType} from "../redux/user/types";
-import {capitalize} from "./StringUtils";
-import {AppointmentType} from "../redux/appointment/types";
+import { UserDetailsType } from "../redux/user/types";
+import { capitalize } from "./StringUtils";
+import { AppointmentType } from "../redux/appointment/types";
 import React from "react";
-import {AppointmentStatus} from "../enum/AppointmentEnum";
+import { AppointmentStatus } from "../enum/AppointmentEnum";
 
 /******************* user details ************************/
 export const getUsername = (user: UserDetailsType) => {
-    if (!!user && !!user.name)
-        return user.name
+    if (!!user && !!user.name) return user.name;
     // const names = user.email.split("@")[0];
     if (!!user && user.email.includes("@lsu.edu"))
         return capitalize(user.email.replace("@lsu.edu", ""));
-    return "Unknown user"
-}
+    return "Unknown user";
+};
 
 /******************* date utils ************************/
 
@@ -28,9 +27,8 @@ export const calendarIntToMonth = {
     8: "september",
     9: "october",
     10: "november",
-    11: "december"
-}
-
+    11: "december",
+};
 
 /******************* get available slots from the list of accepted apts ************************/
 
@@ -80,17 +78,18 @@ export const SLOTS_PER_DAY = [
         title: "5 - 6 PM",
         start: 17,
         available: true,
-    }
-]
+    },
+];
 
-export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = []) => {
+export const getAvailableSlot = (
+    date?: Date,
+    acceptedApts: AppointmentType[] = [],
+) => {
     console.log("selected data: ", date, " acceptedApts: ", acceptedApts);
 
-    if (!date)
-        return [];
+    if (!date) return [];
 
-    if (acceptedApts.length === 0)
-        return SLOTS_PER_DAY;
+    if (acceptedApts.length === 0) return SLOTS_PER_DAY;
 
     // we evaluate the accepted appointments using the selected date's
     // utc values since the appointments' values are set in UTC
@@ -104,10 +103,12 @@ export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = 
         const scheduledDay = scheduledDate.getUTCDate();
         const scheduledMonth = scheduledDate.getMonth();
         const scheduledYear = scheduledDate.getUTCFullYear();
-        return scheduledDay === selectedDay &&
+        return (
+            scheduledDay === selectedDay &&
             scheduledMonth === selectedMonth &&
             scheduledYear === selectedYear &&
             apt.status === AppointmentStatus.ACCEPTED
+        );
     });
 
     console.log("tmp: inside method ", acceptedAptsSlotsOnDate);
@@ -116,12 +117,17 @@ export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = 
     // slots are not in the accepted scheduled hours
     // then such slots are available
     if (acceptedAptsSlotsOnDate.length > 0) {
-        const scheduledDateTsAcceptedOnSelectedDay = acceptedAptsSlotsOnDate.map(item => new Date(item.scheduledAt).getHours());
+        const scheduledDateTsAcceptedOnSelectedDay =
+            acceptedAptsSlotsOnDate.map(item =>
+                new Date(item.scheduledAt).getHours(),
+            );
         return SLOTS_PER_DAY.map(slotItem => {
             return {
                 ...slotItem,
-                available: !scheduledDateTsAcceptedOnSelectedDay.includes(slotItem.start)
-            }
+                available: !scheduledDateTsAcceptedOnSelectedDay.includes(
+                    slotItem.start,
+                ),
+            };
         });
     }
     //
@@ -132,22 +138,26 @@ export const getAvailableSlot = (date?: Date, acceptedApts: AppointmentType[] = 
 
     // by default sending all slots as available
     return SLOTS_PER_DAY;
-}
+};
 
 export const getScheduledSlots = (scheduledDate?: Date) => {
-    if (!scheduledDate)
-        return [];
+    if (!scheduledDate) return [];
     const scheduledHrs = scheduledDate.getHours();
     return SLOTS_PER_DAY.map(slotItem => {
         return {
             ...slotItem,
             available: scheduledHrs !== slotItem.start, // if false, the user scheduled this slot
-        }
-    })
-}
+        };
+    });
+};
+
+export const getScheduledSlot = (scheduledDate?: Date) => {
+    if (!scheduledDate) return [];
+    const scheduledHrs = scheduledDate.getHours();
+    return SLOTS_PER_DAY.filter(slotItem => slotItem.start === scheduledHrs);
+};
 
 /******************* user ratings utils ************************/
-
 
 export const ratings = {
     1: {
@@ -155,42 +165,63 @@ export const ratings = {
         title: "Very bad",
         className: "rate-very-bad",
         totalUsers: 10,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/pouting_face.svg'}/>
+        icon: (
+            <img
+                width={30}
+                height={30}
+                src={process.env.PUBLIC_URL + "/pouting_face.svg"}
+            />
+        ),
     },
     2: {
         id: "bad",
         title: "Just bad",
         className: "rate-just-bad",
         totalUsers: 1,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/neutral_face.svg'}/>
+        icon: (
+            <img
+                width={30}
+                height={30}
+                src={process.env.PUBLIC_URL + "/neutral_face.svg"}
+            />
+        ),
     },
     3: {
         id: "good",
         title: "Good",
         className: "rate-good",
         totalUsers: 100,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/slightly_smiling.svg'}/>
+        icon: (
+            <img
+                width={30}
+                height={30}
+                src={process.env.PUBLIC_URL + "/slightly_smiling.svg"}
+            />
+        ),
     },
     4: {
         id: "very-good",
         title: "Very Good",
         className: "rate-very-good",
         totalUsers: 1000,
-        icon: <img width={30} height={30}
-                   src={process.env.PUBLIC_URL + '/grinning_face.svg'}/>
-    }
-}
+        icon: (
+            <img
+                width={30}
+                height={30}
+                src={process.env.PUBLIC_URL + "/grinning_face.svg"}
+            />
+        ),
+    },
+};
 export const getFormattedRatings = (user?: UserDetailsType) => {
-    if (!user)
-        return []
+    if (!user) return [];
 
     return Object.keys(ratings).map(ratingKey => {
         return {
             ...ratings[ratingKey],
-            totalUsers: user.ratingByNumbers ? user.ratingByNumbers[ratingKey] : 0
-        }
-    })
-}
+            totalUsers: user.ratingByNumbers
+                ? user.ratingByNumbers[ratingKey]
+                : 0,
+        };
+    });
+};

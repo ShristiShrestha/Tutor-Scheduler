@@ -8,8 +8,10 @@ import TutorProfile from "../containers/Tutor/TutorProfile";
 import Chat from "../containers/Chat/Chat";
 import ChatConversation from "../containers/Chat/ChatConversation";
 import LoginPage from "../containers/Auth/LoginPage";
+import { useSelector } from "react-redux";
+import { selectAppointment } from "../redux/appointment/reducer";
 
-const pages = [
+const pages = numNotifications => [
     {
         path: "/find-tutors",
         component: <FindTutors />,
@@ -65,9 +67,11 @@ const pages = [
 ];
 
 export default function PageRoutes() {
+    const { notifications } = useSelector(selectAppointment);
+
     return (
         <Routes>
-            {pages.map((item, index) => (
+            {pages(notifications.length).map((item, index) => (
                 <Route
                     key={"inside-route" + index}
                     path={item.path}

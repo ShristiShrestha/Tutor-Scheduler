@@ -6,23 +6,33 @@ import {
     DELETE_APPOINTMENT,
     FETCH_APPOINTMENT,
     FETCH_APPOINTMENTS,
+    FETCH_NOTIFICATIONS,
     RATE_APPOINTMENT,
     REJECT_APPOINTMENT,
     SET_APPOINTMENT,
     SET_APPOINTMENTS,
+    SET_NOTIFICATIONS,
     UPDATE_APPOINTMENT,
     UPDATE_APPOINTMENTS_RECEIVED,
 } from "./types";
-import {MyThunkDispatch} from "../common/types";
-import {actionFailure, actionStart, actionSuccess} from "../common/actions";
-import {AppointmentFetchType} from "../../enum/AppointmentEnum";
-import {deleteApt, getApts, getOneApt, postApt, putApt, putAptsReceived, putRateApt,} from "../../api/AppointmentApi";
+import { MyThunkDispatch } from "../common/types";
+import { actionFailure, actionStart, actionSuccess } from "../common/actions";
+import { AppointmentFetchType } from "../../enum/AppointmentEnum";
+import {
+    deleteApt,
+    getApts,
+    getOneApt,
+    postApt,
+    putApt,
+    putAptsReceived,
+    putRateApt,
+} from "../../api/AppointmentApi";
 
 /******************* state ************************/
 export function setAppointment(apt: AppointmentType) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_APPOINTMENT));
-        dispatch({type: SET_APPOINTMENT, payload: apt});
+        dispatch({ type: SET_APPOINTMENT, payload: apt });
         dispatch(actionSuccess(SET_APPOINTMENT, apt));
     };
 }
@@ -31,11 +41,19 @@ export function setAppointments(
     apts: AppointmentType[],
     type: AppointmentFetchType,
 ) {
-    const payload = {apts: apts, type: type};
+    const payload = { apts: apts, type: type };
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_APPOINTMENTS));
-        dispatch({type: SET_APPOINTMENTS, payload: payload});
+        dispatch({ type: SET_APPOINTMENTS, payload: payload });
         dispatch(actionSuccess(SET_APPOINTMENTS, payload));
+    };
+}
+
+export function setNotifications(apts: AppointmentType[]) {
+    return (dispatch: MyThunkDispatch) => {
+        dispatch(actionStart(SET_NOTIFICATIONS));
+        dispatch({ type: SET_NOTIFICATIONS, payload: apts });
+        dispatch(actionSuccess(SET_NOTIFICATIONS, apts));
     };
 }
 
@@ -56,7 +74,11 @@ export function createAppointment(apt: AppointmentType, callback: Function) {
     };
 }
 
-export function updateAppointment(apt: AppointmentType, onSuccess?: Function, onError?: Function) {
+export function updateAppointment(
+    apt: AppointmentType,
+    onSuccess?: Function,
+    onError?: Function,
+) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(UPDATE_APPOINTMENT));
         putApt(apt)
@@ -72,7 +94,11 @@ export function updateAppointment(apt: AppointmentType, onSuccess?: Function, on
     };
 }
 
-export function rateAppointment(id: number, rating: number, onError?: Function) {
+export function rateAppointment(
+    id: number,
+    rating: number,
+    onError?: Function,
+) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(RATE_APPOINTMENT));
         putRateApt(id, rating)
@@ -114,6 +140,20 @@ export function fetchAppointments(params: AppointmentParams) {
             })
             .catch(err => {
                 dispatch(actionFailure(FETCH_APPOINTMENTS, err));
+            });
+    };
+}
+
+export function fetchNotifications(params: AppointmentParams) {
+    return (dispatch: MyThunkDispatch) => {
+        dispatch(actionStart(FETCH_NOTIFICATIONS));
+        getApts(params)
+            .then(apts => {
+                dispatch(actionSuccess(FETCH_NOTIFICATIONS, apts));
+                dispatch(setNotifications(apts));
+            })
+            .catch(err => {
+                dispatch(actionFailure(FETCH_NOTIFICATIONS, err));
             });
     };
 }
