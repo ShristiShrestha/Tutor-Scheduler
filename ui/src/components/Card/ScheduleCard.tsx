@@ -1,7 +1,7 @@
 import React, {ReactNode} from "react";
 import {Avatar, Divider, Tag} from "antd";
 import styled from "styled-components";
-import {ResText10Regular, ResText12Regular, ResText14SemiBold,} from "../../utils/TextUtils";
+import {ResText10Regular, ResText12Regular, ResText12SemiBold,} from "../../utils/TextUtils";
 import {amethyst, grey1, grey2, grey3, grey6} from "../../utils/ShadesUtils";
 import {AppointmentType} from "../../redux/appointment/types";
 import {toMonthDateStr, toMonthDateYearStr, toScheduleSlotRangeStr,} from "../../utils/DateUtils";
@@ -18,7 +18,7 @@ export const Card = styled.div<{
     border-radius: 12px;
     border: 1px solid ${grey6};
     height: ${props => (props.height ? props.height : "220px")};
-    min-width: ${props => (props.minWidth ? props.minWidth : "300px")};
+    min-width: ${props => (props.minWidth ? props.minWidth : "220px")};
 
     text {
         color: ${grey1};
@@ -107,7 +107,6 @@ const ScheduleCard = (props: Props) => {
     const { apt, loggedUserId } = props;
 
     if (!apt) return <div> no apt </div>;
-    console.log("schedule card: ", apt, loggedUserId);
     const showingTutoringIn = apt
         ? apt.tutoringOnList && apt.tutoringOnList.length > 2
             ? apt.tutoringOnList.slice(0, 2)
@@ -142,7 +141,7 @@ const ScheduleCard = (props: Props) => {
             <TutorInfo>
                 <Avatar shape="circle" size={64} />
                 <div className={"tutor-profile-info"}>
-                    <ResText14SemiBold>{showingName}</ResText14SemiBold>
+                    <ResText12SemiBold>{showingName}</ResText12SemiBold>
                     {isStudent ? (
                         <ResText12Regular>
                             {/*<span className={"text-grey1"}>{apt.tutor.description || `Freelancer developer`}</span>*/}

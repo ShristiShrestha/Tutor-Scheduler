@@ -118,9 +118,9 @@ export default function FindTutors() {
                             {users.map((item, index) => (
                                 <Col
                                     key={"find-tutors-" + index}
-                                    xxl={6}
+                                    xxl={4}
                                     xl={8}
-                                    lg={12}
+                                    lg={8}
                                     md={12}
                                     sm={24}
                                 >

@@ -7,8 +7,6 @@ import {
     ResText12SemiBold,
     ResText14Regular,
     ResText14SemiBold,
-    ResText16Regular,
-    ResText16SemiBold,
 } from "../../utils/TextUtils";
 import {
     amethyst,
@@ -893,15 +891,15 @@ export default function ScheduleView() {
 
         return (
             <TabContent>
-                <ResText16SemiBold>
-                    <b>Today</b>
-                    <ResText16Regular
+                <ResText14SemiBold>
+                    Today
+                    <ResText14Regular
                         className={"text-grey"}
                         style={{ marginLeft: 12 }}
                     >
                         {toMonthDateYearStr(today)}
-                    </ResText16Regular>
-                </ResText16SemiBold>
+                    </ResText14Regular>
+                </ResText14SemiBold>
                 {appointment && (
                     <MyCalendar
                         dateCellRender={dateCellRender}
