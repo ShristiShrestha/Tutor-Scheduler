@@ -6,8 +6,6 @@ import {
     ResText12SemiBold,
     ResText14Regular,
     ResText14SemiBold,
-    ResText16Regular,
-    ResText16SemiBold,
 } from "../../utils/TextUtils";
 import {
     renderActorInfo,
@@ -16,7 +14,11 @@ import {
     SlotInfo,
     TabContent,
 } from "../Schedule/ScheduleView";
-import { CalendarOutlined, StarOutlined } from "@ant-design/icons";
+import {
+    CalendarOutlined,
+    InfoCircleOutlined,
+    StarOutlined,
+} from "@ant-design/icons";
 import {
     getYearMonthDateHrsUtcFormat,
     toMonthDateYearStr,
@@ -280,18 +282,18 @@ const TutorProfile = () => {
                                 "h-justified-flex medium-vertical-margin"
                             }
                         >
-                            <ResText16Regular>
+                            <ResText14Regular>
                                 Pick a date and slot time for tutoring.
-                            </ResText16Regular>
-                            <ResText16SemiBold>
-                                <b>Today</b>
-                                <ResText16Regular
+                            </ResText14Regular>
+                            <ResText14SemiBold>
+                                Today
+                                <ResText14Regular
                                     className={"text-grey"}
                                     style={{ marginLeft: 12 }}
                                 >
                                     {toMonthDateYearStr(today)}
-                                </ResText16Regular>
-                            </ResText16SemiBold>
+                                </ResText14Regular>
+                            </ResText14SemiBold>
                         </div>
                         <MyCalendar
                             value={selectedCalendarDate}
@@ -396,11 +398,18 @@ const TutorProfile = () => {
                 </div>
             )}
             <div className={"send-slot-request h-start-top-flex"}>
-                <ResText16Regular>
+                <ResText14Regular>
+                    <InfoCircleOutlined
+                        style={{
+                            color: "orange",
+                            marginRight: 6,
+                            fontSize: 14,
+                        }}
+                    />{" "}
                     By confirming the request, you confirm that this is only a
                     request for tutoring and the tutor may decline to provide
                     the tutoring service.
-                </ResText16Regular>
+                </ResText14Regular>
                 <MyButton type={"primary"} onClick={() => dispatchCreateApt()}>
                     <ResText12SemiBold>Send Request</ResText12SemiBold>
                 </MyButton>
