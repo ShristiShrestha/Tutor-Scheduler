@@ -99,6 +99,8 @@ export default function ChatConversation() {
                     : userObj.senderEmail;
 
             dispatch(fetchMsgsWithUser(email));
+        } else {
+            setMsgUser(undefined);
         }
         setLoading(false);
     };
