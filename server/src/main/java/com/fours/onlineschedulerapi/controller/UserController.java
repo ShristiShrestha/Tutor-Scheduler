@@ -85,7 +85,7 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<?> update(@RequestBody User user) throws EntityExistsException {
+    public ResponseEntity<?> update(@RequestBody UserDto user) throws EntityExistsException {
         UserDto updatedUser = userService.update(user);
 
         return ResponseEntity.ok(updatedUser);

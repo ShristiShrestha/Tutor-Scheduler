@@ -83,7 +83,7 @@ public class UserService {
         }
     }
 
-    public UserDto update(User user) {
+    public UserDto update(UserDto user) {
         Long id = user.getId();
 
         Optional<User> userOptional = userRepository.findById(id);
@@ -95,13 +95,13 @@ public class UserService {
 
             this.setFieldsToUpdate(user, userToUpdate);
 
-            userRepository.save(userToUpdate);
+            User updatedUser = userRepository.save(userToUpdate);
 
-            return new UserDto(user);
+            return new UserDto(updatedUser);
         }
     }
 
-    private void setFieldsToUpdate(User user, User userToUpdate) {
+    private void setFieldsToUpdate(UserDto user, User userToUpdate) {
         String name = user.getName();
 
         if (Objects.nonNull(name) && !name.trim().isEmpty()) {
@@ -109,7 +109,7 @@ public class UserService {
         }
 
         if (userToUpdate.getIsTutor()) {
-            List<String> expertise = user.getTutor().getExpertiseList();
+            List<String> expertise = user.getExpertise();
 
             if (Objects.nonNull(expertise)) {
                 userToUpdate.getTutor().setExpertiseList(expertise);
