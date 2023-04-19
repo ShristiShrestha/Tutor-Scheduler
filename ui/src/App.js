@@ -28,6 +28,9 @@ const App = () => {
 
     useEffect(() => {
         if (loggedUser && authenticated && isLoggedTutor(loggedUser)) {
+            // load when first mounted as well
+            dispatchFetchNotifications();
+
             // @ts-ignore
             notificationCallback.current = setInterval(() => {
                 // call your function here
