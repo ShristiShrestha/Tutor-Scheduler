@@ -5,7 +5,7 @@ import { Card, Desc, StatusTagList, TutorInfo } from "./ScheduleCard";
 import {
     ResText10Regular,
     ResText12Regular,
-    ResText14SemiBold,
+    ResText12SemiBold,
 } from "../../utils/TextUtils";
 import { toEndDottedStr } from "../../utils/StringUtils";
 import { UserDetailsType } from "../../redux/user/types";
@@ -27,7 +27,7 @@ const TutorCard = (props: Props) => {
                 <TutorInfo>
                     <Avatar size={64} icon={<UserOutlined />} />
                     <div className={"tutor-profile-info"}>
-                        <ResText14SemiBold>
+                        <ResText12SemiBold>
                             {tutor.name || tutor.email.split("@")[0]}
                             {loggedUserId && loggedUserId === tutor.id && (
                                 <Tag
@@ -39,7 +39,7 @@ const TutorCard = (props: Props) => {
                                     Me
                                 </Tag>
                             )}
-                        </ResText14SemiBold>
+                        </ResText12SemiBold>
                         <div
                             className={
                                 "vertical-start-flex full-block text-grey1"

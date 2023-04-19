@@ -27,15 +27,16 @@ const App = () => {
     /******************* use effects  ************************/
 
     useEffect(() => {
-        console.log("notificationCallback", notificationCallback.current);
-
         if (loggedUser && authenticated && isLoggedTutor(loggedUser)) {
+            // load when first mounted as well
+            dispatchFetchNotifications();
+
             // @ts-ignore
             notificationCallback.current = setInterval(() => {
                 // call your function here
                 console.log("fetching notifications every 5 seconds called!");
                 dispatchFetchNotifications();
-            }, 5000);
+            }, 7000);
         }
 
         // Clear interval on unmount
@@ -45,25 +46,21 @@ const App = () => {
     }, [loggedUser]);
 
     useEffect(() => {
-        fetchApts();
-    }, []);
+        if (loggedUser) dispatchFetchApts();
+    }, [loggedUser]);
 
     /******************* dispatch ************************/
 
-    const fetchApts = useCallback(() => {
-        console.log("calling fetch apts");
-
+    const dispatchFetchApts = useCallback(() => {
         const upcomingParams = getAptParams(true);
         const allParams = getAptParams();
         // @ts-ignore
         dispatch(fetchAppointments(upcomingParams));
         // @ts-ignore
         dispatch(fetchAppointments(allParams));
-    }, [dispatch]);
+    }, [loggedUser]);
 
     const dispatchFetchNotifications = useCallback(() => {
-        console.log("calling fetch notifications");
-
         const params = getAptParams();
         dispatch(fetchNotifications(params));
     }, [loggedUser]);
@@ -92,7 +89,7 @@ const App = () => {
                 <TopBar />
             </Header>
             {authenticated && (
-                <Sider width={200}>
+                <Sider width={210}>
                     <SideBar />
                 </Sider>
             )}

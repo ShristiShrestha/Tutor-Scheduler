@@ -34,3 +34,10 @@ export const login = data => {
         data: data,
     });
 };
+
+export const logout = () => {
+    return Api.apiCall({
+        url: "/auth/logout",
+        method: "GET",
+    });
+};

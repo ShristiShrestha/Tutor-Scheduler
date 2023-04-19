@@ -10,11 +10,16 @@ import {
 } from "../../utils/TextUtils";
 import { Table, Tag } from "antd";
 import EmptyContent from "../../components/NoContent/EmptyContent";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectAppointment } from "../../redux/appointment/reducer";
 import { getScheduledSlot } from "../../utils/ScheduleUtils";
 import { toMonthDateStr } from "../../utils/DateUtils";
-import MyButton from "../../components/Button/MyButton";
+import RespondAction from "../Schedule/RespondAction";
+import { useNavigate } from "react-router-dom";
+import { updateAppointmentsReceived } from "../../redux/appointment/actions";
+import { AlertType, openNotification } from "../../utils/Alert";
+import { AppointmentType } from "../../redux/appointment/types";
+import moment from "moment";
 
 const Wrapper = styled.div``;
 
@@ -25,7 +30,7 @@ const Header = styled.div`
     align-items: center;
     position: fixed;
     top: 48px; // height of main top header - app name
-    left: 200px;
+    left: 210px;
     right: 0;
     padding: 0 24px;
     border-bottom: 1px solid ${grey6};
@@ -80,14 +85,6 @@ const TableContent = styled.div`
         border-radius: 8px;
         background: white;
         border-color: grey;
-    }
-
-    .new-unseen {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: limegreen;
-        border: 1px solid limegreen;
     }
 `;
 
@@ -149,7 +146,49 @@ const columns = [
 ];
 
 const NotificationsPage = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const { notifications } = useSelector(selectAppointment);
+
+    /******************* handle events ************************/
+
+    const handleSelectRow = record => {
+        const scheduleId = record["key"].split("_")[0];
+
+        const onSuccess = (apts: AppointmentType[]) => {
+            if (apts.length > 0) {
+                const aptId = apts[0].id;
+                return navigate(`/schedules/${aptId}`);
+            }
+        };
+
+        const onError = err =>
+            openNotification(
+                "Failed to mark the appointment as read.",
+                err,
+                AlertType.ERROR,
+            );
+
+        return {
+            onClick: () => {
+                if (record["visited"] !== true) {
+                    dispatch(
+                        updateAppointmentsReceived(
+                            [parseInt(scheduleId)],
+                            onSuccess,
+                            onError,
+                        ),
+                    );
+                } else {
+                    navigate(`/schedules/${scheduleId}`);
+                }
+            },
+        };
+    };
+
+    /******************* render children ************************/
+
     const dataSource = useMemo(
         () =>
             notifications.map((item, index) => {
@@ -162,6 +201,11 @@ const NotificationsPage = () => {
                 const itemKey = item.id + "_" + index;
                 return {
                     key: itemKey,
+                    visited:
+                        !!item.clientReceivedAt &&
+                        moment(new Date()).isAfter(
+                            new Date(item.clientReceivedAt),
+                        ),
                     name: (
                         <ResText12Regular className={"h-start-flex"}>
                             {!item.clientReceivedAt ? (
@@ -215,9 +259,10 @@ const NotificationsPage = () => {
                         </ResText12Regular>
                     ),
                     action: (
-                        <MyButton size={"small"} type={"primary"}>
-                            Action
-                        </MyButton>
+                        <RespondAction
+                            showRespondTitle={false}
+                            propAppointment={item}
+                        />
                     ),
                 };
             }),
@@ -230,6 +275,7 @@ const NotificationsPage = () => {
                 key={"notifications-table"}
                 dataSource={dataSource}
                 columns={columns}
+                onRow={(record, rowIndex) => handleSelectRow(record)}
             />
         ) : (
             <EmptyContent

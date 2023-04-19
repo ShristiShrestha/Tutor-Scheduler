@@ -73,7 +73,22 @@ const SideBar = () => {
             defaultOpenKeys={[sideMenus[0].key]}
         >
             {sideMenus.map(item => (
-                <Menu.Item key={item.key} icon={item.icon}>
+                <Menu.Item
+                    key={item.key}
+                    icon={
+                        <div className={"h-start-flex"}>
+                            {item.title.includes("(") ? (
+                                <div
+                                    className={"new-unseen"}
+                                    style={{ marginRight: 8 }}
+                                />
+                            ) : (
+                                ""
+                            )}{" "}
+                            {item.icon}
+                        </div>
+                    }
+                >
                     <Link to={item.link}>
                         <ResText14Regular>{item.title}</ResText14Regular>
                     </Link>

@@ -25,7 +25,7 @@ const Header = styled.div`
     align-items: center;
     position: fixed;
     top: 48px; // height of main top header - app name
-    left: 200px;
+    left: 210px;
     right: 0;
     padding: 0 24px;
     border-bottom: 1px solid ${grey6};
@@ -63,7 +63,6 @@ export default function FindTutors() {
 
     /******************* local params ************************/
     const getUserParams = (): UserParams => {
-        console.log("user params ", searchQuery);
         return {
             sortBy: UserSortKeys.rating,
             role: UserRoles.TUTOR,
@@ -75,7 +74,6 @@ export default function FindTutors() {
     /******************* dispatches ************************/
     const dispatchFetchTutors = () => {
         const tutorsParams = getUserParams();
-        console.log("calling fetch dispatch: ", searchQuery, tutorsParams);
         dispatch(fetchUsers(tutorsParams));
         setLoading(false);
     }; // will create function inside callback only if fetchUsers has changed
@@ -120,9 +118,9 @@ export default function FindTutors() {
                             {users.map((item, index) => (
                                 <Col
                                     key={"find-tutors-" + index}
-                                    xxl={6}
+                                    xxl={4}
                                     xl={8}
-                                    lg={12}
+                                    lg={8}
                                     md={12}
                                     sm={24}
                                 >

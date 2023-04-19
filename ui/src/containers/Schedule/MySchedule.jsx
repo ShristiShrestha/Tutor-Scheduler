@@ -32,7 +32,7 @@ const Header = styled.div`
     align-items: center;
     position: fixed;
     top: 48px; // height of main top header - app name
-    left: 200px;
+    left: 210px;
     right: 0;
     border-bottom: 1px solid ${grey6};
 `;

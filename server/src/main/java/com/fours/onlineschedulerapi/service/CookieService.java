@@ -9,7 +9,7 @@ public class CookieService {
 
     public static ResponseCookie getResponseCookie(String token, int age) {
 
-        ResponseCookie responseCookie = ResponseCookie.from(COOKIE_TOKEN_PREFIX, "Bearer " + token)
+        ResponseCookie responseCookie = ResponseCookie.from(COOKIE_TOKEN_PREFIX, token)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")

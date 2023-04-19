@@ -7,8 +7,6 @@ import {
     ResText12SemiBold,
     ResText14Regular,
     ResText14SemiBold,
-    ResText16Regular,
-    ResText16SemiBold,
 } from "../../utils/TextUtils";
 import {
     amethyst,
@@ -30,11 +28,7 @@ import {
     Badge,
     Checkbox,
     Col,
-    Divider,
-    Dropdown,
-    Input,
     Menu,
-    Modal,
     Row,
     Spin,
     Tag,
@@ -74,7 +68,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectAppointment } from "../../redux/appointment/reducer";
 import { AlertType, openNotification } from "../../utils/Alert";
 import { AppointmentStatus } from "../../enum/AppointmentEnum";
-import { capitalize } from "../../utils/StringUtils";
 import {
     isLoggedModerator,
     isLoggedStudent,
@@ -83,6 +76,7 @@ import {
 import { selectAuth } from "../../redux/auth/reducer";
 import { selectUser } from "../../redux/user/reducer";
 import { fetchAptWithUser } from "../../redux/user/actions";
+import RespondAction from "./RespondAction";
 
 const Wrapper = styled.div`
     .ant-divider {
@@ -469,19 +463,6 @@ export const renderNeedsTutoring = (
     </NeedsTutoring>
 );
 
-const respondMenuItems = [
-    {
-        label: "Accept",
-        key: "respond-accept",
-        value: AppointmentStatus.ACCEPTED,
-    },
-    {
-        label: "Reject",
-        key: "respond-reject",
-        value: AppointmentStatus.REJECTED,
-    },
-];
-
 export const renderTabs = (
     defaultTab,
     renderMenuComponent,
@@ -546,13 +527,10 @@ export default function ScheduleView() {
     const [scheduledSlots, setScheduledSlots] = useState([]);
     const [rateRequest, setRateRequest] = useState({ rating: -1, comment: "" });
     const [tutorUpdateReq, setTutorUpdateReq] = useState({
-        note: "",
-        status: undefined,
         scheduledAt: undefined,
     });
     // list of slots available for user to select
     const [availableSlots, setAvailableSlots] = useState([]);
-    const [showRespondModal, setShowRespondModal] = useState(false);
 
     const { loggedUser } = useSelector(selectAuth);
     const { appointment } = useSelector(selectAppointment);
@@ -607,31 +585,6 @@ export default function ScheduleView() {
             );
     }, [rateRequest]);
 
-    const dispatchUpdateAptStatus = () => {
-        const req = {
-            id: appointment.id,
-            statusMessage: tutorUpdateReq.note,
-            status: tutorUpdateReq.status,
-        };
-        const onSuccess = apt => {
-            openNotification(
-                "Request successful",
-                "Appointment status updated to ",
-                apt.status,
-                AlertType.SUCCESS,
-            );
-            setShowRespondModal(false);
-        };
-        const onError = err =>
-            openNotification(
-                "Failed to update appointment status to " +
-                    tutorUpdateReq.status,
-                err,
-                AlertType.ERROR,
-            );
-        dispatch(updateAppointment(req, onSuccess, onError));
-    };
-
     const dispatchUpdateAptSchedule = () => {
         const req = {
             id: appointment.id,
@@ -642,8 +595,7 @@ export default function ScheduleView() {
         const onSuccess = apt => {
             openNotification(
                 "Request successful",
-                "Appointment schedule updated to ",
-                new Date(apt.scheduledAt),
+                "Appointment schedule updated to " + new Date(apt.scheduledAt),
                 AlertType.SUCCESS,
             );
         };
@@ -704,7 +656,7 @@ export default function ScheduleView() {
     };
 
     const handleRateChanges = (key, value) => {
-        console.log("rate change values", key, value);
+        console.log("rating values", key, value);
         setRateRequest({ ...rateRequest, [key]: value });
     };
 
@@ -723,11 +675,6 @@ export default function ScheduleView() {
                 scheduledAt: selectedDateTs,
             });
         } else setTutorUpdateReq({ ...tutorUpdateReq, [key]: value });
-
-        // tutor is responding
-        if (key === "status") {
-            setShowRespondModal(true);
-        }
     };
 
     const getScheduledSlot = () =>
@@ -944,15 +891,15 @@ export default function ScheduleView() {
 
         return (
             <TabContent>
-                <ResText16SemiBold>
-                    <b>Today</b>
-                    <ResText16Regular
+                <ResText14SemiBold>
+                    Today
+                    <ResText14Regular
                         className={"text-grey"}
                         style={{ marginLeft: 12 }}
                     >
                         {toMonthDateYearStr(today)}
-                    </ResText16Regular>
-                </ResText16SemiBold>
+                    </ResText14Regular>
+                </ResText14SemiBold>
                 {appointment && (
                     <MyCalendar
                         dateCellRender={dateCellRender}
@@ -969,14 +916,6 @@ export default function ScheduleView() {
         );
     };
 
-    const respondMenu = (
-        <Menu onClick={e => handleTutorUpdateReq("status", e.key)}>
-            {respondMenuItems.map(item => (
-                <Menu.Item key={item.value}>{item.label}</Menu.Item>
-            ))}
-        </Menu>
-    );
-
     const renderStatus = () => {
         const text = <ResText12Regular> {appointment.status}</ResText12Regular>;
         if (
@@ -990,42 +929,6 @@ export default function ScheduleView() {
                 {getStatusBox(appointment.status, text)}
             </Tooltip>
         );
-    };
-
-    const renderRespond = () => {
-        const selectedRespondStr = capitalize(
-            tutorUpdateReq.status || respondMenuItems[0].value,
-        )
-            .toString()
-            .replace("ed", "");
-
-        if (appointment.status === AppointmentStatus.PENDING && !isStudent)
-            return (
-                <>
-                    <Divider type={"vertical"} />
-                    <ResText14SemiBold className={"text-grey1"}>
-                        Respond{" "}
-                    </ResText14SemiBold>
-                    <Dropdown.Button
-                        style={{ marginRight: 12 }}
-                        trigger={["click"]}
-                        overlay={respondMenu}
-                    >
-                        <ResText12Regular
-                            onClick={() =>
-                                handleTutorUpdateReq(
-                                    "status",
-                                    tutorUpdateReq.status ||
-                                        respondMenuItems[0].value,
-                                )
-                            }
-                        >
-                            {selectedRespondStr}
-                        </ResText12Regular>
-                    </Dropdown.Button>
-                </>
-            );
-        return <></>;
     };
 
     const showSlotView =
@@ -1081,7 +984,7 @@ export default function ScheduleView() {
                                     getRoleBasedMenuItems(id),
                                     isStudent,
                                     renderStatus(),
-                                    renderRespond(),
+                                    <RespondAction showRespondTitle={true} />,
                                 )}
                             </Col>
                             {showSlotView && (
@@ -1097,66 +1000,6 @@ export default function ScheduleView() {
                     )}
                 </Content>
             </Spin>
-            {!isStudent && appointment && (
-                <Modal
-                    width={"40vw"}
-                    visible={showRespondModal}
-                    okButtonProps={null}
-                    cancelButtonProps={null}
-                    onCancel={() => setShowRespondModal(false)}
-                    footer={null}
-                >
-                    <ResponseAppointment>
-                        {appointment.scheduledAt && (
-                            <ResText12Regular className={"text-break"}>
-                                You are about to respond{" "}
-                                <b>{tutorUpdateReq.status}</b> to the
-                                appointment scheduled for{" "}
-                                <b>{`${toMonthDateYearStr(
-                                    new Date(appointment.scheduledAt),
-                                )} ${getScheduledSlot()[0]?.title}`}</b>
-                                .
-                            </ResText12Regular>
-                        )}
-                        {tutorUpdateReq.status ===
-                            AppointmentStatus.REJECTED && (
-                            <div className={"respond-reject-input"}>
-                                <ResText12Regular className={"text-grey2"}>
-                                    Add a rejection message *
-                                </ResText12Regular>
-                                <Input.TextArea
-                                    className="comment-textarea"
-                                    autoSize={{ minRows: 6, maxRows: 10 }}
-                                    onChange={e => {
-                                        e.stopPropagation();
-                                        handleTutorUpdateReq(
-                                            "note",
-                                            e.currentTarget.value,
-                                        );
-                                    }}
-                                />
-                            </div>
-                        )}
-                        <div className={"h-end-flex respond-submit"}>
-                            <MyButton
-                                htmlType={"submit"}
-                                type={"primary"}
-                                disabled={
-                                    tutorUpdateReq.status ===
-                                        AppointmentStatus.REJECTED &&
-                                    (!tutorUpdateReq.note ||
-                                        tutorUpdateReq.note.length === 0)
-                                }
-                                onClick={() => dispatchUpdateAptStatus()}
-                            >
-                                <ResText12SemiBold>
-                                    Submit changes
-                                </ResText12SemiBold>
-                            </MyButton>
-                        </div>
-                    </ResponseAppointment>
-                </Modal>
-            )}
         </Wrapper>
     );
 }
