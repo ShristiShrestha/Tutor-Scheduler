@@ -1,50 +1,111 @@
-import {Avatar} from "antd";
-import {UserOutlined} from "@ant-design/icons";
-import {ResText14SemiBold, ResText16SemiBold} from "../../utils/TextUtils";
+import { Avatar, Dropdown, Menu } from "antd";
+import { DownOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import {
+    ResText12Regular,
+    ResText14SemiBold,
+    ResText16SemiBold,
+} from "../../utils/TextUtils";
 import styled from "styled-components";
-import {useSelector} from "react-redux";
-import {selectAuth} from "../../redux/auth/reducer";
-import {useNavigate} from "react-router-dom";
-import {capitalize} from "../../utils/StringUtils";
+import { useSelector } from "react-redux";
+import { selectAuth } from "../../redux/auth/reducer";
+import { useNavigate } from "react-router-dom";
+import { capitalize } from "../../utils/StringUtils";
+import { logout } from "../../api/AuthApi";
+import { AlertType, openNotification } from "../../utils/Alert";
+import React from "react";
 
 const Wrapper = styled.div`
-  line-height: inherit;
-  height: fit-content;
-  padding: 24px;
+    line-height: inherit;
+    height: fit-content;
+    padding: 24px;
 `;
 
 const AppName = styled.div`
-  align-self: center;
-  cursor: pointer;
+    align-self: center;
+    cursor: pointer;
 `;
 
 const UserInfo = styled.div`
-  width: fit-content;
-  height: fit-content;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    cursor: pointer;
+
+    .ant-btn-compact-item {
+        background: none;
+        border: none;
+        padding-right: 12px;
+    }
+
+    .user-avatar-menu-item {
+        min-width: 160px !important;
+    }
 `;
 
 const TopBar = () => {
     const navigate = useNavigate();
-    const {loggedUser, authenticated} = useSelector(selectAuth);
+    const { loggedUser, authenticated } = useSelector(selectAuth);
+
+    const handleLogout = () => {
+        logout()
+            .then(res => navigate("/login"))
+            .catch(err =>
+                openNotification("Logout failed", err, AlertType.ERROR),
+            );
+    };
+
+    const avatarMenu = (
+        <Menu>
+            <Menu.Item
+                className={"user-avatar-menu-item"}
+                onClick={() => handleLogout()}
+            >
+                <>
+                    <ResText12Regular>Logout</ResText12Regular>
+                    <LogoutOutlined style={{ marginLeft: 8 }} />
+                </>
+            </Menu.Item>
+        </Menu>
+    );
 
     return (
         <Wrapper className={"h-justified-flex"}>
-            {authenticated && <>
-                <AppName onClick={() => navigate("/")}>
-                    <ResText16SemiBold>Online Scheduler</ResText16SemiBold>
-                </AppName>
-                <UserInfo>
-                    <Avatar
-                        icon={<UserOutlined/>}
-                        style={{marginRight: "10px", cursor: "pointer"}}
-                    />
-                    <ResText14SemiBold>{(loggedUser && capitalize(loggedUser["name"])) || `Noname`}</ResText14SemiBold>
-                </UserInfo>
-            </>}
+            {authenticated && (
+                <>
+                    <AppName onClick={() => navigate("/")}>
+                        <ResText16SemiBold>Online Scheduler</ResText16SemiBold>
+                    </AppName>
+                    <UserInfo>
+                        <Dropdown.Button
+                            style={{
+                                display: "flow-root",
+                                color: "white",
+                            }}
+                            icon={<DownOutlined style={{ color: "white" }} />}
+                            trigger={["click"]}
+                            overlay={avatarMenu}
+                        >
+                            <div className={"h-vertically-centered-flex"}>
+                                <Avatar
+                                    icon={<UserOutlined />}
+                                    style={{
+                                        marginRight: "12px",
+                                        cursor: "pointer",
+                                    }}
+                                />
+                                <ResText14SemiBold className={"text-white"}>
+                                    {(loggedUser &&
+                                        capitalize(loggedUser["name"])) ||
+                                        `Noname`}
+                                </ResText14SemiBold>
+                            </div>
+                        </Dropdown.Button>
+                    </UserInfo>
+                </>
+            )}
         </Wrapper>
     );
 };

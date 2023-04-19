@@ -85,304 +85,304 @@ import { selectUser } from "../../redux/user/reducer";
 import { fetchAptWithUser } from "../../redux/user/actions";
 
 const Wrapper = styled.div`
-    .ant-divider {
-        margin: 0;
-    }
+  .ant-divider {
+    margin: 0;
+  }
 
-    .ant-row {
-        margin: 0 !important;
-    }
+  .ant-row {
+    margin: 0 !important;
+  }
 
-    .ant-col {
-        height: fit-content;
-    }
+  .ant-col {
+    height: fit-content;
+  }
 `;
 
 const Header = styled.div`
-    padding: 12px 24px;
-    border-bottom: 1px solid ${grey6};
-    box-shadow: 0 24px #eaeaea;
+  padding: 12px 24px;
+  border-bottom: 1px solid ${grey6};
+  box-shadow: 0 24px #eaeaea;
 `;
 
 const Content = styled.div`
-    //padding: 24px;
-    background: white;
+  //padding: 24px;
+  background: white;
     // background: ${pearl};
-    height: calc(100vh - 48px);
-    overflow-y: auto;
-    position: relative;
-    padding-bottom: 120px;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+  position: relative;
+  padding-bottom: 120px;
 
-    .border-right {
-        border-right: 1px solid ${grey6};
-    }
+  .border-right {
+    border-right: 1px solid ${grey6};
+  }
 
-    .border-top {
-        border-top: 1px solid ${grey6};
-    }
+  .border-top {
+    border-top: 1px solid ${grey6};
+  }
 
-    .schedule-actor-view-mod {
-        column-gap: 36px;
-    }
+  .schedule-actor-view-mod {
+    column-gap: 36px;
+  }
 `;
 
 export const ScheduleActorInfo = styled.div.attrs({
     // className: "outer-shadow",
 })`
-    //max-width: 720px;
-    //margin: auto;
-    width: 100%;
-    padding: 24px 0 24px 24px;
+  //max-width: 720px;
+  //margin: auto;
+  width: 100%;
+  padding: 24px 0 24px 24px;
     // border: 1px solid ${grey6};
-    background: white;
-    border-radius: 8px;
-    //column-gap: 24px;
-    //margin-bottom: 24px;
+  background: white;
+  border-radius: 8px;
+  //column-gap: 24px;
+  //margin-bottom: 24px;
 
-    .actor-info-content {
-        margin-top: 12px;
-    }
+  .actor-info-content {
+    margin-top: 12px;
+  }
 
-    .actor-profile-info {
-        margin-left: 16px;
-        row-gap: 2px;
-        align-items: start;
-    }
+  .actor-profile-info {
+    margin-left: 16px;
+    row-gap: 2px;
+    align-items: start;
+  }
 `;
 
 const NeedsTutoring = styled.div.attrs({
     // className: "vertical-start-flex outer-shadow",
 })`
-    //max-width: 720px;
-    //margin: auto;
-    width: 100%;
-    margin-top: 16px;
-    padding: 0 0 36px 24px;
+  //max-width: 720px;
+  //margin: auto;
+  width: 100%;
+  margin-top: 16px;
+  padding: 0 0 36px 24px;
     // border: 1px solid ${grey6};
-    //background: white;
-    border-radius: 8px;
-    column-gap: 24px;
-    align-items: start;
-    row-gap: 4px;
+  //background: white;
+  border-radius: 8px;
+  column-gap: 24px;
+  align-items: start;
+  row-gap: 4px;
 `;
 
 export const SlotInfo = styled.div`
-    padding: 24px 0 24px 24px;
+  padding: 24px 0 24px 24px;
 
-    .selected-slots-info {
-        align-items: start;
-        row-gap: 12px;
-        margin-top: 24px;
+  .selected-slots-info {
+    align-items: start;
+    row-gap: 12px;
+    margin-top: 24px;
+  }
+
+  .slot-items {
+    list-style-type: none;
+    padding: 0;
+
+    li {
+      display: flex;
+      padding: 0;
+      column-gap: 12px;
+      margin-bottom: 8px;
     }
+  }
 
-    .slot-items {
-        list-style-type: none;
-        padding: 0;
+  .send-slot-request {
+    max-width: 95%;
+    text-align: justify;
+    column-gap: 20px !important;
+    row-gap: 20px;
 
-        li {
-            display: flex;
-            padding: 0;
-            column-gap: 12px;
-            margin-bottom: 8px;
-        }
+    .ant-btn {
+      align-self: end;
     }
+  }
 
-    .send-slot-request {
-        max-width: 95%;
-        text-align: justify;
-        column-gap: 20px !important;
-        row-gap: 20px;
+  .select-needs-tutoring-in {
+    row-gap: 12px;
+    align-items: start;
+    margin: 32px 0;
+  }
 
-        .ant-btn {
-            align-self: end;
-        }
+  .tutoring-notes {
+    row-gap: 12px;
+    align-items: start;
+    margin: 32px 0;
+
+    .ant-input {
+      font-style: normal;
+      width: 95%;
     }
-
-    .select-needs-tutoring-in {
-        row-gap: 12px;
-        align-items: start;
-        margin: 32px 0;
-    }
-
-    .tutoring-notes {
-        row-gap: 12px;
-        align-items: start;
-        margin: 32px 0;
-
-        .ant-input {
-            font-style: normal;
-            width: 95%;
-        }
-    }
+  }
 `;
 
 const ScheduleDetailsTabs = styled.div`
-    //max-width: 720px;
-    //margin: auto;
+  //max-width: 720px;
+  //margin: auto;
 
-    //background: white;
-    border-radius: 8px;
-    //padding: 12px 0;
+  //background: white;
+  border-radius: 8px;
+  //padding: 12px 0;
 
-    .ant-menu-horizontal {
-        border-top: 1px solid ${grey6};
+  .ant-menu-horizontal {
+    border-top: 1px solid ${grey6};
+  }
+
+  .schedule-menu-header {
+    width: 100%;
+    border-bottom: 1px solid ${grey6};
+    row-gap: 12px;
+  }
+
+  .schedules-menu > .ant-menu-item {
+    padding-left: 36px;
+    //padding-top: 6px;
+    //padding-bottom: 6px;
+    border-bottom: 1px solid ${grey6};
+    min-width: 215px;
+    //min-height: 50px;
+
+    ::after {
+      display: none;
     }
+  }
 
-    .schedule-menu-header {
-        width: 100%;
-        border-bottom: 1px solid ${grey6};
-        row-gap: 12px;
-    }
+  .schedule-menu-last-item {
+    min-width: 160px !important;
+    padding-left: 24px !important;
+  }
 
-    .schedules-menu > .ant-menu-item {
-        padding-left: 36px;
-        //padding-top: 6px;
-        //padding-bottom: 6px;
-        border-bottom: 1px solid ${grey6};
-        min-width: 215px;
-        //min-height: 50px;
+  .schedules-menu > .ant-menu-item-active {
+    border-bottom: 2px solid ${amethyst} !important;
+  }
 
-        ::after {
-            display: none;
-        }
-    }
-
-    .schedule-menu-last-item {
-        min-width: 160px !important;
-        padding-left: 24px !important;
-    }
-
-    .schedules-menu > .ant-menu-item-active {
-        border-bottom: 2px solid ${amethyst} !important;
-    }
-
-    .schedules-menu > .ant-menu-item-selected {
-        border-bottom: 2px solid ${amethyst} !important;
-    }
+  .schedules-menu > .ant-menu-item-selected {
+    border-bottom: 2px solid ${amethyst} !important;
+  }
 `;
 
 export const TabContent = styled.div`
-    padding: 24px;
+  padding: 24px;
 
-    .ant-picker-calendar-mode-switch {
-        display: none;
+  .ant-picker-calendar-mode-switch {
+    display: none;
+  }
+
+  .rate-tutor-content {
+    margin-top: 24px;
+  }
+
+  .rate-tutor-features {
+    row-gap: 6px;
+  }
+
+  .rate-tutor-options {
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 24px;
+
+    li {
+      display: inline-flex;
+      align-items: center;
+      align-content: center;
+      justify-content: center;
+      padding: 36px;
+      max-height: 50px;
+      max-width: 50px;
+      background: white;
+      border: 1px solid ${grey3};
+      margin-right: 10px;
+      border-radius: 4px;
+      column-gap: 4px;
+
+      .anticon svg {
+        font-size: 24px;
+        color: ${grey2};
+      }
+
+      :hover {
+        background: ${snow};
+      }
     }
+  }
 
-    .rate-tutor-content {
-        margin-top: 24px;
-    }
+  .rate-options-disabled {
+    cursor: not-allowed;
+  }
 
-    .rate-tutor-features {
-        row-gap: 6px;
-    }
+  .margin-btm-icon {
+    max-width: 70px !important;
+    max-height: 85px !important;
+  }
 
-    .rate-tutor-options {
-        width: 100%;
-        list-style-type: none;
-        padding: 0;
-        margin-bottom: 24px;
+  .margin-btm-icon > img {
+    margin-bottom: 6px;
+  }
 
-        li {
-            display: inline-flex;
-            align-items: center;
-            align-content: center;
-            justify-content: center;
-            padding: 36px;
-            max-height: 50px;
-            max-width: 50px;
-            background: white;
-            border: 1px solid ${grey3};
-            margin-right: 10px;
-            border-radius: 4px;
-            column-gap: 4px;
+  .rate-very-bad-selected {
+    background: ${rose} !important;
+    border: 1px solid ${rose} !important;
+  }
 
-            .anticon svg {
-                font-size: 24px;
-                color: ${grey2};
-            }
+  .rate-very-bad:hover {
+    background: ${rose} !important;
+    border: 1px solid ${rose} !important;
+  }
 
-            :hover {
-                background: ${snow};
-            }
-        }
-    }
+  .rate-just-bad-selected {
+    background: ${lightRed} !important;
+    border: 1px solid ${crimson} !important;
+  }
 
-    .rate-options-disabled {
-        cursor: not-allowed;
-    }
+  .rate-just-bad:hover {
+    background: ${lightRed} !important;
+    border: 1px solid ${crimson} !important;
+  }
 
-    .margin-btm-icon {
-        max-width: 70px !important;
-        max-height: 85px !important;
-    }
+  .rate-good-selected {
+    background: ${seaFoam} !important;
+    border: 1px solid ${green} !important;
+  }
 
-    .margin-btm-icon > img {
-        margin-bottom: 6px;
-    }
+  .rate-good:hover {
+    background: ${seaFoam} !important;
+    border: 1px solid ${green} !important;
+  }
 
-    .rate-very-bad-selected {
-        background: ${rose} !important;
-        border: 1px solid ${rose} !important;
-    }
+  .rate-very-good-selected {
+    background: ${green} !important;
+    border: 1px solid ${green} !important;
+  }
 
-    .rate-very-bad:hover {
-        background: ${rose} !important;
-        border: 1px solid ${rose} !important;
-    }
+  .rate-very-good:hover {
+    background: ${green} !important;
+    border: 1px solid ${green} !important;
+  }
 
-    .rate-just-bad-selected {
-        background: ${lightRed} !important;
-        border: 1px solid ${crimson} !important;
-    }
+  .rate-tutor-comment {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    row-gap: 20px;
+  }
 
-    .rate-just-bad:hover {
-        background: ${lightRed} !important;
-        border: 1px solid ${crimson} !important;
-    }
-
-    .rate-good-selected {
-        background: ${seaFoam} !important;
-        border: 1px solid ${green} !important;
-    }
-
-    .rate-good:hover {
-        background: ${seaFoam} !important;
-        border: 1px solid ${green} !important;
-    }
-
-    .rate-very-good-selected {
-        background: ${green} !important;
-        border: 1px solid ${green} !important;
-    }
-
-    .rate-very-good:hover {
-        background: ${green} !important;
-        border: 1px solid ${green} !important;
-    }
-
-    .rate-tutor-comment {
-        margin-top: 12px;
-        margin-bottom: 12px;
-        row-gap: 20px;
-    }
-
-    .rate-tutor-input {
-        border: 1px solid ${grey5};
-        min-height: 50px;
-        font-style: normal;
-    }
+  .rate-tutor-input {
+    border: 1px solid ${grey5};
+    min-height: 50px;
+    font-style: normal;
+  }
 `;
 
 const ResponseAppointment = styled.div`
-    padding: 12px 24px;
+  padding: 12px 24px;
 
-    .respond-reject-input {
-        margin: 12px 0;
-    }
+  .respond-reject-input {
+    margin: 12px 0;
+  }
 
-    .respond-submit {
-        margin-top: 24px;
-    }
+  .respond-submit {
+    margin-top: 24px;
+  }
 `;
 
 const getMenuItems = id => [
@@ -390,20 +390,20 @@ const getMenuItems = id => [
         key: "schedule-view",
         link: "/schedules/" + id,
         title: "Schedule Details",
-        icon: <CalendarOutlined />,
+        icon: <CalendarOutlined/>,
     },
     {
         key: "schedule-rating",
         link: "/schedules/" + id + "/rate-tutor",
         title: "Rate Tutor",
-        icon: <StarOutlined />,
+        icon: <StarOutlined/>,
     },
 ];
 
 export const CalenderItem = styled.div`
-    height: 100%;
-    width: 100%;
-    padding-top: 20px;
+  height: 100%;
+  width: 100%;
+  padding-top: 20px;
 `;
 
 //  ----------------- actor details -----------
@@ -415,12 +415,12 @@ export const renderActorInfo = (
     <ScheduleActorInfo>
         <ResText14SemiBold>{title}</ResText14SemiBold>
         <div className={"h-start-flex actor-info-content"}>
-            <Avatar shape="circle" size={64} />
+            <Avatar shape="circle" size={64}/>
             <div className={"vertical-start-flex actor-profile-info"}>
                 <ResText14SemiBold>
                     {getUsername(user) + " "}
                     {loggedUserId && loggedUserId === user?.id && (
-                        <Tag style={{ marginLeft: 6 }}>Me</Tag>
+                        <Tag style={{marginLeft: 6}}>Me</Tag>
                     )}
                     {/*<Link to={"/user/"}>*/}
                     {/*    <ResText14Regular style={{marginLeft: 4}}>*/}
@@ -451,13 +451,13 @@ export const renderNeedsTutoring = (
         <StatusTagList>
             {subjects &&
                 subjects.map(expertise => (
-                    <Tag style={{ padding: "3px 10px" }}>
+                    <Tag style={{padding: "3px 10px"}}>
                         <ResText12Regular>{expertise}</ResText12Regular>
                     </Tag>
                 ))}
         </StatusTagList>
         {studentNote && (
-            <div style={{ marginTop: "2rem" }}>
+            <div style={{marginTop: "2rem"}}>
                 <ResText14Regular className={"text-grey2"}>
                     {noteTitle}
                 </ResText14Regular>
@@ -495,7 +495,7 @@ export const renderTabs = (
             <div className={"h-justified-flex schedule-menu-header"}>
                 <Menu
                     mode={"horizontal"}
-                    style={{ width: "50%" }}
+                    style={{width: "50%"}}
                     className={"schedules-menu"}
                     defaultSelectedKeys={defaultTab}
                     defaultOpenKeys={defaultTab}
@@ -539,12 +539,12 @@ export const renderTabs = (
 };
 
 export default function ScheduleView() {
-    const { id } = useParams();
+    const {id} = useParams();
     const dispatch = useDispatch();
     const location = useLocation();
     const [loading, setLoading] = useState(true);
     const [scheduledSlots, setScheduledSlots] = useState([]);
-    const [rateRequest, setRateRequest] = useState({ rating: -1, comment: "" });
+    const [rateRequest, setRateRequest] = useState({rating: -1, comment: ""});
     const [tutorUpdateReq, setTutorUpdateReq] = useState({
         note: "",
         status: undefined,
@@ -554,8 +554,8 @@ export default function ScheduleView() {
     const [availableSlots, setAvailableSlots] = useState([]);
     const [showRespondModal, setShowRespondModal] = useState(false);
 
-    const { loggedUser } = useSelector(selectAuth);
-    const { appointment } = useSelector(selectAppointment);
+    const {loggedUser} = useSelector(selectAuth);
+    const {appointment} = useSelector(selectAppointment);
 
     const ratingOptions = Object.values(ratings);
     const acceptedApt =
@@ -569,7 +569,7 @@ export default function ScheduleView() {
         appointment &&
         appointment.studentId === loggedUser?.id;
     const isModerator = isLoggedModerator(loggedUser);
-    const { aptsWithUser } = useSelector(selectUser);
+    const {aptsWithUser} = useSelector(selectUser);
 
     /******************* dispatches ************************/
 
@@ -625,7 +625,7 @@ export default function ScheduleView() {
         const onError = err =>
             openNotification(
                 "Failed to update appointment status to " +
-                    tutorUpdateReq.status,
+                tutorUpdateReq.status,
                 err,
                 AlertType.ERROR,
             );
@@ -651,7 +651,7 @@ export default function ScheduleView() {
         const onError = err =>
             openNotification(
                 "Failed to update appointment schedule to " +
-                    tutorUpdateReq.scheduledAt,
+                tutorUpdateReq.scheduledAt,
                 err,
                 AlertType.ERROR,
             );
@@ -705,7 +705,7 @@ export default function ScheduleView() {
 
     const handleRateChanges = (key, value) => {
         console.log("rate change values", key, value);
-        setRateRequest({ ...rateRequest, [key]: value });
+        setRateRequest({...rateRequest, [key]: value});
     };
 
     const handleTutorUpdateReq = (key, value) => {
@@ -722,7 +722,7 @@ export default function ScheduleView() {
                 ...tutorUpdateReq,
                 scheduledAt: selectedDateTs,
             });
-        } else setTutorUpdateReq({ ...tutorUpdateReq, [key]: value });
+        } else setTutorUpdateReq({...tutorUpdateReq, [key]: value});
 
         // tutor is responding
         if (key === "status") {
@@ -849,8 +849,8 @@ export default function ScheduleView() {
                                 {acceptedApt && canRate
                                     ? "Rate Tutor"
                                     : !canRate
-                                    ? "You have not attended the appointment yet."
-                                    : "You can only rate the accepted appointment."}
+                                        ? "You have not attended the appointment yet."
+                                        : "You can only rate the accepted appointment."}
                             </ResText14Regular>
                             <div className={"rate-tutor-content"}>
                                 <div
@@ -878,7 +878,7 @@ export default function ScheduleView() {
                                                     item.className +
                                                     (acceptedApt &&
                                                     index + 1 ===
-                                                        rateRequest.rating
+                                                    rateRequest.rating
                                                         ? "-selected"
                                                         : "") +
                                                     (!acceptedApt
@@ -948,7 +948,7 @@ export default function ScheduleView() {
                     <b>Today</b>
                     <ResText16Regular
                         className={"text-grey"}
-                        style={{ marginLeft: 12 }}
+                        style={{marginLeft: 12}}
                     >
                         {toMonthDateYearStr(today)}
                     </ResText16Regular>
@@ -1002,21 +1002,24 @@ export default function ScheduleView() {
         if (appointment.status === AppointmentStatus.PENDING && !isStudent)
             return (
                 <>
-                    <Divider type={"vertical"} />
+                    <Divider type={"vertical"}/>
                     <ResText14SemiBold className={"text-grey1"}>
                         Respond{" "}
                     </ResText14SemiBold>
                     <Dropdown.Button
-                        style={{ marginRight: 12 }}
+                        style={{
+                            marginRight: 12,
+                        }}
                         trigger={["click"]}
                         overlay={respondMenu}
                     >
                         <ResText12Regular
+
                             onClick={() =>
                                 handleTutorUpdateReq(
                                     "status",
                                     tutorUpdateReq.status ||
-                                        respondMenuItems[0].value,
+                                    respondMenuItems[0].value,
                                 )
                             }
                         >
@@ -1120,30 +1123,30 @@ export default function ScheduleView() {
                         )}
                         {tutorUpdateReq.status ===
                             AppointmentStatus.REJECTED && (
-                            <div className={"respond-reject-input"}>
-                                <ResText12Regular className={"text-grey2"}>
-                                    Add a rejection message *
-                                </ResText12Regular>
-                                <Input.TextArea
-                                    className="comment-textarea"
-                                    autoSize={{ minRows: 6, maxRows: 10 }}
-                                    onChange={e => {
-                                        e.stopPropagation();
-                                        handleTutorUpdateReq(
-                                            "note",
-                                            e.currentTarget.value,
-                                        );
-                                    }}
-                                />
-                            </div>
-                        )}
+                                <div className={"respond-reject-input"}>
+                                    <ResText12Regular className={"text-grey2"}>
+                                        Add a rejection message *
+                                    </ResText12Regular>
+                                    <Input.TextArea
+                                        className="comment-textarea"
+                                        autoSize={{minRows: 6, maxRows: 10}}
+                                        onChange={e => {
+                                            e.stopPropagation();
+                                            handleTutorUpdateReq(
+                                                "note",
+                                                e.currentTarget.value,
+                                            );
+                                        }}
+                                    />
+                                </div>
+                            )}
                         <div className={"h-end-flex respond-submit"}>
                             <MyButton
                                 htmlType={"submit"}
                                 type={"primary"}
                                 disabled={
                                     tutorUpdateReq.status ===
-                                        AppointmentStatus.REJECTED &&
+                                    AppointmentStatus.REJECTED &&
                                     (!tutorUpdateReq.note ||
                                         tutorUpdateReq.note.length === 0)
                                 }
