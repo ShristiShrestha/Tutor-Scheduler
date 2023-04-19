@@ -106,7 +106,11 @@ export default function ChatConversation() {
     };
 
     useEffect(() => {
-        dispatchFetchChat();
+        const interval = setInterval(() => {
+            dispatchFetchChat();
+        }, 2000);
+
+        return () => clearInterval(interval);
     }, [fetchMsgsWithUser]);
 
     useMemo(() => {
