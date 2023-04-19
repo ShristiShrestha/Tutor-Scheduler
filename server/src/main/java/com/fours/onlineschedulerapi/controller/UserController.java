@@ -1,6 +1,7 @@
 package com.fours.onlineschedulerapi.controller;
 
 import com.fours.onlineschedulerapi.auth.JwtUserDetailService;
+import com.fours.onlineschedulerapi.constants.AuthConstants;
 import com.fours.onlineschedulerapi.constants.ResponseMessage;
 import com.fours.onlineschedulerapi.constants.RabbitMqConstant;
 import com.fours.onlineschedulerapi.constants.RoleConstants;
@@ -55,7 +56,7 @@ public class UserController {
             return ResponseEntity
                     .ok()
                     .header(HttpHeaders.SET_COOKIE,
-                            CookieService.getResponseCookie(token).toString())
+                            CookieService.getResponseCookie(token, AuthConstants.JWT_TOKEN_VALIDITY).toString())
                     .build();
         } catch (BadRequestException e) {
 

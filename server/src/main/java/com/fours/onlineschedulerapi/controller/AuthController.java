@@ -2,6 +2,7 @@ package com.fours.onlineschedulerapi.controller;
 
 import com.fours.onlineschedulerapi.auth.AuthService;
 import com.fours.onlineschedulerapi.auth.JwtUserDetailService;
+import com.fours.onlineschedulerapi.constants.AuthConstants;
 import com.fours.onlineschedulerapi.dto.UserDto;
 import com.fours.onlineschedulerapi.model.JwtRequest;
 import com.fours.onlineschedulerapi.model.JwtResponse;
@@ -45,7 +46,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,
-                        CookieService.getResponseCookie(token).toString())
+                        CookieService.getResponseCookie(token, AuthConstants.JWT_TOKEN_VALIDITY).toString())
                 .build();
     }
 
@@ -60,6 +61,15 @@ public class AuthController {
                 new UserDto(userDetails),
                 HttpStatus.OK
         );
+    }
+
+    @GetMapping(value = "/logout")
+    public ResponseEntity<?> logout() {
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE,
+                        CookieService.getResponseCookie("", 0).toString())
+                .build();
     }
 
     @GetMapping(value = "/check")

@@ -7,13 +7,13 @@ import static com.fours.onlineschedulerapi.constants.AuthConstants.COOKIE_TOKEN_
 
 public class CookieService {
 
-    public static ResponseCookie getResponseCookie(String token) {
+    public static ResponseCookie getResponseCookie(String token, int age) {
 
         ResponseCookie responseCookie = ResponseCookie.from(COOKIE_TOKEN_PREFIX, "Bearer " + token)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(AuthConstants.JWT_TOKEN_VALIDITY)
+                .maxAge(age)
                 .build();
 
         return responseCookie;
