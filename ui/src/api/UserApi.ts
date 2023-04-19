@@ -1,17 +1,20 @@
 import Api from "../utils/ApiUtils";
-import {UserAppointmentParams, UserDetailsType, UserEntityType, UserParams} from "../redux/user/types";
-import {AppointmentType} from "../redux/appointment/types"; // todo: add query props
+import {
+    UserAppointmentParams,
+    UserDetailsType,
+    UserParams,
+} from "../redux/user/types";
+import { AppointmentType } from "../redux/appointment/types"; // todo: add query props
 
-
-export const putUser = (user: UserEntityType) => {
+export const putUser = (user: UserDetailsType) => {
     return Api.apiCall<UserDetailsType>({
         url: "/user",
         method: "PUT",
-        data: user
+        data: user,
     });
 };
 
-export const deleteUser = (id) => {
+export const deleteUser = id => {
     return Api.apiCall<string>({
         url: `/user/${id}`,
         method: "DELETE",
@@ -23,11 +26,11 @@ export const getUsers = (params: UserParams) => {
     return Api.apiCall<UserDetailsType[]>({
         url: "/user",
         method: "GET",
-        params: params
+        params: params,
     });
 };
 
-export const getUser = (id) => {
+export const getUser = id => {
     return Api.apiCall<UserDetailsType>({
         url: `/user/${id}`,
         method: "GET",
@@ -41,6 +44,6 @@ export const getAptsWithUser = (id: number, params: UserAppointmentParams) => {
     return Api.apiCall<AppointmentType[]>({
         url: `/user/${id}/appointment`,
         method: "GET",
-        params: params
+        params: params,
     });
-}
+};

@@ -42,6 +42,7 @@ import { selectAuth } from "../../redux/auth/reducer";
 import { AlertType, openNotification } from "../../utils/Alert";
 import ViewTutorRatings from "./ViewTutorRatings";
 import { UserDetailsType } from "../../redux/user/types";
+import { isLoggedModerator } from "../../utils/AuthUtils";
 
 const { TextArea } = Input;
 
@@ -125,6 +126,7 @@ const TutorProfile = () => {
     const { user, aptsWithUser } = useSelector(selectUser);
 
     const loggedUserIsTutor = loggedUser && loggedUser?.id?.toString() === id;
+    const isModerator = isLoggedModerator(loggedUser);
 
     /******************* handle events ************************/
     const handleSlotClick = (selected, item) => {
@@ -450,12 +452,18 @@ const TutorProfile = () => {
             <Spin spinning={loading}>
                 <Content>
                     <div>
-                        {renderActorInfo(user, "Tutor info", loggedUser?.id)}
+                        {renderActorInfo(
+                            user,
+                            "Tutor info",
+                            loggedUser?.id,
+                            isModerator,
+                        )}
                         {renderNeedsTutoring(
                             user?.expertise || [],
                             undefined,
                             "Specializations",
                             "",
+                            isModerator,
                         )}
                     </div>
 

@@ -77,6 +77,8 @@ import { selectAuth } from "../../redux/auth/reducer";
 import { selectUser } from "../../redux/user/reducer";
 import { fetchAptWithUser } from "../../redux/user/actions";
 import RespondAction from "./RespondAction";
+import EditProfile from "../Tutor/EditProfile";
+import { EditProfileEnum } from "../../enum/EditProfileEnum";
 
 const Wrapper = styled.div`
     .ant-divider {
@@ -274,7 +276,7 @@ export const TabContent = styled.div`
         width: 100%;
         list-style-type: none;
         padding: 0;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
 
         li {
             display: inline-flex;
@@ -405,6 +407,7 @@ export const renderActorInfo = (
     user: UserDetailsType,
     title = "Tutor info",
     loggedUserId?: string,
+    showEditProfile = false,
 ) => (
     <ScheduleActorInfo>
         <ResText14SemiBold>{title}</ResText14SemiBold>
@@ -414,13 +417,14 @@ export const renderActorInfo = (
                 <ResText14SemiBold>
                     {getUsername(user) + " "}
                     {loggedUserId && loggedUserId === user?.id && (
-                        <Tag style={{ marginLeft: 6 }}>Me</Tag>
+                        <Tag style={{ marginLeft: 12 }}>Me</Tag>
                     )}
-                    {/*<Link to={"/user/"}>*/}
-                    {/*    <ResText14Regular style={{marginLeft: 4}}>*/}
-                    {/*        View profile*/}
-                    {/*    </ResText14Regular>*/}
-                    {/*</Link>*/}
+                    {showEditProfile && (
+                        <EditProfile
+                            className={"small-horizontal-margin"}
+                            type={EditProfileEnum.NAME}
+                        />
+                    )}
                 </ResText14SemiBold>
                 {user && (
                     <ResText14Regular className={"text-grey2"}>
@@ -439,9 +443,16 @@ export const renderNeedsTutoring = (
     studentNote?: string,
     title = "Needs tutoring in",
     noteTitle = "Student Note - ",
+    showEditProfile = false,
 ) => (
     <NeedsTutoring>
         <ResText14SemiBold>{title}</ResText14SemiBold>
+        {showEditProfile && (
+            <EditProfile
+                className={"small-horizontal-margin"}
+                type={EditProfileEnum.SPECIALIZATIONS}
+            />
+        )}
         <StatusTagList>
             {subjects &&
                 subjects.map(expertise => (
@@ -956,14 +967,11 @@ export default function ScheduleView() {
                                         : appointment.tutor,
                                     isTutor ? "Student Info" : "Tutor Info",
                                 )}
-                                {isLoggedModerator(loggedUser) ? (
+                                {isLoggedModerator(loggedUser) &&
                                     renderActorInfo(
                                         appointment.student,
                                         "Student Info",
-                                    )
-                                ) : (
-                                    <></>
-                                )}
+                                    )}
                             </div>
                             {renderNeedsTutoring(
                                 appointment.tutoringOnList,

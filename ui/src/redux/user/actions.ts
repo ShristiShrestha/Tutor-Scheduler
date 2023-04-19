@@ -8,19 +8,18 @@ import {
     UPDATE_USER,
     UserAppointmentParams,
     UserDetailsType,
-    UserEntityType,
     UserParams,
 } from "./types";
-import {MyThunkDispatch} from "../common/types";
-import {actionFailure, actionStart, actionSuccess} from "../common/actions";
-import {getAptsWithUser, getUser, getUsers, putUser} from "../../api/UserApi";
-import {AppointmentType} from "../appointment/types";
+import { MyThunkDispatch } from "../common/types";
+import { actionFailure, actionStart, actionSuccess } from "../common/actions";
+import { getAptsWithUser, getUser, getUsers, putUser } from "../../api/UserApi";
+import { AppointmentType } from "../appointment/types";
 
 /******************* state ************************/
 export function setUser(props: UserDetailsType) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_USER));
-        dispatch({type: SET_USER, payload: props});
+        dispatch({ type: SET_USER, payload: props });
         dispatch(actionSuccess(SET_USER, props));
     };
 }
@@ -28,7 +27,7 @@ export function setUser(props: UserDetailsType) {
 export function setUsers(props: UserDetailsType[]) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_USERS));
-        dispatch({type: SET_USERS, payload: props});
+        dispatch({ type: SET_USERS, payload: props });
         dispatch(actionSuccess(SET_USERS, props));
     };
 }
@@ -36,7 +35,7 @@ export function setUsers(props: UserDetailsType[]) {
 export function setAptsWithUser(props: AppointmentType[]) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(SET_APTS_WITH_USER));
-        dispatch({type: SET_APTS_WITH_USER, payload: props});
+        dispatch({ type: SET_APTS_WITH_USER, payload: props });
         dispatch(actionSuccess(SET_APTS_WITH_USER, props));
     };
 }
@@ -71,16 +70,22 @@ export function fetchUser(id: number) {
     };
 }
 
-export function updateUser(user: UserEntityType) {
+export function updateUser(
+    user: UserDetailsType,
+    onSuccess?: Function,
+    onError?: Function,
+) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(UPDATE_USER));
         putUser(user)
             .then(user => {
                 dispatch(actionSuccess(UPDATE_USER, user));
                 dispatch(setUser(user));
+                onSuccess && onSuccess(user);
             })
             .catch(err => {
                 dispatch(actionFailure(UPDATE_USER, err));
+                onError && onError(err);
             });
     };
 }

@@ -1,6 +1,6 @@
-import {PageConfigType} from "../common/types";
-import {UserRoles} from "../../enum/UserEnum";
-import {AppointmentType} from "../appointment/types";
+import { PageConfigType } from "../common/types";
+import { UserRoles } from "../../enum/UserEnum";
+import { AppointmentType } from "../appointment/types";
 
 /******************* actions ************************/
 export const FETCH_USER = "FETCH_USER";
@@ -18,22 +18,22 @@ export const UPDATE_USER = "UPDATE_USER";
 export enum UserFilterKeys {
     name = "name",
     email = "email",
-    expertise = "expertise"
+    expertise = "expertise",
 }
 
 export enum UserSortKeys {
     name = "name",
     nameReverse = "-name",
     rating = "rating",
-    ratingReverse = "-rating"
+    ratingReverse = "-rating",
 }
 
 export type UserParams = {
     sortBy?: string;
     filterKey?: string;
     filterValue?: string;
-    role?: UserRoles
-}
+    role?: UserRoles;
+};
 
 export type UserAppointmentParams = {
     status?: string;
@@ -41,7 +41,7 @@ export type UserAppointmentParams = {
     sortBy?: string;
     year?: string;
     month?: string;
-}
+};
 
 export type UserMiniDetailsType = {
     email: string;
@@ -53,12 +53,20 @@ export type UserMiniDetailsType = {
 export type UserEntityType = {
     name?: string;
     expertise?: string[];
-}
+};
 
 export type UserRoleType = {
     id: number;
     name: UserRoles;
-}
+};
+
+export type UserTutorDetailsType = {
+    expertiseList: string[];
+    id: number;
+    ratedBy?: number;
+    rating?: number;
+    ratingByNumbers?: Record<number, number>; // rating: number of users rated
+};
 
 // user dto that server responds with
 export type UserDetailsType = {
@@ -66,14 +74,16 @@ export type UserDetailsType = {
     name: string;
     email: string;
     isTutor: boolean;
+    isCoordinator?: boolean;
     roles: UserRoleType[];
     rating: number;
     expertise: string[];
     createdAt: Date;
     ratedBy: number;
     ratingByNumbers?: Record<number, number>; // rating: number of users rated
-    description?: string,
-}
+    description?: string;
+    tutor?: UserTutorDetailsType;
+};
 
 /******************* states ************************/
 
@@ -84,7 +94,7 @@ export type UserState = {
     user?: UserDetailsType;
 
     // scheduled apts for logged user with the tutor profile currently visiting
-    aptsWithUser: AppointmentType[],
+    aptsWithUser: AppointmentType[];
 
     // stores list of users: could be list of tutors
     users: UserDetailsType[];

@@ -2,8 +2,8 @@ import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import {
     ResText12Regular,
+    ResText14Regular,
     ResText14SemiBold,
-    ResText16Regular,
     Text12Regular,
 } from "../../utils/TextUtils";
 import { TabContent } from "../Schedule/ScheduleView";
@@ -11,13 +11,13 @@ import React from "react";
 import { selectAuth } from "../../redux/auth/reducer";
 import { getFormattedRatings } from "../../utils/ScheduleUtils";
 import { Tooltip } from "antd";
-import { InfoCircleFilled } from "@ant-design/icons";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import { orange } from "../../utils/ShadesUtils";
 
 export default function ViewTutorRatings() {
-    const {id} = useParams();
+    const { id } = useParams();
 
-    const {loggedUser} = useSelector(selectAuth);
+    const { loggedUser } = useSelector(selectAuth);
 
     const userRatings = getFormattedRatings(loggedUser);
     const loggedUserIsTutor = loggedUser && loggedUser?.id?.toString() === id;
@@ -29,17 +29,17 @@ export default function ViewTutorRatings() {
                 <Text12Regular
                     className={"small-vertical-margin full-block text-grey2"}
                 >
-                    <InfoCircleFilled
-                        style={{color: orange, marginRight: 8}}
+                    <InfoCircleOutlined
+                        style={{ color: orange, marginRight: 8, fontSize: 14 }}
                     />
                     You are not allowed to rate yourself.
                 </Text12Regular>
             )}
             <div className={"rate-tutor-content"}>
                 <div className={"rate-tutor-features h-start-top-flex"}>
-                    <ResText16Regular className={"text-grey2"}>
+                    <ResText14Regular className={"text-grey2"}>
                         Tutoring skill
-                    </ResText16Regular>
+                    </ResText14Regular>
                     <ul className={"rate-tutor-options"}>
                         {userRatings.map((item, index) => (
                             <Tooltip
