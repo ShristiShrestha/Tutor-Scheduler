@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { selectAppointment } from "../../redux/appointment/reducer";
 import { getScheduledSlot } from "../../utils/ScheduleUtils";
 import { toMonthDateStr } from "../../utils/DateUtils";
-import MyButton from "../../components/Button/MyButton";
+import RespondAction from "../Schedule/RespondAction";
 
 const Wrapper = styled.div``;
 
@@ -215,9 +215,10 @@ const NotificationsPage = () => {
                         </ResText12Regular>
                     ),
                     action: (
-                        <MyButton size={"small"} type={"primary"}>
-                            Action
-                        </MyButton>
+                        <RespondAction
+                            showRespondTitle={false}
+                            propAppointment={item}
+                        />
                     ),
                 };
             }),

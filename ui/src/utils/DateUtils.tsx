@@ -175,12 +175,14 @@ export const toMonthDateStr = (date: Date) =>
         month: "short",
     });
 
-export const toMonthDateYearStr = (date: Date) =>
-    date.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-    });
+export const toMonthDateYearStr = (date?: Date) =>
+    date
+        ? date.toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+          })
+        : "";
 
 export const toHourMinStr = (date: Date) =>
     date.toLocaleTimeString("en-GB", {
