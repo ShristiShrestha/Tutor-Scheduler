@@ -1,11 +1,7 @@
 import { capitalize } from "../../utils/StringUtils";
 import { AppointmentStatus } from "../../enum/AppointmentEnum";
 import { Divider, Dropdown, Input, Menu, Modal } from "antd";
-import {
-    ResText12Regular,
-    ResText12SemiBold,
-    ResText14SemiBold,
-} from "../../utils/TextUtils";
+import { ResText12Regular, ResText12SemiBold } from "../../utils/TextUtils";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAppointment } from "../../redux/appointment/reducer";
@@ -18,6 +14,15 @@ import { getScheduledSlot } from "../../utils/ScheduleUtils";
 import { AlertType, openNotification } from "../../utils/Alert";
 import { updateAppointment } from "../../redux/appointment/actions";
 import { AppointmentType } from "../../redux/appointment/types";
+
+const Wrapper = styled.div`
+    z-index: 1111;
+
+    .ant-space-compact-block {
+        width: fit-content;
+        display: flex;
+    }
+`;
 
 const ResponseAppointment = styled.div`
     padding: 12px 24px;
@@ -116,6 +121,10 @@ export default function RespondAction(props: Props) {
         setShowRespondModal(true);
     };
 
+    const handleClick = e => {
+        e.stopPropagation();
+    };
+
     /******************* local renders ************************/
 
     const isStudent =
@@ -147,14 +156,14 @@ export default function RespondAction(props: Props) {
         !isStudent
     )
         return (
-            <>
+            <Wrapper className={"h-start-flex"} onClick={e => handleClick(e)}>
                 {showRespondTitle && (
-                    <>
+                    <div className={"default-margin-right"}>
                         <Divider type={"vertical"} />
-                        <ResText14SemiBold className={"text-grey1"}>
+                        <ResText12SemiBold className={"text-grey2"}>
                             Respond{" "}
-                        </ResText14SemiBold>
-                    </>
+                        </ResText12SemiBold>
+                    </div>
                 )}
                 <Dropdown.Button
                     style={{
@@ -236,7 +245,7 @@ export default function RespondAction(props: Props) {
                         </ResponseAppointment>
                     </Modal>
                 )}
-            </>
+            </Wrapper>
         );
     return <></>;
 }

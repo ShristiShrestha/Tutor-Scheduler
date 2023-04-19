@@ -86,7 +86,7 @@ const App = () => {
                 <TopBar />
             </Header>
             {authenticated && (
-                <Sider width={200}>
+                <Sider width={210}>
                     <SideBar />
                 </Sider>
             )}

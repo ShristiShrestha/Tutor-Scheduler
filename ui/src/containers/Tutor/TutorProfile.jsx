@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { grey1, grey6, pearl } from "../../utils/ShadesUtils";
 import {
     ResText12Regular,
+    ResText12SemiBold,
     ResText14Regular,
     ResText14SemiBold,
     ResText16Regular,
@@ -40,40 +41,40 @@ import { AlertType, openNotification } from "../../utils/Alert";
 import ViewTutorRatings from "./ViewTutorRatings";
 import { UserDetailsType } from "../../redux/user/types";
 
-const {TextArea} = Input;
+const { TextArea } = Input;
 
 const Wrapper = styled.div`
-  .ant-divider {
-    margin: 0;
-  }
+    .ant-divider {
+        margin: 0;
+    }
 
-  .ant-row {
-    margin: 0 !important;
-  }
+    .ant-row {
+        margin: 0 !important;
+    }
 
-  .ant-col {
-    height: fit-content;
-  }
+    .ant-col {
+        height: fit-content;
+    }
 `;
 
 const Header = styled.div`
-  padding: 12px 24px;
-  border-bottom: 1px solid ${grey6};
-  box-shadow: 0 24px #eaeaea;
+    padding: 12px 24px;
+    border-bottom: 1px solid ${grey6};
+    box-shadow: 0 24px #eaeaea;
 `;
 
 const Content = styled.div`
-  //padding: 24px;
-  background: white;
+    //padding: 24px;
+    background: white;
     // background: ${pearl};
-  height: calc(100vh - 48px);
-  overflow-y: auto;
-  position: relative;
-  padding-bottom: 120px;
+    height: calc(100vh - 48px);
+    overflow-y: auto;
+    position: relative;
+    padding-bottom: 120px;
 
-  .border-right {
-    border-right: 1px solid ${grey6};
-  }
+    .border-right {
+        border-right: 1px solid ${grey6};
+    }
 `;
 
 const getMenuItems = (id, loggedUser?: UserDetailsType) => {
@@ -82,13 +83,13 @@ const getMenuItems = (id, loggedUser?: UserDetailsType) => {
             key: "request-tutoring",
             link: `/profile/${id}/request-tutoring`,
             title: "Request for tutoring",
-            icon: <CalendarOutlined/>,
+            icon: <CalendarOutlined />,
         },
         {
             key: "view-tutor-ratings",
             link: `/profile/${id}/view-tutor-ratings`,
             title: "View ratings",
-            icon: <StarOutlined/>,
+            icon: <StarOutlined />,
         },
     ];
 
@@ -98,7 +99,7 @@ const getMenuItems = (id, loggedUser?: UserDetailsType) => {
 };
 
 const TutorProfile = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
@@ -118,8 +119,8 @@ const TutorProfile = () => {
         subjects: [],
     });
     // redux states
-    const {loggedUser} = useSelector(selectAuth);
-    const {user, aptsWithUser} = useSelector(selectUser);
+    const { loggedUser } = useSelector(selectAuth);
+    const { user, aptsWithUser } = useSelector(selectUser);
 
     const loggedUserIsTutor = loggedUser && loggedUser?.id?.toString() === id;
 
@@ -151,7 +152,7 @@ const TutorProfile = () => {
 
     const handleReqInput = (key, value) => {
         console.log(`tutor request input value: `, value);
-        setRequestInput({...requestInput, [key]: value});
+        setRequestInput({ ...requestInput, [key]: value });
     };
 
     /******************* validations ************************/
@@ -228,8 +229,8 @@ const TutorProfile = () => {
     const getExpertiseOptions = () =>
         !!user
             ? user.expertise.map(item => {
-                return {label: item, value: item};
-            })
+                  return { label: item, value: item };
+              })
             : [];
 
     /******************* use effects ************************/
@@ -265,8 +266,7 @@ const TutorProfile = () => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
 
-        if (loggedUserIsTutor)
-            return <ViewTutorRatings/>
+        if (loggedUserIsTutor) return <ViewTutorRatings />;
 
         switch (defaultTab) {
             case menuItems[0].key:
@@ -287,7 +287,7 @@ const TutorProfile = () => {
                                 <b>Today</b>
                                 <ResText16Regular
                                     className={"text-grey"}
-                                    style={{marginLeft: 12}}
+                                    style={{ marginLeft: 12 }}
                                 >
                                     {toMonthDateYearStr(today)}
                                 </ResText16Regular>
@@ -322,7 +322,7 @@ const TutorProfile = () => {
             //     </TabContent>
 
             default:
-                return <ViewTutorRatings/>;
+                return <ViewTutorRatings />;
         }
     };
 
@@ -331,7 +331,7 @@ const TutorProfile = () => {
             <div className={"vertical-start-flex selected-slots-info"}>
                 <ResText14Regular className={"text-grey2"}>
                     Showing slots for
-                    <b style={{marginLeft: 8, color: grey1}}>
+                    <b style={{ marginLeft: 8, color: grey1 }}>
                         {`${toMonthDateYearStr(selectedCalendarDate)}`}
                     </b>
                 </ResText14Regular>
@@ -374,7 +374,7 @@ const TutorProfile = () => {
                     <Select
                         mode="multiple"
                         allowClear
-                        style={{width: "95%"}}
+                        style={{ width: "95%" }}
                         placeholder="Select tutoring topics..."
                         onChange={value => handleReqInput("subjects", value)}
                         options={getExpertiseOptions()}
@@ -402,7 +402,7 @@ const TutorProfile = () => {
                     the tutoring service.
                 </ResText16Regular>
                 <MyButton type={"primary"} onClick={() => dispatchCreateApt()}>
-                    Send Request
+                    <ResText12SemiBold>Send Request</ResText12SemiBold>
                 </MyButton>
             </div>
         </SlotInfo>
@@ -428,7 +428,7 @@ const TutorProfile = () => {
     const renderSlotView = tabOpened => {
         if (loggedUserIsTutor) return renderOtherReviews();
         return tabOpened === "" ||
-        tabOpened === getMenuItems(id, loggedUser)[0].key
+            tabOpened === getMenuItems(id, loggedUser)[0].key
             ? renderCurrentSlot()
             : renderOtherReviews();
     };
@@ -467,7 +467,7 @@ const TutorProfile = () => {
                             md={24}
                             className={"h-start-top-flex no-padding"}
                         >
-                            <Divider type={"horizontal"}/>
+                            <Divider type={"horizontal"} />
                             {renderSlotView(getDefaultTab()[0])}
                         </Col>
                     </Row>

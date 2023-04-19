@@ -47,9 +47,9 @@
 .app-layout-content {
     position: fixed;
     top: 48px;
-    left: 200px;
+    left: 210px;
     /*width: 100vw;*/
-    width: calc(100vw - 200px) !important;
+    width: calc(100vw - 210px) !important;
     overflow: hidden;
 }
 
@@ -65,3 +65,12 @@
 /*.ant-layout.ant-layout-has-sider > .ant-layout-content {*/
 /*    width: fit-content;*/
 /*}*/
+
+
+.new-unseen {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: limegreen;
+    border: 1px solid limegreen;
+}

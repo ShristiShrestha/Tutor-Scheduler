@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import MySearch from "../../components/Search/MySearch";
-import { ResText14SemiBold } from "../../utils/TextUtils";
+import {
+    ResText12SemiBold,
+    ResText14Regular,
+    ResText14SemiBold,
+    ResText16SemiBold,
+} from "../../utils/TextUtils";
 import { grey6 } from "../../utils/ShadesUtils";
 import ListView from "../../components/ListView/ListView";
-import { fetchMsgsWithUsers } from "../../redux/chat/actions";
+import { fetchMsgsWithUsers, sendMessage } from "../../redux/chat/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectChat } from "../../redux/chat/reducer";
 import { selectAuth } from "../../redux/auth/reducer";
@@ -12,9 +17,7 @@ import { fetchUsers } from "../../redux/user/actions";
 import { selectUser } from "../../redux/user/reducer";
 import { PlusOutlined } from "@ant-design/icons";
 import MyButton from "../../components/Button/MyButton";
-import { sendMessage } from "../../redux/chat/actions";
 import { Form, Input, Modal, Select } from "antd";
-import { ResText14Regular, ResText16SemiBold } from "../../utils/TextUtils";
 import { Link } from "react-router-dom";
 
 const Wrapper = styled.div``;
@@ -25,13 +28,13 @@ const Header = styled.div`
     align-items: center;
     position: fixed;
     top: 48px; // height of main top header - app name
-    left: 200px;
+    left: 210px;
     right: 0;
     border-bottom: 1px solid ${grey6};
 `;
 const Content = styled.div`
     padding: 0 24px;
-    margin-top: 60px;
+    margin-top: 56px;
     position: relative;
     height: calc(100vh - 112px);
     overflow-y: auto;
@@ -142,14 +145,11 @@ export default function Chat() {
             <Content>
                 {msgUser && <ListView data={msgUser} />}
 
-                <MyButton
-                    type="primary"
-                    style={{ borderRadius: "0 5px 5px 0" }}
-                    htmlType="submit"
-                >
+                <MyButton type="primary" htmlType="submit">
                     <Link to={`/chat/1`}>
-                        {" "}
-                        Start A New Chat <PlusOutlined />{" "}
+                        <ResText12SemiBold>
+                            Start A New Chat <PlusOutlined />
+                        </ResText12SemiBold>
                     </Link>
                 </MyButton>
 

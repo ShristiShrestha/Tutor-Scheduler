@@ -113,16 +113,22 @@ export function rateAppointment(
     };
 }
 
-export function updateAppointmentsReceived(ids: number[]) {
+export function updateAppointmentsReceived(
+    ids: number[],
+    onSuccess?: Function,
+    onError?: Function,
+) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(UPDATE_APPOINTMENTS_RECEIVED));
         putAptsReceived(ids)
             .then(apts => {
                 dispatch(actionSuccess(UPDATE_APPOINTMENTS_RECEIVED, apts));
                 // dispatch(setAppointments(apt)); todo: merge with the existing list of appointments
+                onSuccess && onSuccess(apts);
             })
             .catch(err => {
                 dispatch(actionFailure(UPDATE_APPOINTMENTS_RECEIVED, err));
+                onError && onError(err);
             });
     };
 }
