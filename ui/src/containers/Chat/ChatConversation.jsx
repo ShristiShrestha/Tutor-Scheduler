@@ -1,83 +1,83 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import {SendOutlined} from "@ant-design/icons";
-import {ResText12Regular, ResText12SemiBold,} from "../../utils/TextUtils";
-import {grey6} from "../../utils/ShadesUtils";
-import {fetchMsgsWithUser, sendMessage} from "../../redux/chat/actions";
-import {Avatar, Input, List, Select} from "antd";
+import { SendOutlined } from "@ant-design/icons";
+import { ResText12Regular, ResText12SemiBold } from "../../utils/TextUtils";
+import { grey6 } from "../../utils/ShadesUtils";
+import { fetchMsgsWithUser, sendMessage } from "../../redux/chat/actions";
+import { Avatar, Input, List, Select } from "antd";
 import MyButton from "../../components/Button/MyButton";
-import {useParams} from "react-router-dom";
-import {selectChat} from "../../redux/chat/reducer";
-import {useDispatch, useSelector} from "react-redux";
-import {selectAuth} from "../../redux/auth/reducer";
-import {selectUser} from "../../redux/user/reducer";
+import { useParams } from "react-router-dom";
+import { selectChat } from "../../redux/chat/reducer";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAuth } from "../../redux/auth/reducer";
+import { selectUser } from "../../redux/user/reducer";
 import EmptyContent from "../../components/NoContent/EmptyContent";
-import {toHourMinStr, toMonthDateYearStr,} from "../../utils/DateUtils";
-import {UserRoles} from "../../enum/UserEnum";
+import { toHourMinStr, toMonthDateYearStr } from "../../utils/DateUtils";
+import { UserRoles } from "../../enum/UserEnum";
 
 const Wrapper = styled.div``;
 
 const Message = styled.div`
-  padding: 8px;
-  border-radius: 8px;
+    padding: 8px;
+    border-radius: 8px;
 `;
 
 const Header = styled.div`
-  height: 56px;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid ${grey6};
+    height: 56px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid ${grey6};
 `;
 
 const Content = styled.div`
-  padding: 0 24px;
-  margin-bottom: 120px;
+    padding: 0 24px;
+    margin-bottom: 120px;
 
-  .header-date {
-    margin: 20px 0 5px 2px;
-  }
+    .header-date {
+        margin: 20px 0 5px 2px;
+    }
 
-  .ant-input-group.ant-input-group-compact::before {
-    display: none;
-  }
+    .ant-input-group.ant-input-group-compact::before {
+        display: none;
+    }
 `;
 
 const ChatCard = styled.div`
-  padding: 16px 24px;
-  border-radius: 12px;
-  border: 1px solid rgb(242, 242, 242);
-  margin-top: 12px;
-  height: calc(100vh - 250px);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column-reverse;
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: 1px solid rgb(242, 242, 242);
+    margin-top: 12px;
+    height: calc(100vh - 250px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
 
-  .input-messagebox {
-    position: fixed;
-    bottom: 0px;
-    background-color: white;
-    width: calc(100vw - 300px);
-    margin-bottom: 25px;
-  }
+    .input-messagebox {
+        position: fixed;
+        bottom: 0px;
+        background-color: white;
+        width: calc(100vw - 300px);
+        margin-bottom: 25px;
+    }
 
-  .ant-list-item {
-    border: none !important;
-  }
+    .ant-list-item {
+        border: none !important;
+    }
 
-  .text-area {
-    flex: 1;
-    resize: none;
-    border-radius: 5px 0 0 5px;
-  }
+    .text-area {
+        flex: 1;
+        resize: none;
+        border-radius: 5px 0 0 5px;
+    }
 `;
 
 export default function ChatConversation() {
     const dispatch = useDispatch();
-    const {sender_id} = useParams();
-    const {userMessages, usersMessages} = useSelector(selectChat);
-    const {loggedUser} = useSelector(selectAuth);
-    const {users} = useSelector(selectUser);
+    const { sender_id } = useParams();
+    const { userMessages, usersMessages } = useSelector(selectChat);
+    const { loggedUser } = useSelector(selectAuth);
+    const { users } = useSelector(selectUser);
 
     const [loading, setLoading] = useState(true);
     const [msgUser, setMsgUser] = useState(undefined);
@@ -85,8 +85,7 @@ export default function ChatConversation() {
     const [inputReceiver, setRequestInput] = useState(undefined);
 
     const handleInputChange = event => {
-        if (event.target.value !== "\n")
-            setInputValue(event.target.value);
+        if (event.target.value !== "\n") setInputValue(event.target.value);
     };
 
     const dispatchFetchChat = () => {
@@ -116,7 +115,8 @@ export default function ChatConversation() {
     }, [fetchMsgsWithUser]);
 
     useMemo(() => {
-        if (userMessages) {
+        if (sender_id == "1") setMsgUser(undefined);
+        else if (userMessages) {
             let convertedData = userMessages.map((item, index) => ({
                 id: index + 1,
                 message: item.message,
@@ -154,11 +154,15 @@ export default function ChatConversation() {
             let filteredUser;
             if (loggedUser.roles[0].name === UserRoles.MODERATOR)
                 filteredUser = users.filter(item => {
-                    return item.roles.some(role => role.name !== UserRoles.MODERATOR);
+                    return item.roles.some(
+                        role => role.name !== UserRoles.MODERATOR,
+                    );
                 });
             else
                 filteredUser = users.filter(item => {
-                    return item.roles.some(role => role.name === UserRoles.MODERATOR);
+                    return item.roles.some(
+                        role => role.name === UserRoles.MODERATOR,
+                    );
                 });
 
             let existingUser = Object.keys(usersMessages).map(
@@ -216,13 +220,13 @@ export default function ChatConversation() {
                                     {index === 0 ||
                                     (message &&
                                         message.sender !==
-                                        msgUser[index - 1].sender) ? (
-                                        <Avatar/>
+                                            msgUser[index - 1].sender) ? (
+                                        <Avatar />
                                     ) : null}
 
                                     {index === 0 ||
                                     message.sender !==
-                                    msgUser[index - 1].sender ? (
+                                        msgUser[index - 1].sender ? (
                                         <Message
                                             style={{
                                                 marginTop: "-35px",
@@ -308,7 +312,7 @@ export default function ChatConversation() {
                 ) : (
                     <Select
                         allowClear
-                        style={{width: "20%"}}
+                        style={{ width: "20%" }}
                         placeholder="Select coordinator..."
                         onChange={value => handleReqInput("coordinator", value)}
                         options={getUserData()}
@@ -332,7 +336,7 @@ export default function ChatConversation() {
                     <div className="input-messagebox">
                         <Input.Group
                             compact
-                            style={{display: "flex", alignItems: "center"}}
+                            style={{ display: "flex", alignItems: "center" }}
                         >
                             <Input.TextArea
                                 className={"text-area"}
@@ -344,11 +348,11 @@ export default function ChatConversation() {
                             />
                             <MyButton
                                 type="primary"
-                                style={{borderRadius: "0 5px 5px 0"}}
+                                style={{ borderRadius: "0 5px 5px 0" }}
                                 htmlType="submit"
                                 onClick={() => postMsg()}
                             >
-                                Send <SendOutlined/>
+                                Send <SendOutlined />
                             </MyButton>
                         </Input.Group>
                     </div>
