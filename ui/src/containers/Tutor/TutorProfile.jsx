@@ -96,8 +96,9 @@ const getMenuItems = (id, loggedUser?: UserDetailsType) => {
         },
     ];
 
+    const loggedUserIsModerator = isLoggedModerator(loggedUser);
     const loggdUserIsTutor = !!loggedUser && id === loggedUser?.id?.toString();
-    if (loggdUserIsTutor) return [items[1]];
+    if (loggdUserIsTutor || loggedUserIsModerator) return [items[1]];
     return items;
 };
 
@@ -445,7 +446,8 @@ const TutorProfile = () => {
     );
 
     const renderSlotView = tabOpened => {
-        if (loggedUserIsTutor) return renderOtherReviews();
+        if (loggedUserIsTutor || isLoggedModerator(loggedUser))
+            return renderOtherReviews();
         return tabOpened === "" ||
             tabOpened === getMenuItems(id, loggedUser)[0].key
             ? renderCurrentSlot()
