@@ -14,6 +14,7 @@ const Wrapper = styled.div`
     .secondary {
         background: white;
         color: ${amethyst};
+        border: 1px solid ${amethyst};
 
         :hover {
             background: ${snow};
