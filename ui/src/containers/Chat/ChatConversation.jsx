@@ -123,9 +123,14 @@ export default function ChatConversation() {
                 username: item.receiverEmail,
                 date: item.sentAt,
                 sender: item.senderEmail === loggedUser.email ? "me" : "other",
+                receiver:
+                    item.senderEmail === loggedUser.email
+                        ? item.receiverEmail
+                        : item.senderEmail,
             }));
             convertedData = convertedData.map(user => {
-                const matchingUser = users.find(u => u.email === user.username);
+                const matchingUser = users.find(u => u.email === user.receiver);
+
                 return {
                     ...user,
                     name: matchingUser ? matchingUser.name : null,
