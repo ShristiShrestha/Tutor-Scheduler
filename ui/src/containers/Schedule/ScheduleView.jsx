@@ -867,25 +867,22 @@ export default function ScheduleView() {
                                     item,
                                 )}
                             />
-                            <ResText14Regular>
-                                {item.title}
-                                <i className={"text-grey3"}>{` ${
-                                    disabledScheduledSlot(
-                                        showingSlotsForDate,
-                                        item,
-                                    )
-                                        ? " (not available)"
-                                        : ""
-                                }`}</i>
-                                {previouslySelectedSlot(item) && (
-                                    <ResText14Regular
-                                        className={"text-grey3"}
-                                        style={{ marginLeft: 6 }}
-                                    >
-                                        <i>(previously selected slot)</i>
-                                    </ResText14Regular>
-                                )}
-                            </ResText14Regular>
+                            <ResText14Regular>{item.title}</ResText14Regular>
+                            {!item.available && (
+                                <ResText12Regular
+                                    className={"text-grey2 text-italic"}
+                                >
+                                    (not available)
+                                </ResText12Regular>
+                            )}
+                            {previouslySelectedSlot(item) && (
+                                <ResText12Regular
+                                    className={"text-grey2 text-italic"}
+                                    // style={{ marginLeft: 6 }}
+                                >
+                                    <i>(previously selected slot)</i>
+                                </ResText12Regular>
+                            )}
                         </li>
                     ))}
                 </ul>
