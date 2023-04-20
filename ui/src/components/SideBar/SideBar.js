@@ -78,8 +78,8 @@ const SideBar = () => {
             : "/schedules";
         const pathname = location ? location.pathname : defaultPath;
         if (!!menuItems) {
-            const defaultOpenTabs = menuItems.filter(
-                item => item["link"] === pathname,
+            const defaultOpenTabs = menuItems.filter(item =>
+                pathname.includes(item["link"]),
             );
             if (defaultOpenTabs.length > 0) {
                 return defaultOpenTabs.map(item => item["key"]);

@@ -41,19 +41,19 @@ const pages = numNotifications => [
         component: <NotificationsPage />,
     },
     {
-        path: "/profile/:id",
+        path: "/find-tutors/profile/:id",
         component: <TutorProfile />,
     },
     {
-        path: "/profile/:id/details",
+        path: "/find-tutors/profile/:id/details",
         component: <TutorProfile />,
     },
     {
-        path: "/profile/:id/request-tutoring",
+        path: "/find-tutors/profile/:id/request-tutoring",
         component: <TutorProfile />,
     },
     {
-        path: "/profile/:id/view-tutor-ratings",
+        path: "/find-tutors/profile/:id/view-tutor-ratings",
         component: <TutorProfile />,
     },
     {
