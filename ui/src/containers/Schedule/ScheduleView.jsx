@@ -705,6 +705,12 @@ export default function ScheduleView() {
     }, [id]);
 
     useEffect(() => {
+        if (appointment && loggedUserIsAllowedToView) {
+            dispatchFetchAptsWithUser();
+        }
+    }, [appointment, loggedUserIsAllowedToView]);
+
+    useEffect(() => {
         if (appointment && loggedUserIsAllowedToView) fetchScheduledSlots();
     }, [appointment, loggedUserIsAllowedToView]);
 
@@ -713,12 +719,6 @@ export default function ScheduleView() {
             getAvailableSlotsFromAcceptedApts();
         }
     }, [appointment, tutorUpdateReq.scheduledAt, loggedUserIsAllowedToView]);
-
-    useEffect(() => {
-        if (appointment && loggedUserIsAllowedToView) {
-            dispatchFetchAptsWithUser();
-        }
-    }, [appointment, loggedUserIsAllowedToView]);
 
     useEffect(() => {
         if (
@@ -807,9 +807,37 @@ export default function ScheduleView() {
         const scheduledDate = new Date(appointment.scheduledAt);
         const showingSlotsForDate = tutorUpdateReq.scheduledAt || scheduledDate;
 
-        const disabledScheduledSlot = item => !item.available;
+        const now = new Date();
+
+        const getSelectedSlotDate = start =>
+            new Date(
+                showingSlotsForDate.getFullYear(),
+                showingSlotsForDate.getMonth(),
+                showingSlotsForDate.getDate(),
+                start,
+            );
+        const disabledScheduledSlot = item => {
+            const selectedSlotDate = getSelectedSlotDate(item.start);
+            return (
+                selectedSlotDate.getTime() - now.getTime() < 0 ||
+                !item.available
+            );
+        };
         const newSelectedSlot = item =>
             tutorUpdateReq.scheduledAt?.getHours() === item.start;
+
+        const previouslySelectedSlot = item => {
+            const scheduledDateMatchesSelectedDate =
+                tutorUpdateReq.scheduledAt?.getMonth() ===
+                    scheduledDate.getMonth() &&
+                tutorUpdateReq.scheduledAt?.getDate() ===
+                    scheduledDate.getDate();
+            return (
+                appointment &&
+                scheduledDateMatchesSelectedDate &&
+                scheduledDate.getHours() === item.start
+            );
+        };
 
         return (
             <SlotInfo>
@@ -825,13 +853,23 @@ export default function ScheduleView() {
 
                 <ResText14Regular
                     className={
-                        "text-grey2 full-block text-underlined medium-vertical-margin"
+                        "text-grey2 full-block text-italic medium-vertical-margin"
                     }
                 >
+                    <InfoCircleOutlined
+                        style={{
+                            marginRight: 8,
+                            fontSize: 16,
+                            color: orange,
+                        }}
+                    />
                     {toSlotRangeStr(showingSlotsForDate)}
                 </ResText14Regular>
 
-                <ul className={"slot-items"}>
+                <ul
+                    className={"slot-items"}
+                    style={{ marginTop: 32, display: "block" }}
+                >
                     {availableSlots.map((item, index) => (
                         <li key={`scheduled-slot-apt-${index}`}>
                             <Checkbox
@@ -845,9 +883,17 @@ export default function ScheduleView() {
                                 {item.title}
                                 <i className={"text-grey3"}>{` ${
                                     disabledScheduledSlot(item)
-                                        ? " (previously selected slot)"
+                                        ? " (not available)"
                                         : ""
                                 }`}</i>
+                                {previouslySelectedSlot(item) && (
+                                    <ResText14Regular
+                                        className={"text-grey3"}
+                                        style={{ marginLeft: 6 }}
+                                    >
+                                        <i>(previously selected slot)</i>
+                                    </ResText14Regular>
+                                )}
                             </ResText14Regular>
                         </li>
                     ))}
@@ -1033,15 +1079,27 @@ export default function ScheduleView() {
 
         return (
             <TabContent>
-                <ResText14SemiBold>
-                    Today
-                    <ResText14Regular
-                        className={"text-grey"}
-                        style={{ marginLeft: 12 }}
-                    >
-                        {toMonthDateYearStr(today)}
+                <div className={"h-justified-flex"} style={{ marginBottom: 8 }}>
+                    <ResText14Regular>
+                        Scheduled for{" "}
+                        <b>
+                            {toMonthDateYearStr(
+                                new Date(appointment.scheduledAt),
+                            )}
+                            {getScheduledSlot().length > 0 &&
+                                ", " + getScheduledSlot()[0].title}
+                        </b>
                     </ResText14Regular>
-                </ResText14SemiBold>
+                    <ResText14Regular>
+                        Today
+                        <ResText14Regular
+                            className={"text-grey"}
+                            style={{ marginLeft: 12 }}
+                        >
+                            {toMonthDateYearStr(today)}
+                        </ResText14Regular>
+                    </ResText14Regular>
+                </div>
                 {appointment && (
                     <MyCalendar
                         dateCellRender={dateCellRender}
@@ -1073,7 +1131,7 @@ export default function ScheduleView() {
         );
     };
 
-    const showSlotView =
+    const showSlotUpdateViewToModerator =
         isModerator &&
         appointment &&
         appointment.status === AppointmentStatus.PENDING;
@@ -1106,7 +1164,7 @@ export default function ScheduleView() {
                         <RespondAction showRespondTitle={true} />,
                     )}
                 </Col>
-                {showSlotView && (
+                {showSlotUpdateViewToModerator && (
                     <Col
                         xxl={8}
                         md={24}
