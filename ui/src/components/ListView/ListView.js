@@ -8,6 +8,9 @@ import { grey6, yellow } from "../../utils/ShadesUtils";
 import { Link } from "react-router-dom";
 import { toEndDottedStr } from "../../utils/StringUtils";
 import { toHourMinStr, toMonthDateYearStr } from "../../utils/DateUtils";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateMsgsReceived } from "../../redux/chat/actions";
 
 const Wrapper = styled.div`
     .anticon svg {
@@ -29,7 +32,8 @@ const Wrapper = styled.div`
 const ListItem = ({ item }) => {
     const [checked, setChecked] = useState(false);
     const [starred, setStarred] = useState(false);
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const handleCheckboxChange = e => {
         setChecked(e.target.checked);
     };
@@ -37,32 +41,42 @@ const ListItem = ({ item }) => {
     const handleStarClick = () => {
         setStarred(!starred);
     };
+    const navigateChat = id => {
+        dispatch(updateMsgsReceived([parseInt(id)]));
+        navigate(`/chat/${id}`);
+    };
 
     return (
-        <Link to={`/chat/${item.id}`}>
-            <List.Item>
-                <Space style={{ marginRight: 12 }}>
-                    {starred ? (
-                        <StarFilled
-                            onClick={handleStarClick}
-                            style={{ color: yellow }}
-                        />
-                    ) : (
-                        <StarOutlined onClick={handleStarClick} />
-                    )}
-                </Space>
-                <ResText14Regular className={"listview-title text-grey1"}>
-                    {toEndDottedStr(item.name, 5)}
-                </ResText14Regular>
-                <ResText14Regular className="listview-field text-grey2">
-                    {toEndDottedStr(item.message, 20)}
-                </ResText14Regular>
-                <ResText14Regular className="listview-time">
-                    {toMonthDateYearStr(new Date(item.sentAt))},
-                    {toHourMinStr(new Date(item.sentAt))}
-                </ResText14Regular>
-            </List.Item>
-        </Link>
+        // <Link to={`/chat/${item.id}`}>
+        <List.Item onClick={() => navigateChat(item.id)}>
+            <Space style={{ marginRight: 12 }}>
+                {!item.receivedAt && item.unread ? (
+                    <div className={"new-unseen small-margin-right"} />
+                ) : (
+                    ""
+                )}
+
+                {starred ? (
+                    <StarFilled
+                        onClick={handleStarClick}
+                        style={{ color: yellow }}
+                    />
+                ) : (
+                    <StarOutlined onClick={handleStarClick} />
+                )}
+            </Space>
+            <ResText14Regular className={"listview-title text-grey1"}>
+                {toEndDottedStr(item.name, 5)}
+            </ResText14Regular>
+            <ResText14Regular className="listview-field text-grey2">
+                {toEndDottedStr(item.message, 20)}
+            </ResText14Regular>
+            <ResText14Regular className="listview-time">
+                {toMonthDateYearStr(new Date(item.sentAt))},
+                {toHourMinStr(new Date(item.sentAt))}
+            </ResText14Regular>
+        </List.Item>
+        // </Link>
     );
 };
 

@@ -96,6 +96,10 @@ export default function Chat() {
             const matchingUser = users.find(u => u.email === user.email);
             return {
                 ...user,
+                unread: matchingUser
+                    ? matchingUser.receivedAt == null &&
+                      loggedUser.email == user.receiverEmail
+                    : false,
                 name: matchingUser ? matchingUser.name : null,
             };
         });
@@ -143,6 +147,15 @@ export default function Chat() {
                 <MySearch />
             </Header>
             <Content>
+                <ResText14Regular style={{ marginLeft: "25px" }}>
+                    New messages: ({" "}
+                    {
+                        msgUser?.filter(
+                            obj => obj.receivedAt === null && obj.unread,
+                        ).length
+                    }{" "}
+                    )
+                </ResText14Regular>
                 {msgUser && <ListView data={msgUser} />}
 
                 <MyButton type="primary" htmlType="submit">
