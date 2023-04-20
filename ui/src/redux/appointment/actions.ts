@@ -59,17 +59,22 @@ export function setNotifications(apts: AppointmentType[]) {
 
 /******************* api calls ************************/
 
-export function createAppointment(apt: AppointmentType, callback: Function) {
+export function createAppointment(
+    apt: AppointmentType,
+    onSuccess?: Function,
+    onError?: Function,
+) {
     return (dispatch: MyThunkDispatch) => {
         dispatch(actionStart(CREATE_APPOINTMENT));
         postApt(apt)
             .then(apt => {
                 dispatch(actionSuccess(CREATE_APPOINTMENT, apt));
                 dispatch(setAppointment(apt));
-                callback && callback(apt);
+                onSuccess && onSuccess(apt);
             })
             .catch(err => {
                 dispatch(actionFailure(CREATE_APPOINTMENT, err));
+                onError && onError(err);
             });
     };
 }
@@ -97,6 +102,7 @@ export function updateAppointment(
 export function rateAppointment(
     id: number,
     rating: number,
+    onSuccess?: Function,
     onError?: Function,
 ) {
     return (dispatch: MyThunkDispatch) => {
@@ -105,6 +111,7 @@ export function rateAppointment(
             .then(apt => {
                 dispatch(actionSuccess(RATE_APPOINTMENT, apt));
                 dispatch(setAppointment(apt));
+                onSuccess && onSuccess(apt);
             })
             .catch(err => {
                 dispatch(actionFailure(RATE_APPOINTMENT, err));

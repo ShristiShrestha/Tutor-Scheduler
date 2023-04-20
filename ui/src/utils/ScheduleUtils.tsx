@@ -33,60 +33,70 @@ export const calendarIntToMonth = {
 /******************* get available slots from the list of accepted apts ************************/
 
 // hrs shown in Local time zone
+// pending: if the current user already has
+// a pending schedule apt with the tutor
 export const SLOTS_PER_DAY = [
     {
         title: "9 - 10 AM",
         start: 9,
         available: true,
+        pending: false,
     },
     {
         title: "10 - 11 AM",
         start: 10,
         available: true,
+        pending: false,
     },
     {
         title: "11 AM - 12 PM",
         start: 11,
         available: true,
+        pending: false,
     },
     {
         title: "12 - 1 PM",
         start: 12,
         available: true,
+        pending: false,
     },
     {
         title: "1 - 2 PM",
         start: 13,
         available: true,
+        pending: false,
     },
     {
         title: "2 - 3 PM",
         start: 14,
         available: true,
+        pending: false,
     },
     {
         title: "3 - 4 PM",
         start: 15,
         available: true,
+        pending: false,
     },
     {
         title: "4 - 5 PM",
         start: 16,
         available: true,
+        pending: false,
     },
     {
         title: "5 - 6 PM",
         start: 17,
         available: true,
+        pending: false,
     },
 ];
 
 export const getAvailableSlot = (
     date?: Date,
     acceptedApts: AppointmentType[] = [],
+    loggedUserId?: number,
 ) => {
-    console.log("selected data: ", date, " acceptedApts: ", acceptedApts);
-
     if (!date) return [];
 
     if (acceptedApts.length === 0) return SLOTS_PER_DAY;
@@ -97,7 +107,22 @@ export const getAvailableSlot = (
     const selectedMonth = date.getUTCMonth();
     const selectedYear = date.getUTCFullYear();
 
+    const pendingAptsCreatedByLoggedUserOnDate = acceptedApts.filter(apt =>
+        loggedUserId
+            ? loggedUserId === apt.studentId &&
+              apt.status === AppointmentStatus.PENDING
+            : false,
+    );
+
+    const pendingAptsHrs = pendingAptsCreatedByLoggedUserOnDate.map(item =>
+        new Date(item.scheduledAt).getHours(),
+    );
+    const pendingAptsIds = pendingAptsCreatedByLoggedUserOnDate.map(
+        item => item.id,
+    );
+
     // filter out appointments that are accepted for that day
+    // or are still pending (only if created by the logged user)
     const acceptedAptsSlotsOnDate = acceptedApts.filter(apt => {
         const scheduledDate = new Date(apt.scheduledAt);
         const scheduledDay = scheduledDate.getUTCDate();
@@ -107,11 +132,10 @@ export const getAvailableSlot = (
             scheduledDay === selectedDay &&
             scheduledMonth === selectedMonth &&
             scheduledYear === selectedYear &&
-            apt.status === AppointmentStatus.ACCEPTED
+            (apt.status === AppointmentStatus.ACCEPTED ||
+                pendingAptsIds.includes(apt.id))
         );
     });
-
-    console.log("tmp: inside method ", acceptedAptsSlotsOnDate);
 
     // filter slots per day availability
     // slots are not in the accepted scheduled hours
@@ -127,14 +151,10 @@ export const getAvailableSlot = (
                 available: !scheduledDateTsAcceptedOnSelectedDay.includes(
                     slotItem.start,
                 ),
+                pending: pendingAptsHrs.includes(slotItem.start),
             };
         });
     }
-    //
-    // // no appointments slots accepted for that day
-    // if (acceptedAptsSlotsOnDate.length === 0) {
-    //     return SLOTS_PER_DAY;
-    // }
 
     // by default sending all slots as available
     return SLOTS_PER_DAY;

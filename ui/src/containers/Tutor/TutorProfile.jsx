@@ -155,7 +155,6 @@ const TutorProfile = () => {
     };
 
     const handleReqInput = (key, value) => {
-        console.log(`tutor request input value: `, value);
         setRequestInput({ ...requestInput, [key]: value });
     };
 
@@ -212,22 +211,32 @@ const TutorProfile = () => {
                 tutoringOnList: requestInput["subjects"],
                 scheduledAt: getYearMonthDateHrsUtcFormat(selectedSlotDate),
             };
-            console.log("creating apt req: ", req);
-            const callback = apt => {
+            const onSuccess = apt => {
                 openNotification(
                     "Appointment request",
                     "You have successfully created the appointment request.",
+                    AlertType.SUCCESS,
                 );
                 navigate(`/schedules/${apt.id}`);
             };
-            dispatch(createAppointment(req, callback));
-        } else
-            console.log("apt creation not success input req: ", requestInput);
+            const onError = err => {
+                openNotification(
+                    "Failed to create an appointment request.",
+                    err,
+                    AlertType.ERROR,
+                );
+            };
+            dispatch(createAppointment(req, onSuccess, onError));
+        }
     };
 
     /******************* get local values ************************/
     const getAvailableSlotsFromAcceptedApts = () => {
-        const slots = getAvailableSlot(selectedCalendarDate, aptsWithUser);
+        const slots = getAvailableSlot(
+            selectedCalendarDate,
+            aptsWithUser,
+            loggedUser?.id,
+        );
         setAvailableSlots(slots);
     };
     const getExpertiseOptions = () =>
@@ -243,7 +252,7 @@ const TutorProfile = () => {
             dispatchFetchUser();
             dispatchFetchAptsWithUser();
         }
-    }, [dispatchFetchUser, dispatchFetchAptsWithUser]);
+    }, [id]);
 
     useEffect(() => {
         getAvailableSlotsFromAcceptedApts();
@@ -259,7 +268,6 @@ const TutorProfile = () => {
             if (defaultOpenTabs.length > 0) {
                 return defaultOpenTabs.map(item => item["key"]);
             }
-            console.log("default tab: ", pathname, menuItems);
 
             return [menuItems[0].key];
         }

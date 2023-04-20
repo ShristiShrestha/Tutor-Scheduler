@@ -120,7 +120,7 @@ const ScheduleCard = (props: Props) => {
         ? apt.student.name || apt.student.email
         : apt.tutor.name || apt.tutor.email;
     return (
-        <Card>
+        <Card height={"215px"}>
             <StatusInfo className={"h-justified-flex"}>
                 <div className={"h-start-flex data-slot-info"}>
                     {!!apt.createdAt && (

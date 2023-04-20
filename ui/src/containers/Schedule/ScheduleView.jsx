@@ -582,12 +582,24 @@ export default function ScheduleView() {
     }, [appointment]);
 
     const dispatchRateTutor = useCallback(() => {
+        const handleSuccess = res =>
+            openNotification(
+                "Tutor is rated successfully.",
+                res,
+                AlertType.SUCCESS,
+            );
         const handleErr = err =>
             openNotification("Failed to rate the tutor.", err, AlertType.ERROR);
-        console.log("rating req : ", rateRequest);
 
         if (rateRequest.rating > 0)
-            dispatch(rateAppointment(id, rateRequest.rating, handleErr));
+            dispatch(
+                rateAppointment(
+                    id,
+                    rateRequest.rating,
+                    handleSuccess,
+                    handleErr,
+                ),
+            );
         else
             openNotification(
                 "Invalid rating",
@@ -656,8 +668,11 @@ export default function ScheduleView() {
     const getAvailableSlotsFromAcceptedApts = () => {
         const findAvailableSlotsFor =
             tutorUpdateReq.scheduledAt || new Date(appointment.scheduledAt);
-        const slots = getAvailableSlot(findAvailableSlotsFor, aptsWithUser);
-        console.log("tmp: available slots for: ", slots, aptsWithUser);
+        const slots = getAvailableSlot(
+            findAvailableSlotsFor,
+            aptsWithUser,
+            loggedUser?.id,
+        );
         setAvailableSlots(slots);
     };
 

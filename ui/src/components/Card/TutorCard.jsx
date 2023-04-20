@@ -23,7 +23,7 @@ const TutorCard = (props: Props) => {
             : tutor.expertise;
     if (!!tutor)
         return (
-            <Card height={"170px"}>
+            <Card height={"190px"}>
                 <TutorInfo>
                     <Avatar size={64} icon={<UserOutlined />} />
                     <div className={"tutor-profile-info"}>
