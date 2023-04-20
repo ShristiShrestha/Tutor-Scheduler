@@ -531,7 +531,7 @@ export const renderTabs = (
     defaultTab,
     renderMenuComponent,
     menuItems,
-    isStudent = true,
+    showRespond = false,
     renderStatus?: string,
     renderRespond?: ReactNode,
 ) => {
@@ -572,9 +572,8 @@ export const renderTabs = (
                             columnGap: 12,
                         }}
                     >
-                        {/*<i className={"text-grey3"}>Status</i>*/}
                         {renderStatus}
-                        {!isStudent && !!renderRespond && renderRespond}
+                        {showRespond && !!renderRespond && renderRespond}
                     </div>
                 )}
             </div>
@@ -1091,7 +1090,7 @@ export default function ScheduleView() {
                         getDefaultTab(),
                         () => renderMenuComponent(),
                         getRoleBasedMenuItems(id),
-                        isStudent,
+                        isTutor, // showRespond only for the appointment tutor
                         renderStatus(),
                         <RespondAction showRespondTitle={true} />,
                     )}
