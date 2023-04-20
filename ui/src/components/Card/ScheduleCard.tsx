@@ -17,7 +17,7 @@ export const Card = styled.div<{
     padding: 16px 24px;
     border-radius: 12px;
     border: 1px solid ${grey6};
-    height: ${props => (props.height ? props.height : "220px")};
+    // height: ${props => (props.height ? props.height : "220px")};
     min-width: ${props => (props.minWidth ? props.minWidth : "220px")};
 
     text {
@@ -35,6 +35,8 @@ export const Card = styled.div<{
 `;
 
 const StatusInfo = styled.div`
+    margin-bottom: 16px;
+
     .data-slot-info {
         column-gap: 8px;
     }
@@ -42,7 +44,6 @@ const StatusInfo = styled.div`
 
 export const TutorInfo = styled.div`
     display: flex;
-    margin-top: 16px;
     align-items: center;
     width: 100%;
 
@@ -139,7 +140,15 @@ const ScheduleCard = (props: Props) => {
                 {apt.status && getStatusBox(apt.status)}
             </StatusInfo>
             <TutorInfo>
-                <Avatar shape="circle" size={64} />
+                <Avatar
+                    shape="circle"
+                    size={64}
+                    src={
+                        <img
+                            src={process.env.PUBLIC_URL + "/avatar_male.jpg"}
+                        />
+                    }
+                />
                 <div className={"tutor-profile-info"}>
                     <ResText12SemiBold>{showingName}</ResText12SemiBold>
                     {isStudent ? (

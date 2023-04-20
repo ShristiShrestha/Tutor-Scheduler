@@ -226,6 +226,7 @@ const ScheduleDetailsTabs = styled.div`
 
     .schedule-menu-header {
         width: 100%;
+        border-top: 1px solid ${grey6};
         border-bottom: 1px solid ${grey6};
         row-gap: 12px;
     }
@@ -412,7 +413,11 @@ export const renderActorInfo = (
     <ScheduleActorInfo>
         <ResText14SemiBold>{title}</ResText14SemiBold>
         <div className={"h-start-flex actor-info-content"}>
-            <Avatar shape="circle" size={64} />
+            <Avatar
+                shape="circle"
+                size={64}
+                src={<img src={process.env.PUBLIC_URL + "/avatar_male.jpg"} />}
+            />
             <div className={"vertical-start-flex actor-profile-info"}>
                 <ResText14SemiBold>
                     {getUsername(user) + " "}

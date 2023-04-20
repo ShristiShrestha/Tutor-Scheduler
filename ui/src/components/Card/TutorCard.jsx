@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Divider, Tag } from "antd";
-import { StarOutlined, UserOutlined } from "@ant-design/icons";
+import { StarOutlined } from "@ant-design/icons";
 import { Card, Desc, StatusTagList, TutorInfo } from "./ScheduleCard";
 import {
     ResText10Regular,
@@ -23,9 +23,18 @@ const TutorCard = (props: Props) => {
             : tutor.expertise;
     if (!!tutor)
         return (
-            <Card height={"190px"}>
+            <Card>
                 <TutorInfo>
-                    <Avatar size={64} icon={<UserOutlined />} />
+                    <Avatar
+                        size={64}
+                        src={
+                            <img
+                                src={
+                                    process.env.PUBLIC_URL + "/avatar_male.jpg"
+                                }
+                            />
+                        }
+                    />
                     <div className={"tutor-profile-info"}>
                         <ResText12SemiBold>
                             {tutor.name || tutor.email.split("@")[0]}

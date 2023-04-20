@@ -4,15 +4,12 @@ import {
     ResText12Regular,
     ResText14Regular,
     ResText14SemiBold,
-    Text12Regular,
 } from "../../utils/TextUtils";
 import { TabContent } from "../Schedule/ScheduleView";
 import React from "react";
 import { selectAuth } from "../../redux/auth/reducer";
 import { getFormattedRatings } from "../../utils/ScheduleUtils";
 import { Tooltip } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { orange } from "../../utils/ShadesUtils";
 
 export default function ViewTutorRatings() {
     const { id } = useParams();
@@ -25,16 +22,16 @@ export default function ViewTutorRatings() {
     return (
         <TabContent>
             <ResText14SemiBold>Overall ratings</ResText14SemiBold>
-            {loggedUserIsTutor && (
-                <Text12Regular
-                    className={"small-vertical-margin full-block text-grey2"}
-                >
-                    <InfoCircleOutlined
-                        style={{ color: orange, marginRight: 8, fontSize: 14 }}
-                    />
-                    You are not allowed to rate yourself.
-                </Text12Regular>
-            )}
+            {/*{loggedUserIsTutor && (*/}
+            {/*    <Text12Regular*/}
+            {/*        className={"small-vertical-margin full-block text-grey2"}*/}
+            {/*    >*/}
+            {/*        <InfoCircleOutlined*/}
+            {/*            style={{ color: orange, marginRight: 8, fontSize: 14 }}*/}
+            {/*        />*/}
+            {/*        You are not allowed to rate yourself.*/}
+            {/*    </Text12Regular>*/}
+            {/*)}*/}
             <div className={"rate-tutor-content"}>
                 <div className={"rate-tutor-features h-start-top-flex"}>
                     <ResText14Regular className={"text-grey2"}>
