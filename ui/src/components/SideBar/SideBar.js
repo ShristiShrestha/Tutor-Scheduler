@@ -6,7 +6,7 @@ import {
     SendOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import "./SideBar.scss";
 import { ResText14Regular } from "../../utils/TextUtils";
@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "../../redux/auth/reducer";
 import { UserRoles } from "../../enum/UserEnum";
 import { selectAppointment } from "../../redux/appointment/reducer";
+import { isLoggedModerator } from "../../utils/AuthUtils";
 
 const getMenus = numNotifications => [
     {
@@ -44,15 +45,22 @@ const getMenus = numNotifications => [
     },
 ];
 const SideBar = () => {
+    const location = useLocation();
+
+    /******************* use selectors ************************/
     const { loggedUser } = useSelector(selectAuth);
     const { notifications } = useSelector(selectAppointment);
+
+    /******************* local variables ************************/
     const unSeenPendingNotifications = notifications.filter(
         item =>
             item.clientReceivedAt === undefined ||
             item.clientReceivedAt === null,
     ).length;
 
-    const menuItems = () => {
+    /******************* render children ************************/
+
+    const getMenuItems = () => {
         const menus = getMenus(unSeenPendingNotifications);
         const roles = loggedUser.roles.map(item => item.name);
         if (roles.includes(UserRoles.STUDENT))
@@ -63,14 +71,32 @@ const SideBar = () => {
         return menus;
     };
 
-    const sideMenus = menuItems();
+    const getDefaultMenu = () => {
+        const menuItems = getMenuItems();
+        const defaultPath = isLoggedModerator(loggedUser)
+            ? "/find-tutors"
+            : "/schedules";
+        const pathname = location ? location.pathname : defaultPath;
+        if (!!menuItems) {
+            const defaultOpenTabs = menuItems.filter(
+                item => item["link"] === pathname,
+            );
+            if (defaultOpenTabs.length > 0) {
+                return defaultOpenTabs.map(item => item["key"]);
+            }
+            return [menuItems[0].key];
+        }
+        return [""];
+    };
 
+    const sideMenus = getMenuItems();
+    const defaultSelectedMenu = getDefaultMenu();
     return (
         <Menu
             className={"app-sidebar-menu"}
             mode="inline"
-            defaultSelectedKeys={[sideMenus[0].key]}
-            defaultOpenKeys={[sideMenus[0].key]}
+            defaultSelectedKeys={[defaultSelectedMenu[0]]}
+            defaultOpenKeys={[defaultSelectedMenu[0]]}
         >
             {sideMenus.map(item => (
                 <Menu.Item
