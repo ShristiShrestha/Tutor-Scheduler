@@ -878,9 +878,8 @@ export default function ScheduleView() {
                             {previouslySelectedSlot(item) && (
                                 <ResText12Regular
                                     className={"text-grey2 text-italic"}
-                                    // style={{ marginLeft: 6 }}
                                 >
-                                    <i>(previously selected slot)</i>
+                                    <i>(currently scheduled slot)</i>
                                 </ResText12Regular>
                             )}
                         </li>
