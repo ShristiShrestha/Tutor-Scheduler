@@ -91,321 +91,321 @@ import EmptyContent from "../../components/NoContent/EmptyContent";
 import { CopyToClipboard } from "react-copy-to-clipboard/src";
 
 const Wrapper = styled.div`
-  .ant-divider {
-    margin: 0;
-  }
+    .ant-divider {
+        margin: 0;
+    }
 
-  .ant-row {
-    margin: 0 !important;
-  }
+    .ant-row {
+        margin: 0 !important;
+    }
 
-  .ant-col {
-    height: fit-content;
-  }
+    .ant-col {
+        height: fit-content;
+    }
 `;
 
 const Header = styled.div`
-  padding: 12px 24px;
-  border-bottom: 1px solid ${grey6};
-  box-shadow: 0 24px #eaeaea;
-  align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid ${grey6};
+    box-shadow: 0 24px #eaeaea;
+    align-items: center;
 `;
 
 const Content = styled.div`
-  //padding: 24px;
-  background: white;
+    //padding: 24px;
+    background: white;
     // background: ${pearl};
-  height: calc(100vh - 48px);
-  overflow-y: auto;
-  position: relative;
-  padding-bottom: 120px;
+    height: calc(100vh - 48px);
+    overflow-y: auto;
+    position: relative;
+    padding-bottom: 120px;
 
-  .border-right {
-    border-right: 1px solid ${grey6};
-  }
+    .border-right {
+        border-right: 1px solid ${grey6};
+    }
 
-  .border-top {
-    border-top: 1px solid ${grey6};
-  }
+    .border-top {
+        border-top: 1px solid ${grey6};
+    }
 
-  .schedule-actor-view-mod {
-    column-gap: 36px;
-  }
+    .schedule-actor-view-mod {
+        column-gap: 36px;
+    }
 `;
 
 export const ScheduleActorInfo = styled.div.attrs({
     // className: "outer-shadow",
 })`
-  //max-width: 720px;
-  //margin: auto;
-  width: 100%;
-  padding: 24px 0 24px 24px;
+    //max-width: 720px;
+    //margin: auto;
+    width: 100%;
+    padding: 24px 0 24px 24px;
     // border: 1px solid ${grey6};
-  background: white;
-  border-radius: 8px;
-  //column-gap: 24px;
-  //margin-bottom: 24px;
+    background: white;
+    border-radius: 8px;
+    //column-gap: 24px;
+    //margin-bottom: 24px;
 
-  .actor-info-content {
-    margin-top: 12px;
-  }
+    .actor-info-content {
+        margin-top: 12px;
+    }
 
-  .actor-profile-info {
-    margin-left: 16px;
-    row-gap: 6px;
-    align-items: start;
-  }
+    .actor-profile-info {
+        margin-left: 16px;
+        row-gap: 6px;
+        align-items: start;
+    }
 `;
 
 const NeedsTutoring = styled.div.attrs({
     // className: "vertical-start-flex outer-shadow",
 })`
-  //max-width: 720px;
-  //margin: auto;
-  width: 100%;
-  margin-top: 16px;
-  padding: 0 0 36px 24px;
+    //max-width: 720px;
+    //margin: auto;
+    width: 100%;
+    margin-top: 16px;
+    padding: 0 0 36px 24px;
     // border: 1px solid ${grey6};
-  //background: white;
-  border-radius: 8px;
-  column-gap: 24px;
-  align-items: start;
-  row-gap: 4px;
+    //background: white;
+    border-radius: 8px;
+    column-gap: 24px;
+    align-items: start;
+    row-gap: 4px;
 `;
 
 export const SlotInfo = styled.div`
-  padding: 24px 0 24px 24px;
+    padding: 24px 0 24px 24px;
 
-  .selected-slots-info {
-    align-items: start;
-    row-gap: 12px;
-    margin-top: 24px;
-  }
-
-  .slot-items {
-    list-style-type: none;
-    padding: 0;
-
-    li {
-      display: flex;
-      padding: 0;
-      column-gap: 12px;
-      margin-bottom: 8px;
+    .selected-slots-info {
+        align-items: start;
+        row-gap: 12px;
+        margin-top: 24px;
     }
-  }
 
-  .send-slot-request {
-    max-width: 95%;
-    text-align: justify;
-    column-gap: 20px !important;
-    row-gap: 20px;
+    .slot-items {
+        list-style-type: none;
+        padding: 0;
 
-    .ant-btn {
-      align-self: end;
+        li {
+            display: flex;
+            padding: 0;
+            column-gap: 12px;
+            margin-bottom: 8px;
+        }
     }
-  }
 
-  .select-needs-tutoring-in {
-    row-gap: 12px;
-    align-items: start;
-    margin: 32px 0;
-  }
+    .send-slot-request {
+        max-width: 95%;
+        text-align: justify;
+        column-gap: 20px !important;
+        row-gap: 20px;
 
-  .tutoring-notes {
-    row-gap: 12px;
-    align-items: start;
-    margin: 32px 0;
-
-    .ant-input {
-      font-style: normal;
-      width: 95%;
+        .ant-btn {
+            align-self: end;
+        }
     }
-  }
+
+    .select-needs-tutoring-in {
+        row-gap: 12px;
+        align-items: start;
+        margin: 32px 0;
+    }
+
+    .tutoring-notes {
+        row-gap: 12px;
+        align-items: start;
+        margin: 32px 0;
+
+        .ant-input {
+            font-style: normal;
+            width: 95%;
+        }
+    }
 `;
 
 const ScheduleDetailsTabs = styled.div`
-  //max-width: 720px;
-  //margin: auto;
+    //max-width: 720px;
+    //margin: auto;
 
-  //background: white;
-  border-radius: 8px;
-  //padding: 12px 0;
+    //background: white;
+    border-radius: 8px;
+    //padding: 12px 0;
 
-  .ant-menu-horizontal {
-    border-top: 1px solid ${grey6};
-  }
-
-  .schedule-menu-header {
-    width: 100%;
-    border-top: 1px solid ${grey6};
-    border-bottom: 1px solid ${grey6};
-    row-gap: 12px;
-  }
-
-  .schedules-menu > .ant-menu-item {
-    padding-left: 36px;
-    //padding-top: 6px;
-    //padding-bottom: 6px;
-    border-bottom: 1px solid ${grey6};
-    min-width: 215px;
-    //min-height: 50px;
-
-    ::after {
-      display: none;
+    .ant-menu-horizontal {
+        border-top: 1px solid ${grey6};
     }
-  }
 
-  .schedule-menu-last-item {
-    min-width: 160px !important;
-    padding-left: 24px !important;
-  }
+    .schedule-menu-header {
+        width: 100%;
+        border-top: 1px solid ${grey6};
+        border-bottom: 1px solid ${grey6};
+        row-gap: 12px;
+    }
 
-  .schedules-menu > .ant-menu-item-active {
-    border-bottom: 2px solid ${amethyst} !important;
-  }
+    .schedules-menu > .ant-menu-item {
+        padding-left: 36px;
+        //padding-top: 6px;
+        //padding-bottom: 6px;
+        border-bottom: 1px solid ${grey6};
+        min-width: 215px;
+        //min-height: 50px;
 
-  .schedules-menu > .ant-menu-item-selected {
-    border-bottom: 2px solid ${amethyst} !important;
-  }
+        ::after {
+            display: none;
+        }
+    }
+
+    .schedule-menu-last-item {
+        min-width: 160px !important;
+        padding-left: 24px !important;
+    }
+
+    .schedules-menu > .ant-menu-item-active {
+        border-bottom: 2px solid ${amethyst} !important;
+    }
+
+    .schedules-menu > .ant-menu-item-selected {
+        border-bottom: 2px solid ${amethyst} !important;
+    }
 `;
 
 export const TabContent = styled.div`
-  padding: 24px;
+    padding: 24px;
 
-  .ant-picker-calendar-mode-switch {
-    display: none;
-  }
-
-  .rate-tutor-content {
-    margin-top: 24px;
-  }
-
-  .rate-tutor-features {
-    row-gap: 6px;
-  }
-
-  .rate-tutor-options {
-    width: 100%;
-    list-style-type: none;
-    padding: 0;
-    margin-bottom: 28px;
-
-    li {
-      display: inline-flex;
-      align-items: center;
-      align-content: center;
-      justify-content: center;
-      padding: 36px;
-      max-height: 50px;
-      max-width: 50px;
-      background: white;
-      border: 1px solid ${grey3};
-      margin-right: 10px;
-      margin-bottom: 10px;
-      border-radius: 4px;
-      column-gap: 4px;
-      row-gap: 4px;
-
-      .anticon svg {
-        font-size: 24px;
-        color: ${grey2};
-      }
-
-      :hover {
-        background: ${snow};
-      }
+    .ant-picker-calendar-mode-switch {
+        display: none;
     }
-  }
 
-  .rate-options-disabled {
-    cursor: not-allowed;
-  }
+    .rate-tutor-content {
+        margin-top: 24px;
+    }
 
-  .rated-icon {
-    font-size: 16px;
-    margin-right: 8px;
-  }
+    .rate-tutor-features {
+        row-gap: 6px;
+    }
 
-  .rated-icon-done {
-    color: ${parakeet};
-  }
+    .rate-tutor-options {
+        width: 100%;
+        list-style-type: none;
+        padding: 0;
+        margin-bottom: 28px;
 
-  .rated-icon-not-allowed {
-    color: ${orange};
-  }
+        li {
+            display: inline-flex;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            padding: 36px;
+            max-height: 50px;
+            max-width: 50px;
+            background: white;
+            border: 1px solid ${grey3};
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            column-gap: 4px;
+            row-gap: 4px;
 
-  .margin-btm-icon {
-    max-width: 70px !important;
-    max-height: 85px !important;
-  }
+            .anticon svg {
+                font-size: 24px;
+                color: ${grey2};
+            }
 
-  .margin-btm-icon > img {
-    margin-bottom: 6px;
-  }
+            :hover {
+                background: ${snow};
+            }
+        }
+    }
 
-  .rate-very-bad-selected {
-    background: ${rose} !important;
-    border: 1px solid ${rose} !important;
-  }
+    .rate-options-disabled {
+        cursor: not-allowed;
+    }
 
-  .rate-very-bad:hover {
-    background: ${rose} !important;
-    border: 1px solid ${rose} !important;
-  }
+    .rated-icon {
+        font-size: 16px;
+        margin-right: 8px;
+    }
 
-  .rate-just-bad-selected {
-    background: ${lightRed} !important;
-    border: 1px solid ${crimson} !important;
-  }
+    .rated-icon-done {
+        color: ${parakeet};
+    }
 
-  .rate-just-bad:hover {
-    background: ${lightRed} !important;
-    border: 1px solid ${crimson} !important;
-  }
+    .rated-icon-not-allowed {
+        color: ${orange};
+    }
 
-  .rate-good-selected {
-    background: ${seaFoam} !important;
-    border: 1px solid ${green} !important;
-  }
+    .margin-btm-icon {
+        max-width: 70px !important;
+        max-height: 85px !important;
+    }
 
-  .rate-good:hover {
-    background: ${seaFoam} !important;
-    border: 1px solid ${green} !important;
-  }
+    .margin-btm-icon > img {
+        margin-bottom: 6px;
+    }
 
-  .rate-very-good-selected {
-    background: ${green} !important;
-    border: 1px solid ${green} !important;
-  }
+    .rate-very-bad-selected {
+        background: ${rose} !important;
+        border: 1px solid ${rose} !important;
+    }
 
-  .rate-very-good:hover {
-    background: ${green} !important;
-    border: 1px solid ${green} !important;
-  }
+    .rate-very-bad:hover {
+        background: ${rose} !important;
+        border: 1px solid ${rose} !important;
+    }
 
-  .rate-tutor-comment {
-    margin-top: 12px;
-    margin-bottom: 12px;
-    row-gap: 20px;
-  }
+    .rate-just-bad-selected {
+        background: ${lightRed} !important;
+        border: 1px solid ${crimson} !important;
+    }
 
-  .rate-tutor-input {
-    border: 1px solid ${grey5};
-    min-height: 50px;
-    font-style: normal;
-  }
+    .rate-just-bad:hover {
+        background: ${lightRed} !important;
+        border: 1px solid ${crimson} !important;
+    }
+
+    .rate-good-selected {
+        background: ${seaFoam} !important;
+        border: 1px solid ${green} !important;
+    }
+
+    .rate-good:hover {
+        background: ${seaFoam} !important;
+        border: 1px solid ${green} !important;
+    }
+
+    .rate-very-good-selected {
+        background: ${green} !important;
+        border: 1px solid ${green} !important;
+    }
+
+    .rate-very-good:hover {
+        background: ${green} !important;
+        border: 1px solid ${green} !important;
+    }
+
+    .rate-tutor-comment {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        row-gap: 20px;
+    }
+
+    .rate-tutor-input {
+        border: 1px solid ${grey5};
+        min-height: 50px;
+        font-style: normal;
+    }
 `;
 
 const ResponseAppointment = styled.div`
-  padding: 12px 24px;
+    padding: 12px 24px;
 
-  .respond-reject-input {
-    margin: 12px 0;
-  }
+    .respond-reject-input {
+        margin: 12px 0;
+    }
 
-  .respond-submit {
-    margin-top: 24px;
-  }
+    .respond-submit {
+        margin-top: 24px;
+    }
 `;
 
 const getMenuItems = id => [
@@ -413,20 +413,20 @@ const getMenuItems = id => [
         key: "schedule-view",
         link: "/schedules/" + id,
         title: "Schedule Details",
-        icon: <CalendarOutlined/>,
+        icon: <CalendarOutlined />,
     },
     {
         key: "schedule-rating",
         link: "/schedules/" + id + "/rate-tutor",
         title: "Rate Tutor",
-        icon: <StarOutlined/>,
+        icon: <StarOutlined />,
     },
 ];
 
 export const CalenderItem = styled.div`
-  height: 100%;
-  width: 100%;
-  padding-top: 20px;
+    height: 100%;
+    width: 100%;
+    padding-top: 20px;
 `;
 
 //  ----------------- actor details -----------
@@ -442,13 +442,13 @@ export const renderActorInfo = (
             <Avatar
                 shape="circle"
                 size={64}
-                src={<img src={process.env.PUBLIC_URL + "/avatar_male.jpg"}/>}
+                src={<img src={process.env.PUBLIC_URL + "/avatar_male.jpg"} />}
             />
             <div className={"vertical-start-flex actor-profile-info"}>
                 <ResText14SemiBold>
                     {getUsername(user) + " "}
                     {loggedUserId && loggedUserId === user?.id && (
-                        <Tag style={{marginLeft: 12}}>Me</Tag>
+                        <Tag style={{ marginLeft: 12 }}>Me</Tag>
                     )}
                     {showEditProfile && (
                         <EditProfile
@@ -467,11 +467,11 @@ export const renderActorInfo = (
                     <div
                         className={"vertical-start-flex full-block text-grey1"}
                     >
-                        <StarFilled style={{color: orange, marginRight: 3}}/>{" "}
+                        <StarFilled style={{ color: orange, marginRight: 3 }} />{" "}
                         <ResText12Regular>{`${user.rating}`}</ResText12Regular>
                         <Divider
                             type={"vertical"}
-                            style={{marginLeft: 10, marginRight: 10}}
+                            style={{ marginLeft: 10, marginRight: 10 }}
                         />
                         <ResText12Regular>
                             {user.ratedBy}{" "}
@@ -503,7 +503,7 @@ export const renderNeedsTutoring = (
         <StatusTagList>
             {subjects &&
                 subjects.map(expertise => (
-                    <Tag style={{padding: "3px 10px"}}>
+                    <Tag style={{ padding: "3px 10px" }}>
                         <ResText12Regular>{expertise}</ResText12Regular>
                     </Tag>
                 ))}
@@ -518,7 +518,7 @@ export const renderNeedsTutoring = (
             )}
         </StatusTagList>
         {studentNote && (
-            <div style={{marginTop: "2rem"}}>
+            <div style={{ marginTop: "2rem" }}>
                 <ResText14Regular className={"text-grey2"}>
                     {noteTitle}
                 </ResText14Regular>
@@ -543,7 +543,7 @@ export const renderTabs = (
             <div className={"h-justified-flex schedule-menu-header"}>
                 <Menu
                     mode={"horizontal"}
-                    style={{width: "50%"}}
+                    style={{ width: "50%" }}
                     className={"schedules-menu"}
                     defaultSelectedKeys={defaultTab}
                     defaultOpenKeys={defaultTab}
@@ -586,15 +586,14 @@ export const renderTabs = (
 };
 
 export default function ScheduleView() {
-    const {id} = useParams();
+    const { id } = useParams();
     const dispatch = useDispatch();
     const location = useLocation();
-
 
     /******************* use states ************************/
     const [loading, setLoading] = useState(true);
     const [scheduledSlots, setScheduledSlots] = useState([]);
-    const [rateRequest, setRateRequest] = useState({rating: -1, comment: ""});
+    const [rateRequest, setRateRequest] = useState({ rating: -1, comment: "" });
     const [tutorUpdateReq, setTutorUpdateReq] = useState({
         scheduledAt: undefined,
     });
@@ -608,9 +607,9 @@ export default function ScheduleView() {
     console.log("location: ", location);
 
     /******************* use selectors ************************/
-    const {loggedUser} = useSelector(selectAuth);
-    const {appointment} = useSelector(selectAppointment);
-    const {aptsWithUser} = useSelector(selectUser);
+    const { loggedUser } = useSelector(selectAuth);
+    const { appointment } = useSelector(selectAppointment);
+    const { aptsWithUser } = useSelector(selectUser);
 
     /******************* local variables ************************/
     const ratingOptions = Object.values(ratings);
@@ -693,7 +692,7 @@ export default function ScheduleView() {
         const onError = err =>
             openNotification(
                 "Failed to update appointment schedule to " +
-                tutorUpdateReq.scheduledAt,
+                    tutorUpdateReq.scheduledAt,
                 err,
                 AlertType.ERROR,
             );
@@ -753,7 +752,7 @@ export default function ScheduleView() {
     };
 
     const handleRateChanges = (key, value) => {
-        setRateRequest({...rateRequest, [key]: value});
+        setRateRequest({ ...rateRequest, [key]: value });
     };
 
     const handleTutorUpdateReq = (key, value) => {
@@ -770,7 +769,9 @@ export default function ScheduleView() {
                 ...tutorUpdateReq,
                 scheduledAt: selectedDateTs,
             });
-        } else setTutorUpdateReq({...tutorUpdateReq, [key]: value});
+        } else {
+            setTutorUpdateReq({ ...tutorUpdateReq, [key]: value });
+        }
     };
 
     const getScheduledSlot = () =>
@@ -894,10 +895,10 @@ export default function ScheduleView() {
                 return [
                     false,
                     "The appintment has not been attended yet. " +
-                    "You have an appointment starting from: " +
-                    toMonthDateStr(scheduledFor) +
-                    " " +
-                    toHourMinStr(scheduledFor),
+                        "You have an appointment starting from: " +
+                        toMonthDateStr(scheduledFor) +
+                        " " +
+                        toHourMinStr(scheduledFor),
                 ];
             return [
                 true,
@@ -951,10 +952,10 @@ export default function ScheduleView() {
                                         {ratingOptions.map((item, index) => {
                                             const eitherSelectedOrAlreadyRated =
                                                 appointment.rating ===
-                                                index + 1 ||
+                                                    index + 1 ||
                                                 (rateResponse[0] &&
                                                     index + 1 ===
-                                                    rateRequest.rating);
+                                                        rateRequest.rating);
                                             return (
                                                 <Tooltip title={item.title}>
                                                     <li
@@ -1036,7 +1037,7 @@ export default function ScheduleView() {
                     Today
                     <ResText14Regular
                         className={"text-grey"}
-                        style={{marginLeft: 12}}
+                        style={{ marginLeft: 12 }}
                     >
                         {toMonthDateYearStr(today)}
                     </ResText14Regular>
@@ -1102,7 +1103,7 @@ export default function ScheduleView() {
                         getRoleBasedMenuItems(id),
                         isTutor, // showRespond only for the appointment tutor
                         renderStatus(),
-                        <RespondAction showRespondTitle={true}/>,
+                        <RespondAction showRespondTitle={true} />,
                     )}
                 </Col>
                 {showSlotView && (
@@ -1146,7 +1147,7 @@ export default function ScheduleView() {
                     }
                 >
                     <MyButton type={"secondary"}>
-                        Share <ShareAltOutlined/>
+                        Share <ShareAltOutlined />
                     </MyButton>
                 </CopyToClipboard>
             </Header>
