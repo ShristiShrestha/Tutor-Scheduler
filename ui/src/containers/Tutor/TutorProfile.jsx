@@ -34,6 +34,7 @@ import { fetchAptWithUser, fetchUser } from "../../redux/user/actions";
 import { selectUser } from "../../redux/user/reducer";
 import {
     calendarIntToMonth,
+    disabledScheduledSlotForReqCreate,
     getAvailableSlot,
 } from "../../utils/ScheduleUtils";
 import { AppointmentStatus } from "../../enum/AppointmentEnum";
@@ -171,15 +172,15 @@ const TutorProfile = () => {
     // return all the ACCEPTED appointments for a given month of a year and
     // do some manipulation to show all the other slots as available slots
     const dispatchFetchAptsWithUser = useCallback(() => {
-        const today = new Date();
+        const selectedDate = selectedCalendarDate || new Date();
         const params = {
             status: AppointmentStatus.ACCEPTED,
-            year: `${today.getUTCFullYear()}`, // backend stores date in UTC format
-            month: calendarIntToMonth[today.getUTCMonth()], // // backend stores date in UTC format
+            year: `${selectedDate.getUTCFullYear()}`, // backend stores date in UTC format
+            month: calendarIntToMonth[selectedDate.getUTCMonth()], // // backend stores date in UTC format
         };
         // @ts-ignore
         dispatch(fetchAptWithUser(id, params));
-    }, [id]);
+    }, [selectedCalendarDate, id]);
 
     const dispatchCreateApt = () => {
         const success = validateAptCreation();
@@ -230,9 +231,14 @@ const TutorProfile = () => {
     useEffect(() => {
         if (!!id) {
             dispatchFetchUser();
-            dispatchFetchAptsWithUser();
         }
     }, [id]);
+
+    useEffect(() => {
+        if (!!id) {
+            dispatchFetchAptsWithUser();
+        }
+    }, [id, selectedSlotDate]);
 
     useEffect(() => {
         getAvailableSlotsFromAcceptedApts();
@@ -303,14 +309,12 @@ const TutorProfile = () => {
                 return (
                     <TabContent>
                         <div
-                            className={
-                                "h-justified-flex medium-vertical-margin"
-                            }
+                            className={"h-justified-flex small-vertical-margin"}
                         >
                             <ResText14Regular>
                                 Pick a date and slot time for tutoring.
                             </ResText14Regular>
-                            <ResText14SemiBold>
+                            <ResText14Regular>
                                 Today
                                 <ResText14Regular
                                     className={"text-grey"}
@@ -318,7 +322,7 @@ const TutorProfile = () => {
                                 >
                                     {toMonthDateYearStr(today)}
                                 </ResText14Regular>
-                            </ResText14SemiBold>
+                            </ResText14Regular>
                         </div>
                         <MyCalendar
                             value={selectedCalendarDate}
@@ -379,7 +383,10 @@ const TutorProfile = () => {
                                 !!selectedSlot &&
                                 selectedSlot["title"] === item.title
                             }
-                            disabled={!item.available}
+                            disabled={disabledScheduledSlotForReqCreate(
+                                selectedCalendarDate,
+                                item,
+                            )}
                             onChange={e =>
                                 handleSlotClick(e.target.checked, item)
                             }

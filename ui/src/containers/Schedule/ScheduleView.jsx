@@ -62,6 +62,7 @@ import {
 import { UserAppointmentParams, UserDetailsType } from "../../redux/user/types";
 import {
     calendarIntToMonth,
+    disabledScheduledSlot,
     getAvailableSlot,
     getScheduledSlots,
     getUsername,
@@ -179,7 +180,7 @@ export const SlotInfo = styled.div`
     .selected-slots-info {
         align-items: start;
         row-gap: 12px;
-        margin-top: 24px;
+        //margin-top: 24px;
     }
 
     .slot-items {
@@ -807,22 +808,6 @@ export default function ScheduleView() {
         const scheduledDate = new Date(appointment.scheduledAt);
         const showingSlotsForDate = tutorUpdateReq.scheduledAt || scheduledDate;
 
-        const now = new Date();
-
-        const getSelectedSlotDate = start =>
-            new Date(
-                showingSlotsForDate.getFullYear(),
-                showingSlotsForDate.getMonth(),
-                showingSlotsForDate.getDate(),
-                start,
-            );
-        const disabledScheduledSlot = item => {
-            const selectedSlotDate = getSelectedSlotDate(item.start);
-            return (
-                selectedSlotDate.getTime() - now.getTime() < 0 ||
-                !item.available
-            );
-        };
         const newSelectedSlot = item =>
             tutorUpdateReq.scheduledAt?.getHours() === item.start;
 
@@ -877,12 +862,18 @@ export default function ScheduleView() {
                                     handleTutorUpdateReq("slotSelected", item)
                                 }
                                 checked={newSelectedSlot(item)}
-                                disabled={disabledScheduledSlot(item)}
+                                disabled={disabledScheduledSlot(
+                                    showingSlotsForDate,
+                                    item,
+                                )}
                             />
                             <ResText14Regular>
                                 {item.title}
                                 <i className={"text-grey3"}>{` ${
-                                    disabledScheduledSlot(item)
+                                    disabledScheduledSlot(
+                                        showingSlotsForDate,
+                                        item,
+                                    )
                                         ? " (not available)"
                                         : ""
                                 }`}</i>
