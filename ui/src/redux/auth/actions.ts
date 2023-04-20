@@ -5,7 +5,6 @@ import {actionStart, actionSuccess} from "../common/actions";
 
 /******************* state ************************/
 export function setAuth(props?: UserMiniDetailsType) {
-    console.log("set auth: ", props)
     return (dispatch: MyThunkDispatch) => {
         const stateProps = {
             authenticated: !!props,

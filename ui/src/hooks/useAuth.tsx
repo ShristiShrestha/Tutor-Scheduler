@@ -24,7 +24,6 @@ export default function useAuth(Component) {
                 } else {
                     setIsAuthenticated(false);
                 }
-                console.log("profile response: ", res);
                 // const roles = res["roles"]
                 // const userMiniDetails: UserMiniDetailsType = {
                 //     username: res["username"],
