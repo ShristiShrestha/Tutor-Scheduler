@@ -55,7 +55,7 @@ export default function LoginPage() {
         // }
         // @ts-ignore
         dispatch(setAuth(res));
-        return navigate("/schedules");
+        return navigate("/");
     };
 
     const handleErr = (item, err) =>
@@ -102,7 +102,7 @@ export default function LoginPage() {
         }
     };
 
-    if (authenticated) navigate("/schedules");
+    if (authenticated) navigate("/");
 
     return (
         <Wrapper>
