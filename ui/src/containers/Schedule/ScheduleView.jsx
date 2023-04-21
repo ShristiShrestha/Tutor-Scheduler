@@ -563,7 +563,7 @@ export default function ScheduleView() {
     const dispatchFetchApt = useCallback(() => {
         dispatch(fetchAppointment(id));
         setLoading(false);
-    }, [fetchAppointment]);
+    }, [id]);
 
     // we are viewing apt scheduled for the tutorId
     // fetch the tutor info and and all apointments
@@ -680,7 +680,6 @@ export default function ScheduleView() {
     };
 
     const handleRateChanges = (key, value) => {
-        console.log("rating values", key, value);
         setRateRequest({...rateRequest, [key]: value});
     };
 
@@ -817,7 +816,7 @@ export default function ScheduleView() {
                 return [false, "The appointment has been rejected."]
             if (now.getTime() < scheduledFor.getTime())
                 return [false, "The appintment has not been attended yet. " +
-                "You have an appointment starts at: " + toMonthDateStr(scheduledFor) + " " + toHourMinStr(scheduledFor)]
+                "You have an appointment starting from: " + toMonthDateStr(scheduledFor) + " " + toHourMinStr(scheduledFor)]
             return [true, "You can rate the tutor from angry (1) to very happy (4)."]
         }
         return [false, "Invalid appointment."];
