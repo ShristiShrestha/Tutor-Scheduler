@@ -6,9 +6,9 @@ import { grey6 } from "../../utils/ShadesUtils";
 import { fetchMsgsWithUser, sendMessage } from "../../redux/chat/actions";
 import { Avatar, Input, List, Select } from "antd";
 import MyButton from "../../components/Button/MyButton";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { selectChat } from "../../redux/chat/reducer";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, push } from "react-redux";
 import { selectAuth } from "../../redux/auth/reducer";
 import { selectUser } from "../../redux/user/reducer";
 import EmptyContent from "../../components/NoContent/EmptyContent";
@@ -83,40 +83,48 @@ export default function ChatConversation() {
     const [msgUser, setMsgUser] = useState(undefined);
     const [inputValue, setInputValue] = useState("");
     const [inputReceiver, setRequestInput] = useState(undefined);
-
+    const location = useLocation();
     const handleInputChange = event => {
         if (event.target.value !== "\n") setInputValue(event.target.value);
     };
 
     const dispatchFetchChat = () => {
-        const userObj = Object.values(usersMessages)
-            .flat()
-            .find(obj => obj.id === parseInt(sender_id));
-        if (userObj) {
-            let email =
-                userObj.senderEmail === loggedUser.email
-                    ? userObj.receiverEmail
-                    : userObj.senderEmail;
-
-            dispatch(fetchMsgsWithUser(email));
+        let userObj;
+        if (sender_id == "new") {
+            dispatch(fetchMsgsWithUser(location.state.receiver));
         } else {
-            setMsgUser(undefined);
+            userObj = Object.values(usersMessages)
+                .flat()
+                .find(obj => obj.id === parseInt(sender_id));
+            if (userObj) {
+                let email =
+                    userObj.senderEmail === loggedUser.email
+                        ? userObj.receiverEmail
+                        : userObj.senderEmail;
+
+                dispatch(fetchMsgsWithUser(email));
+            } else {
+                setMsgUser(undefined);
+            }
         }
         setLoading(false);
     };
 
     useEffect(() => {
         dispatchFetchChat();
-        const interval = setInterval(() => {
-            dispatchFetchChat();
-        }, 2000);
+        if (msgUser) {
+            const interval = setInterval(() => {
+                dispatchFetchChat();
+            }, 5000);
 
-        return () => clearInterval(interval);
+            return () => clearInterval(interval);
+        }
     }, [fetchMsgsWithUser]);
 
     useMemo(() => {
-        if (sender_id == "1") setMsgUser(undefined);
-        else if (userMessages) {
+        if (!userMessages) {
+            setMsgUser(undefined);
+        } else if (userMessages) {
             let convertedData = userMessages.map((item, index) => ({
                 id: index + 1,
                 message: item.message,
@@ -312,17 +320,7 @@ export default function ChatConversation() {
     return (
         <Wrapper>
             <Header className={"h-justified-flex"}>
-                {msgUser && msgUser.length ? (
-                    `Chat - ${msgUser[0].name}`
-                ) : (
-                    <Select
-                        allowClear
-                        style={{ width: "20%" }}
-                        placeholder="Select coordinator..."
-                        onChange={value => handleReqInput("coordinator", value)}
-                        options={getUserData()}
-                    />
-                )}
+                {msgUser && msgUser.length ? `Chat - ${msgUser[0].name}` : null}
             </Header>
             <Content>
                 <div className={"header-date"}>
