@@ -239,8 +239,38 @@ export const getFormattedRatings = (user?: UserDetailsType) => {
         return {
             ...ratings[parseFloat(ratingKey)],
             totalUsers: user.ratingByNumbers
-                ? (user.ratingByNumbers[ratingKey.toString() + ".0"] || 0)
+                ? user.ratingByNumbers[ratingKey.toString() + ".0"] || 0
                 : 0,
         };
     });
+};
+
+/******************* showing slots availability: schedule view  ************************/
+export const getSelectedSlotDate = (showingSlotsForDate, start) =>
+    new Date(
+        showingSlotsForDate.getFullYear(),
+        showingSlotsForDate.getMonth(),
+        showingSlotsForDate.getDate(),
+        start,
+    );
+export const disabledScheduledSlot = (showingSlotsForDate, item) => {
+    const now = new Date();
+    const selectedSlotDate = getSelectedSlotDate(
+        showingSlotsForDate,
+        item.start,
+    );
+    return selectedSlotDate.getTime() - now.getTime() < 0 || !item.available;
+};
+
+/******************* showing slots availability: request for tutoring ************************/
+export const disabledScheduledSlotForReqCreate = (
+    showingSlotsForDate,
+    item,
+) => {
+    const now = new Date();
+    const selectedSlotDate = getSelectedSlotDate(
+        showingSlotsForDate,
+        item.start,
+    );
+    return selectedSlotDate.getTime() - now.getTime() < 0 || !item.available;
 };

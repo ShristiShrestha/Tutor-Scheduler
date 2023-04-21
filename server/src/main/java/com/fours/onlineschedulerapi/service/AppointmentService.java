@@ -334,7 +334,7 @@ public class AppointmentService {
 
         }
 
-        return appointmentToUpdate;
+        return getById(appointmentToUpdate.getId());
     }
 
     private void rejectPendingAppointmentsAtCurrentlyAcceptedTimeSlot(Appointment appointment) {
@@ -447,6 +447,6 @@ public class AppointmentService {
         appointment.setRating(rating);
         appointmentRepository.save(appointment);
 
-        return appointment;
+        return getById(appointment.getId());
     }
 }
