@@ -338,6 +338,13 @@ export default function ChatConversation() {
                 </div>
                 <ChatCard>
                     {msgUser && renderItem(msgUser)}
+                    {!msgUser && (
+                        <EmptyContent
+                            className={"empty-content"}
+                            showEmptyIcon={true}
+                            desc={"Start a new conversation"}
+                        />
+                    )}
                     <div className="input-messagebox">
                         <Input.Group
                             compact
