@@ -1,4 +1,4 @@
-import {Avatar, Dropdown, Menu} from "antd";
+import {Avatar, Dropdown, Menu, Tag} from "antd";
 import {DownOutlined, LogoutOutlined, UserOutlined} from "@ant-design/icons";
 import {ResText12Regular, ResText14SemiBold, ResText16SemiBold,} from "../../utils/TextUtils";
 import styled from "styled-components";
@@ -90,6 +90,7 @@ const TopBar = () => {
                             overlay={avatarMenu}
                         >
                             <div className={"h-vertically-centered-flex"}>
+                                <Tag className={"text-white default-margin-right"}>{loggedUser.roles[0].name}</Tag>
                                 <Avatar
                                     icon={<UserOutlined/>}
                                     style={{
