@@ -124,7 +124,6 @@ export default function Chat() {
                         role => role.name === UserRoles.MODERATOR,
                     );
                 });
-
             let existingUser = Object.keys(usersMessages).map(
                 item => item.split(",")[0],
             );
@@ -149,13 +148,9 @@ export default function Chat() {
     };
 
     const handleSubmit = async () => {
-        let receiver = users.find(
-            u => u.name === requestInput.coordinator,
-        ).email;
-
         let msgObj = {
             message: requestInput.message,
-            receiverEmail: receiver,
+            receiverEmail: requestInput.coordinator,
             senderEmail: loggedUser.email,
         };
 
@@ -164,7 +159,7 @@ export default function Chat() {
 
         navigate(`/chat/new`, {
             state: {
-                receiver: receiver,
+                receiver: msgObj.receiverEmail,
             },
         });
 
