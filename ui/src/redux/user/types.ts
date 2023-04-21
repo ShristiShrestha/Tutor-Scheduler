@@ -1,6 +1,6 @@
-import { PageConfigType } from "../common/types";
-import { UserRoles } from "../../enum/UserEnum";
-import { AppointmentType } from "../appointment/types";
+import {PageConfigType} from "../common/types";
+import {UserRoles} from "../../enum/UserEnum";
+import {AppointmentType} from "../appointment/types";
 
 /******************* actions ************************/
 export const FETCH_USER = "FETCH_USER";

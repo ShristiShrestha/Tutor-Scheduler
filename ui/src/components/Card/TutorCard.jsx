@@ -1,6 +1,6 @@
 import React from "react";
 import {Avatar, Divider, Tag} from "antd";
-import {StarOutlined} from "@ant-design/icons";
+import {StarFilled} from "@ant-design/icons";
 import {
     Card,
     Desc,
@@ -13,6 +13,7 @@ import {
 import {ResText10Regular, ResText12Regular, ResText12SemiBold,} from "../../utils/TextUtils";
 import {toEndDottedStr} from "../../utils/StringUtils";
 import {UserDetailsType} from "../../redux/user/types";
+import {orange} from "../../utils/ShadesUtils";
 
 type Props = {
     tutor: UserDetailsType,
@@ -58,14 +59,14 @@ const TutorCard = (props: Props) => {
                                 "vertical-start-flex full-block text-grey1"
                             }
                         >
-                            <StarOutlined style={{marginRight: 3}}/>
+                            <StarFilled style={{color: orange, marginRight: 3}}/>{" "}
                             <ResText12Regular>{`${tutor.rating}`}</ResText12Regular>
                             <Divider
                                 type={"vertical"}
                                 style={{marginLeft: 10, marginRight: 10}}
                             />
                             <ResText12Regular>
-                                {tutor.ratedBy} ratings
+                                {tutor.ratedBy} {tutor.ratedBy > 1 ? "ratings" : "rating"}
                             </ResText12Regular>
                         </div>
                     </div>

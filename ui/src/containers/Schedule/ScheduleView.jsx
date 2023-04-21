@@ -20,7 +20,7 @@ import {
     seaFoam,
     snow,
 } from "../../utils/ShadesUtils";
-import {Avatar, Badge, Checkbox, Col, Menu, Row, Spin, Tag, Tooltip,} from "antd";
+import {Avatar, Badge, Checkbox, Col, Divider, Menu, Row, Spin, Tag, Tooltip,} from "antd";
 import {Link, useLocation} from "react-router-dom";
 import {getStatusBox, StatusTagList,} from "../../components/Card/ScheduleCard";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
@@ -32,7 +32,7 @@ import {
     toSlotRangeStr,
 } from "../../utils/DateUtils";
 import MyButton from "../../components/Button/MyButton";
-import {CalendarOutlined, CheckCircleFilled, InfoCircleOutlined, StarOutlined,} from "@ant-design/icons";
+import {CalendarOutlined, CheckCircleFilled, InfoCircleOutlined, StarFilled, StarOutlined,} from "@ant-design/icons";
 import {UserAppointmentParams, UserDetailsType} from "../../redux/user/types";
 import {
     calendarIntToMonth,
@@ -115,7 +115,7 @@ export const ScheduleActorInfo = styled.div.attrs({
 
   .actor-profile-info {
     margin-left: 16px;
-    row-gap: 2px;
+    row-gap: 6px;
     align-items: start;
   }
 `;
@@ -264,8 +264,10 @@ export const TabContent = styled.div`
       background: white;
       border: 1px solid ${grey3};
       margin-right: 10px;
+      margin-bottom: 10px;
       border-radius: 4px;
       column-gap: 4px;
+      row-gap: 4px;
 
       .anticon svg {
         font-size: 24px;
@@ -424,6 +426,21 @@ export const renderActorInfo = (
                             toMonthDateYearStr(new Date(user.createdAt))}
                     </ResText14Regular>
                 )}
+                {user && user.isTutor && <div
+                    className={
+                        "vertical-start-flex full-block text-grey1"
+                    }
+                >
+                    <StarFilled style={{color: orange, marginRight: 3}}/>{" "}
+                    <ResText12Regular>{`${user.rating}`}</ResText12Regular>
+                    <Divider
+                        type={"vertical"}
+                        style={{marginLeft: 10, marginRight: 10}}
+                    />
+                    <ResText12Regular>
+                        {user.ratedBy} {user.ratedBy > 1 ? "ratings" : "rating"}
+                    </ResText12Regular>
+                </div>}
             </div>
         </div>
     </ScheduleActorInfo>

@@ -1,8 +1,8 @@
-import { UserDetailsType } from "../redux/user/types";
-import { capitalize } from "./StringUtils";
-import { AppointmentType } from "../redux/appointment/types";
+import {UserDetailsType} from "../redux/user/types";
+import {capitalize} from "./StringUtils";
+import {AppointmentType} from "../redux/appointment/types";
 import React from "react";
-import { AppointmentStatus } from "../enum/AppointmentEnum";
+import {AppointmentStatus} from "../enum/AppointmentEnum";
 
 /******************* user details ************************/
 export const getUsername = (user: UserDetailsType) => {
@@ -110,7 +110,7 @@ export const getAvailableSlot = (
     const pendingAptsCreatedByLoggedUserOnDate = acceptedApts.filter(apt =>
         loggedUserId
             ? loggedUserId === apt.studentId &&
-              apt.status === AppointmentStatus.PENDING
+            apt.status === AppointmentStatus.PENDING
             : false,
     );
 
@@ -235,12 +235,11 @@ export const ratings = {
 };
 export const getFormattedRatings = (user?: UserDetailsType) => {
     if (!user) return [];
-
     return Object.keys(ratings).map(ratingKey => {
         return {
-            ...ratings[ratingKey],
+            ...ratings[parseFloat(ratingKey)],
             totalUsers: user.ratingByNumbers
-                ? user.ratingByNumbers[ratingKey]
+                ? (user.ratingByNumbers[ratingKey.toString() + ".0"] || 0)
                 : 0,
         };
     });

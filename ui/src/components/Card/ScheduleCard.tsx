@@ -2,11 +2,11 @@ import React, {ReactNode} from "react";
 import {Avatar, Divider, Tag} from "antd";
 import styled from "styled-components";
 import {ResText10Regular, ResText12Regular, ResText12SemiBold,} from "../../utils/TextUtils";
-import {amethyst, grey1, grey2, grey3, grey6} from "../../utils/ShadesUtils";
+import {amethyst, grey1, grey2, grey3, grey6, orange} from "../../utils/ShadesUtils";
 import {AppointmentType} from "../../redux/appointment/types";
 import {toMonthDateStr, toMonthDateYearStr, toScheduleSlotRangeStr,} from "../../utils/DateUtils";
 import {AppointmentStatus} from "../../enum/AppointmentEnum";
-import {StarOutlined} from "@ant-design/icons";
+import {StarFilled} from "@ant-design/icons";
 import {toEndDottedStr} from "../../utils/StringUtils";
 
 // styled components
@@ -157,15 +157,13 @@ const ScheduleCard = (props: Props) => {
                     <ResText12SemiBold>{showingName}</ResText12SemiBold>
                     {isStudent ? (
                         <ResText12Regular>
-                            {/*<span className={"text-grey1"}>{apt.tutor.description || `Freelancer developer`}</span>*/}
-                            {/*<Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>*/}
-                            <StarOutlined style={{marginRight: 3}}/>{" "}
-                            <span>{`${apt.rating}`}</span>
+                            <StarFilled style={{color: orange, marginRight: 3}}/>{" "}
+                            <span>{`${apt.tutor.rating}`}</span>
                             <Divider
                                 type={"vertical"}
                                 style={{marginLeft: 8, marginRight: 6}}
                             />
-                            <span>0 ratings</span>
+                            <span>{apt.tutor.ratedBy + (apt.tutor.ratedBy > 1 ? " ratings" : " rating")}</span>
                         </ResText12Regular>
                     ) : (
                         <ResText12Regular className={"text-grey3"}>
