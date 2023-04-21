@@ -1,109 +1,65 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import styled from "styled-components";
-import { grey1, grey6, pearl } from "../../utils/ShadesUtils";
-import {
-    ResText12Regular,
-    ResText12SemiBold,
-    ResText14Regular,
-    ResText14SemiBold,
-} from "../../utils/TextUtils";
-import {
-    renderActorInfo,
-    renderNeedsTutoring,
-    renderTabs,
-    SlotInfo,
-    TabContent,
-} from "../Schedule/ScheduleView";
-import {
-    CalendarOutlined,
-    InfoCircleOutlined,
-    StarOutlined,
-} from "@ant-design/icons";
-import {
-    getYearMonthDateHrsUtcFormat,
-    toMonthDateYearStr,
-    toSlotRangeStr,
-} from "../../utils/DateUtils";
+import {grey1, grey6, pearl} from "../../utils/ShadesUtils";
+import {ResText12Regular, ResText12SemiBold, ResText14Regular, ResText14SemiBold,} from "../../utils/TextUtils";
+import {renderActorInfo, renderNeedsTutoring, renderTabs, SlotInfo, TabContent,} from "../Schedule/ScheduleView";
+import {CalendarOutlined, InfoCircleOutlined, StarOutlined,} from "@ant-design/icons";
+import {getYearMonthDateHrsUtcFormat, toMonthDateYearStr, toSlotRangeStr,} from "../../utils/DateUtils";
 import MyCalendar from "../../components/MyCalendar/MyCalendar";
-import { useParams } from "react-router";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Checkbox, Col, Divider, Input, Row, Select, Spin } from "antd";
+import {useParams} from "react-router";
+import {useLocation, useNavigate} from "react-router-dom";
+import {Checkbox, Col, Divider, Input, Row, Select, Spin} from "antd";
 import MyButton from "../../components/Button/MyButton";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchAptWithUser, fetchUser } from "../../redux/user/actions";
-import { selectUser } from "../../redux/user/reducer";
-import {
-    calendarIntToMonth,
-    getAvailableSlot,
-} from "../../utils/ScheduleUtils";
-import { AppointmentStatus } from "../../enum/AppointmentEnum";
-import { createAppointment } from "../../redux/appointment/actions";
-import { selectAuth } from "../../redux/auth/reducer";
-import { AlertType, openNotification } from "../../utils/Alert";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchAptWithUser, fetchUser} from "../../redux/user/actions";
+import {selectUser} from "../../redux/user/reducer";
+import {calendarIntToMonth, getAvailableSlot,} from "../../utils/ScheduleUtils";
+import {AppointmentStatus} from "../../enum/AppointmentEnum";
+import {createAppointment} from "../../redux/appointment/actions";
+import {selectAuth} from "../../redux/auth/reducer";
+import {AlertType, openNotification} from "../../utils/Alert";
 import ViewTutorRatings from "./ViewTutorRatings";
-import { UserDetailsType } from "../../redux/user/types";
-import { isLoggedModerator } from "../../utils/AuthUtils";
+import {isLoggedModerator} from "../../utils/AuthUtils";
 
-const { TextArea } = Input;
+const {TextArea} = Input;
 
 const Wrapper = styled.div`
-    .ant-divider {
-        margin: 0;
-    }
+  .ant-divider {
+    margin: 0;
+  }
 
-    .ant-row {
-        margin: 0 !important;
-    }
+  .ant-row {
+    margin: 0 !important;
+  }
 
-    .ant-col {
-        height: fit-content;
-    }
+  .ant-col {
+    height: fit-content;
+  }
 `;
 
 const Header = styled.div`
-    padding: 12px 24px;
-    border-bottom: 1px solid ${grey6};
-    box-shadow: 0 24px #eaeaea;
+  padding: 12px 24px;
+  border-bottom: 1px solid ${grey6};
+  box-shadow: 0 24px #eaeaea;
 `;
 
 const Content = styled.div`
-    //padding: 24px;
-    background: white;
+  //padding: 24px;
+  background: white;
     // background: ${pearl};
-    height: calc(100vh - 48px);
-    overflow-y: auto;
-    position: relative;
-    padding-bottom: 120px;
+  height: calc(100vh - 48px);
+  overflow-y: auto;
+  position: relative;
+  padding-bottom: 120px;
 
-    .border-right {
-        border-right: 1px solid ${grey6};
-    }
+  .border-right {
+    border-right: 1px solid ${grey6};
+  }
 `;
 
-const getMenuItems = (id, loggedUser?: UserDetailsType) => {
-    const items = [
-        {
-            key: "request-tutoring",
-            link: `/profile/${id}/request-tutoring`,
-            title: "Request for tutoring",
-            icon: <CalendarOutlined />,
-        },
-        {
-            key: "view-tutor-ratings",
-            link: `/profile/${id}/view-tutor-ratings`,
-            title: "View ratings",
-            icon: <StarOutlined />,
-        },
-    ];
-
-    const loggedUserIsModerator = isLoggedModerator(loggedUser);
-    const loggdUserIsTutor = !!loggedUser && id === loggedUser?.id?.toString();
-    if (loggdUserIsTutor || loggedUserIsModerator) return [items[1]];
-    return items;
-};
 
 const TutorProfile = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
@@ -123,11 +79,13 @@ const TutorProfile = () => {
         subjects: [],
     });
     // redux states
-    const { loggedUser } = useSelector(selectAuth);
-    const { user, aptsWithUser } = useSelector(selectUser);
+    const {loggedUser} = useSelector(selectAuth);
+    const {user, aptsWithUser} = useSelector(selectUser);
 
+    // if logged user is the tutor the user is currently viewing
     const loggedUserIsTutor = loggedUser && loggedUser?.id?.toString() === id;
     const isModerator = isLoggedModerator(loggedUser);
+    const showOnlyViewRatings = isModerator || loggedUserIsTutor;
 
     /******************* handle events ************************/
     const handleSlotClick = (selected, item) => {
@@ -156,7 +114,7 @@ const TutorProfile = () => {
     };
 
     const handleReqInput = (key, value) => {
-        setRequestInput({ ...requestInput, [key]: value });
+        setRequestInput({...requestInput, [key]: value});
     };
 
     /******************* validations ************************/
@@ -243,8 +201,8 @@ const TutorProfile = () => {
     const getExpertiseOptions = () =>
         !!user
             ? user.expertise.map(item => {
-                  return { label: item, value: item };
-              })
+                return {label: item, value: item};
+            })
             : [];
 
     /******************* use effects ************************/
@@ -259,27 +217,61 @@ const TutorProfile = () => {
         getAvailableSlotsFromAcceptedApts();
     }, [selectedCalendarDate]);
 
-    const getDefaultTab = () => {
-        const menuItems = getMenuItems(id, loggedUser);
-        const pathname = location ? location.pathname : "/profile/" + id;
-        if (!!menuItems) {
-            const defaultOpenTabs = menuItems.filter(
-                item => item["link"] === pathname,
-            );
-            if (defaultOpenTabs.length > 0) {
-                return defaultOpenTabs.map(item => item["key"]);
-            }
-
-            return [menuItems[0].key];
+    useEffect(() => {
+        const menuItems = getMenuItems(id);
+        if (showOnlyViewRatings) {
+            navigate(menuItems[0].link, {replace: true});
         }
-        return [""];
+    }, [loggedUser])
+
+    /******************* render children ************************/
+
+    const getMenuItems = (id) => {
+        const items = [
+            {
+                key: "request-tutoring",
+                link: `/profile/${id}/request-tutoring`,
+                title: "Request for tutoring",
+                icon: <CalendarOutlined/>,
+            },
+            {
+                key: "view-tutor-ratings",
+                link: `/profile/${id}/view-tutor-ratings`,
+                title: "View ratings",
+                icon: <StarOutlined/>,
+            },
+        ];
+
+        if (showOnlyViewRatings) return [items[1]];
+        return items;
     };
 
-    const renderMenuComponent = (menuItems = getMenuItems(id, loggedUser)) => {
+
+    const getDefaultTab = () => {
+        const menuItems = getMenuItems(id);
+        const pathname = location ? location.pathname : "/profile/" + id;
+        // if tutor profile is viewed by student
+        if (!showOnlyViewRatings) {
+            if (!!menuItems) {
+                const defaultOpenTabs = menuItems.filter(
+                    item => item["link"] === pathname,
+                );
+                if (defaultOpenTabs.length > 0) {
+                    return defaultOpenTabs.map(item => item["key"]);
+                }
+
+                return [menuItems[0].key];
+            }
+            return [""]
+        }
+        return [menuItems[0].key];
+    };
+
+    const renderMenuComponent = (menuItems = getMenuItems(id)) => {
         const defaultTab = getDefaultTab()[0];
         const today = new Date();
 
-        if (loggedUserIsTutor) return <ViewTutorRatings />;
+        if (showOnlyViewRatings) return <ViewTutorRatings/>;
 
         switch (defaultTab) {
             case menuItems[0].key:
@@ -300,7 +292,7 @@ const TutorProfile = () => {
                                 Today
                                 <ResText14Regular
                                     className={"text-grey"}
-                                    style={{ marginLeft: 12 }}
+                                    style={{marginLeft: 12}}
                                 >
                                     {toMonthDateYearStr(today)}
                                 </ResText14Regular>
@@ -335,7 +327,7 @@ const TutorProfile = () => {
             //     </TabContent>
 
             default:
-                return <ViewTutorRatings />;
+                return <ViewTutorRatings/>;
         }
     };
 
@@ -344,7 +336,7 @@ const TutorProfile = () => {
             <div className={"vertical-start-flex selected-slots-info"}>
                 <ResText14Regular className={"text-grey2"}>
                     Showing slots for
-                    <b style={{ marginLeft: 8, color: grey1 }}>
+                    <b style={{marginLeft: 8, color: grey1}}>
                         {`${toMonthDateYearStr(selectedCalendarDate)}`}
                     </b>
                 </ResText14Regular>
@@ -387,7 +379,7 @@ const TutorProfile = () => {
                     <Select
                         mode="multiple"
                         allowClear
-                        style={{ width: "95%" }}
+                        style={{width: "95%"}}
                         placeholder="Select tutoring topics..."
                         onChange={value => handleReqInput("subjects", value)}
                         options={getExpertiseOptions()}
@@ -449,7 +441,7 @@ const TutorProfile = () => {
         if (loggedUserIsTutor || isLoggedModerator(loggedUser))
             return renderOtherReviews();
         return tabOpened === "" ||
-            tabOpened === getMenuItems(id, loggedUser)[0].key
+        tabOpened === getMenuItems(id)[0].key
             ? renderCurrentSlot()
             : renderOtherReviews();
     };
@@ -486,7 +478,7 @@ const TutorProfile = () => {
                             {renderTabs(
                                 getDefaultTab(),
                                 () => renderMenuComponent(),
-                                getMenuItems(id, loggedUser),
+                                getMenuItems(id),
                             )}
                         </Col>
                         <Col
@@ -494,7 +486,7 @@ const TutorProfile = () => {
                             md={24}
                             className={"h-start-top-flex no-padding"}
                         >
-                            <Divider type={"horizontal"} />
+                            <Divider type={"horizontal"}/>
                             {renderSlotView(getDefaultTab()[0])}
                         </Col>
                     </Row>

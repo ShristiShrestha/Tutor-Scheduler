@@ -1,27 +1,24 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, {useCallback, useEffect, useRef} from "react";
 import PageRoutes from "./route/PageRoutes";
 import TopBar from "./components/TopBar/TopBar";
-import { Layout } from "antd";
+import {Layout} from "antd";
 
 // import "antd/dist/reset.css";
 import "./App.css";
 import "./custom_antd.css";
 import useAuth from "./hooks/useAuth";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAuth } from "./redux/auth/reducer";
+import {useDispatch, useSelector} from "react-redux";
+import {selectAuth} from "./redux/auth/reducer";
 import SideBar from "./components/SideBar/SideBar";
-import { isLoggedTutor } from "./utils/AuthUtils";
-import { AppointmentParams } from "./redux/appointment/types";
-import {
-    fetchAppointments,
-    fetchNotifications,
-} from "./redux/appointment/actions";
+import {isLoggedTutor} from "./utils/AuthUtils";
+import {AppointmentParams} from "./redux/appointment/types";
+import {fetchAppointments, fetchNotifications,} from "./redux/appointment/actions";
 
-const { Header, Content, Sider } = Layout;
+const {Header, Content, Sider} = Layout;
 
 const App = () => {
     const dispatch = useDispatch();
-    const { authenticated, loggedUser } = useSelector(selectAuth);
+    const {authenticated, loggedUser} = useSelector(selectAuth);
     const notificationCallback = useRef(null);
 
     /******************* use effects  ************************/
@@ -34,15 +31,12 @@ const App = () => {
             // @ts-ignore
             notificationCallback.current = setInterval(() => {
                 // call your function here
-                console.log("fetching notifications every 5 seconds called!");
                 dispatchFetchNotifications();
             }, 7000);
         }
 
         // Clear interval on unmount
-        return () =>
-            // @ts-ignore
-            notificationCallback && clearInterval(notificationCallback.current);
+        return () => notificationCallback && clearInterval(notificationCallback.current);
     }, [loggedUser]);
 
     useEffect(() => {
@@ -86,11 +80,11 @@ const App = () => {
     const getLayout = child => (
         <Layout>
             <Header className={"app-layout-header centered-flex"}>
-                <TopBar />
+                <TopBar/>
             </Header>
             {authenticated && (
                 <Sider width={210}>
-                    <SideBar />
+                    <SideBar/>
                 </Sider>
             )}
             <Content
@@ -118,7 +112,7 @@ const App = () => {
             {/*        ))}*/}
             {/*    </Routes>,*/}
             {/*)}*/}
-            {useAuth(getLayout(<PageRoutes />))}
+            {useAuth(getLayout(<PageRoutes/>))}
         </>
     );
 };

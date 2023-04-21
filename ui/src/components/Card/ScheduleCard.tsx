@@ -14,65 +14,65 @@ export const Card = styled.div<{
     height?: string;
     minWidth?: string;
 }>`
-    padding: 16px 24px;
-    border-radius: 12px;
-    border: 1px solid ${grey6};
-    // height: ${props => (props.height ? props.height : "220px")};
-    min-width: ${props => (props.minWidth ? props.minWidth : "220px")};
+  padding: 16px 24px;
+  border-radius: 12px;
+  border: 1px solid ${grey6};
+  height: ${props => (props.height ? props.height : "fit-content")};
+  min-width: ${props => (props.minWidth ? props.minWidth : "250px")};
 
-    text {
-        color: ${grey1};
-    }
+  text {
+    color: ${grey1};
+  }
 
-    :hover {
-        border: 2px solid ${amethyst};
-        scale: 1.05;
-    }
+  :hover {
+    border: 2px solid ${amethyst};
+    scale: 1.05;
+  }
 
-    @media (max-width: 1024px) {
-        min-width: fit-content;
-    }
+  @media (max-width: 1024px) {
+    min-width: fit-content;
+  }
 `;
 
 const StatusInfo = styled.div`
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 
-    .data-slot-info {
-        column-gap: 8px;
-    }
+  .data-slot-info {
+    column-gap: 8px;
+  }
 `;
 
 export const TutorInfo = styled.div`
-    display: flex;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  width: 100%;
 
-    .tutor-profile-info {
-        margin-left: 12px;
-        display: flex;
-        flex-direction: column;
-        row-gap: 6px;
-        flex-wrap: wrap;
-    }
+  .tutor-profile-info {
+    margin-left: 12px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+    flex-wrap: wrap;
+  }
 `;
 
 export const Desc = styled.div`
-    margin-top: 1em;
-    color: ${grey3};
+  margin-top: 1em;
+  color: ${grey3};
 `;
 
 export const StatusTagList = styled.div<{ padding?: string }>`
-    margin-top: 1em;
-    row-gap: 8px;
+  margin-top: 1em;
+  row-gap: 8px;
 
-    .ant-tag {
-        width: fit-content;
-        background: white;
-        color: ${grey2} !important;
-        border: 1px solid ${grey3};
-        border-radius: 12px !important;
-        padding: ${props => props.padding || "2px 8px"};
-    }
+  .ant-tag {
+    width: fit-content;
+    background: white;
+    color: ${grey2} !important;
+    border: 1px solid ${grey3};
+    border-radius: 12px !important;
+    padding: ${props => props.padding || "2px 8px"};
+  }
 `;
 
 export const getStatusBox = (
@@ -100,17 +100,21 @@ export const getStatusBox = (
     return <Tag color={color}>{renderText || text} </Tag>;
 };
 
+export const MAX_TAG_SPECIALIZATIONS = 3
+export const MAX_DESC_SIZE = 40
+export const MAX_DOTTED_LEAD = 8
+
 type Props = {
     apt: AppointmentType;
     loggedUserId?: number;
 };
 const ScheduleCard = (props: Props) => {
-    const { apt, loggedUserId } = props;
+    const {apt, loggedUserId} = props;
 
     if (!apt) return <div> no apt </div>;
     const showingTutoringIn = apt
-        ? apt.tutoringOnList && apt.tutoringOnList.length > 2
-            ? apt.tutoringOnList.slice(0, 2)
+        ? apt.tutoringOnList && apt.tutoringOnList.length > MAX_TAG_SPECIALIZATIONS
+            ? apt.tutoringOnList.slice(0, MAX_TAG_SPECIALIZATIONS)
             : apt.tutoringOnList
         : [];
     const isStudent =
@@ -121,7 +125,7 @@ const ScheduleCard = (props: Props) => {
         ? apt.student.name || apt.student.email
         : apt.tutor.name || apt.tutor.email;
     return (
-        <Card height={"215px"}>
+        <Card>
             <StatusInfo className={"h-justified-flex"}>
                 <div className={"h-start-flex data-slot-info"}>
                     {!!apt.createdAt && (
@@ -129,7 +133,7 @@ const ScheduleCard = (props: Props) => {
                             {toMonthDateStr(new Date(apt.scheduledAt))}
                         </ResText12Regular>
                     )}
-                    {apt.scheduledAt && <Divider type={"vertical"} />}
+                    {apt.scheduledAt && <Divider type={"vertical"}/>}
                     {apt.scheduledAt && (
                         <ResText12Regular>
                             {" "}
@@ -155,11 +159,11 @@ const ScheduleCard = (props: Props) => {
                         <ResText12Regular>
                             {/*<span className={"text-grey1"}>{apt.tutor.description || `Freelancer developer`}</span>*/}
                             {/*<Divider type={"vertical"} style={{marginLeft: 8, marginRight: 6}}/>*/}
-                            <StarOutlined style={{ marginRight: 3 }} />{" "}
+                            <StarOutlined style={{marginRight: 3}}/>{" "}
                             <span>{`${apt.rating}`}</span>
                             <Divider
                                 type={"vertical"}
-                                style={{ marginLeft: 8, marginRight: 6 }}
+                                style={{marginLeft: 8, marginRight: 6}}
                             />
                             <span>0 ratings</span>
                         </ResText12Regular>
@@ -173,22 +177,26 @@ const ScheduleCard = (props: Props) => {
                     )}
                 </div>
             </TutorInfo>
-            {apt.studentNote && (
-                <Desc>
-                    <ResText12Regular className={"text-grey4"}>
-                        "{toEndDottedStr(apt.studentNote, 30)}"
-                    </ResText12Regular>
-                </Desc>
-            )}
-            <StatusTagList>
+            <Desc>
+                <ResText12Regular className={"text-grey2"}>
+                    {apt.studentNote ? `"${toEndDottedStr(apt.studentNote, MAX_DESC_SIZE)}"` :
+                        <i>- No note added.</i>}
+                </ResText12Regular>
+            </Desc>
+            <StatusTagList className={"h-start-flex"}>
                 {showingTutoringIn.map(expertise => (
-                    <Tag>{expertise}</Tag>
+                    <Tag>{toEndDottedStr(expertise, MAX_DOTTED_LEAD)}</Tag>
                 ))}
                 <ResText10Regular className={"text-grey2"}>
                     {apt &&
-                        apt.tutoringOnList?.length > 2 &&
-                        `+ ${apt.tutoringOnList.length - 2} more`}
+                        apt.tutoringOnList?.length > MAX_TAG_SPECIALIZATIONS &&
+                        `+ ${apt.tutoringOnList.length - MAX_TAG_SPECIALIZATIONS} more`}
+
                 </ResText10Regular>
+                <ResText12Regular className={"text-grey2"}>
+                    {apt && apt.tutoringOnList.length < 1 &&
+                        <i>- No specific course mentioned for tutoring.</i>}
+                </ResText12Regular>
             </StatusTagList>
         </Card>
     );
