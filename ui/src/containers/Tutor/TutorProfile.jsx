@@ -469,7 +469,7 @@ const TutorProfile = () => {
     );
 
     const renderSlotView = tabOpened => {
-        if (loggedUserIsAnyTutor)
+        if (showOnlyViewRatings)
             //  loggedUserIsTutor || isLoggedModerator(loggedUser)
             return renderOtherReviews();
         return tabOpened === "" || tabOpened === getMenuItems(id)[0].key
