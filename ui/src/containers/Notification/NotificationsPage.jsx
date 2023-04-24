@@ -153,6 +153,11 @@ const NotificationsPage = () => {
 
     /******************* handle events ************************/
 
+    const checkIfDuplicateSlotRequests = () =>
+        notifications.filter(item => {
+            const scheduledFor = new Date(item.scheduledAt);
+            return false;
+        });
     const handleSelectRow = record => {
         const scheduleId = record["key"].split("_")[0];
 
@@ -287,6 +292,8 @@ const NotificationsPage = () => {
             />
         );
 
+    const duplicateSlotsRequests = checkIfDuplicateSlotRequests();
+
     return (
         <Wrapper>
             <Header>
@@ -297,6 +304,13 @@ const NotificationsPage = () => {
                     Pending requests{" "}
                     {dataSource.length > 0 ? `(${dataSource.length})` : ""}
                 </ResText14Regular>
+                {duplicateSlotsRequests.length > 0 && (
+                    <ResText12Regular>
+                        You can {duplicateSlotsRequests.length} appointment
+                        requested for the same date and time slot. Accepting any
+                        one of them will render other requests as rejected.
+                    </ResText12Regular>
+                )}
                 <TableContent key={"notification-table-wrapper"}>
                     {tableContent}
                 </TableContent>
