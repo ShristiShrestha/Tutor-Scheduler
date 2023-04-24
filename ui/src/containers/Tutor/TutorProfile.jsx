@@ -42,7 +42,7 @@ import { createAppointment } from "../../redux/appointment/actions";
 import { selectAuth } from "../../redux/auth/reducer";
 import { AlertType, openNotification } from "../../utils/Alert";
 import ViewTutorRatings from "./ViewTutorRatings";
-import { isLoggedModerator } from "../../utils/AuthUtils";
+import { isLoggedModerator, isLoggedTutor } from "../../utils/AuthUtils";
 
 const { TextArea } = Input;
 
@@ -107,7 +107,9 @@ const TutorProfile = () => {
     // if logged user is the tutor the user is currently viewing
     const loggedUserIsTutor = loggedUser && loggedUser?.id?.toString() === id;
     const isModerator = isLoggedModerator(loggedUser);
-    const showOnlyViewRatings = isModerator || loggedUserIsTutor;
+    const loggedUserIsAnyTutor = isLoggedTutor(loggedUser);
+    const showOnlyViewRatings =
+        isModerator || loggedUserIsTutor || loggedUserIsAnyTutor;
 
     /******************* handle events ************************/
     const handleSlotClick = (selected, item) => {
@@ -467,7 +469,8 @@ const TutorProfile = () => {
     );
 
     const renderSlotView = tabOpened => {
-        if (loggedUserIsTutor || isLoggedModerator(loggedUser))
+        if (loggedUserIsAnyTutor)
+            //  loggedUserIsTutor || isLoggedModerator(loggedUser)
             return renderOtherReviews();
         return tabOpened === "" || tabOpened === getMenuItems(id)[0].key
             ? renderCurrentSlot()
