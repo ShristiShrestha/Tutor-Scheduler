@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, {useMemo} from "react";
 import styled from "styled-components";
-import { grey6 } from "../../utils/ShadesUtils";
+import {grey6, orange} from "../../utils/ShadesUtils";
 import {
     ResText10Regular,
     ResText12Regular,
@@ -8,84 +8,85 @@ import {
     ResText14Regular,
     ResText14SemiBold,
 } from "../../utils/TextUtils";
-import { Table, Tag } from "antd";
+import {Table, Tag} from "antd";
 import EmptyContent from "../../components/NoContent/EmptyContent";
-import { useDispatch, useSelector } from "react-redux";
-import { selectAppointment } from "../../redux/appointment/reducer";
-import { getScheduledSlot } from "../../utils/ScheduleUtils";
-import { toMonthDateStr } from "../../utils/DateUtils";
+import {useDispatch, useSelector} from "react-redux";
+import {selectAppointment} from "../../redux/appointment/reducer";
+import {getScheduledSlot} from "../../utils/ScheduleUtils";
+import {toHourMinStr, toMonthDateStr, toMonthDateYearStr} from "../../utils/DateUtils";
 import RespondAction from "../Schedule/RespondAction";
-import { useNavigate } from "react-router-dom";
-import { updateAppointmentsReceived } from "../../redux/appointment/actions";
-import { AlertType, openNotification } from "../../utils/Alert";
-import { AppointmentType } from "../../redux/appointment/types";
+import {useNavigate} from "react-router-dom";
+import {updateAppointmentsReceived} from "../../redux/appointment/actions";
+import {AlertType, openNotification} from "../../utils/Alert";
+import {AppointmentType} from "../../redux/appointment/types";
 import moment from "moment";
+import {InfoCircleOutlined} from "@ant-design/icons";
 
 const Wrapper = styled.div``;
 
 const Header = styled.div`
+  width: 100%;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 48px; // height of main top header - app name
+  left: 210px;
+  right: 0;
+  padding: 0 24px;
+  border-bottom: 1px solid ${grey6};
+
+  .ant-row {
     width: 100%;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    position: fixed;
-    top: 48px; // height of main top header - app name
-    left: 210px;
-    right: 0;
-    padding: 0 24px;
-    border-bottom: 1px solid ${grey6};
+  }
 
-    .ant-row {
-        width: 100%;
-    }
-
-    .ant-col {
-        align-self: center;
-    }
+  .ant-col {
+    align-self: center;
+  }
 `;
 
 const Content = styled.div`
-    position: relative;
-    top: 56px;
-    height: calc(100vh - 112px);
-    overflow-y: auto;
-    margin-top: 16px;
+  position: relative;
+  top: 56px;
+  height: calc(100vh - 112px);
+  overflow-y: auto;
+  margin-top: 16px;
 `;
 
 const TableContent = styled.div`
-    padding: 20px 24px;
+  padding: 20px 24px;
 
-    .button-text {
-        padding: 1px;
-        color: white;
-        border-radius: 5px;
-        font-weight: 600;
-        cursor: pointer;
-        width: 8vw;
-    }
+  .button-text {
+    padding: 1px;
+    color: white;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 8vw;
+  }
 
-    .button-green {
-        background-color: #1bb885;
-    }
+  .button-green {
+    background-color: #1bb885;
+  }
 
-    .button-red {
-        background-color: #f44336;
-    }
+  .button-red {
+    background-color: #f44336;
+  }
 
-    .text-field {
-        margin-left: 12px;
-    }
+  .text-field {
+    margin-left: 12px;
+  }
 
-    .expertise-tags {
-        width: fit-content;
-        display: inline-flex;
-    }
+  .expertise-tags {
+    width: fit-content;
+    display: inline-flex;
+  }
 
-    .expertise-tag {
-        border-radius: 8px;
-        background: white;
-        border-color: grey;
-    }
+  .expertise-tag {
+    border-radius: 8px;
+    background: white;
+    border-color: grey;
+  }
 `;
 
 const columns = [
@@ -149,15 +150,27 @@ const NotificationsPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const { notifications } = useSelector(selectAppointment);
+    const {notifications} = useSelector(selectAppointment);
+    const notIds = notifications.map(item => item.id);
 
     /******************* handle events ************************/
 
-    const checkIfDuplicateSlotRequests = () =>
-        notifications.filter(item => {
-            const scheduledFor = new Date(item.scheduledAt);
-            return false;
-        });
+    const duplicateSlotsRequests = useMemo(() => {
+        let uniqueReqByScheduledAt = {};
+        for (let i = 0; i < notifications.length; i++) {
+            let notification = notifications[i];
+            let scheduledFor = new Date(notification.scheduledAt);
+            const _key = `${toMonthDateYearStr(scheduledFor) + "-" + toHourMinStr(scheduledFor)}`
+            if (!Object.keys(uniqueReqByScheduledAt).includes(_key)) {
+                uniqueReqByScheduledAt[_key] = [notification];
+            } else {
+                uniqueReqByScheduledAt[_key].push(notification);
+            }
+        }
+        const moreThanOneDuplicate = Object.values(uniqueReqByScheduledAt).filter(item => item.length > 1)
+        if (moreThanOneDuplicate.length > 0) return moreThanOneDuplicate[0]
+        return []
+    }, [notifications]);
     const handleSelectRow = record => {
         const scheduleId = record["key"].split("_")[0];
 
@@ -271,7 +284,7 @@ const NotificationsPage = () => {
                     ),
                 };
             }),
-        [notifications],
+        [notIds],
     );
 
     const tableContent =
@@ -292,22 +305,22 @@ const NotificationsPage = () => {
             />
         );
 
-    const duplicateSlotsRequests = checkIfDuplicateSlotRequests();
-
     return (
         <Wrapper>
             <Header>
                 <ResText14SemiBold>Notifications</ResText14SemiBold>
             </Header>
             <Content>
-                <ResText14Regular style={{ marginLeft: "25px" }}>
+                <ResText14Regular style={{marginLeft: "25px"}}>
                     Pending requests{" "}
                     {dataSource.length > 0 ? `(${dataSource.length})` : ""}
                 </ResText14Regular>
                 {duplicateSlotsRequests.length > 0 && (
-                    <ResText12Regular>
-                        You can {duplicateSlotsRequests.length} appointment
-                        requested for the same date and time slot. Accepting any
+                    <ResText12Regular className={"text-grey2 full-block display-linebreak medium-vertical-margin"}
+                                      style={{marginLeft: 25}}>
+                        <InfoCircleOutlined style={{marginRight: 8, fontSize: 14, color: orange}}/>
+                        You have <b className={"text-grey1"}>({duplicateSlotsRequests.length})</b>
+                        appointment/schedules requested for the same date and time slot.{"\n"} Accepting any
                         one of them will render other requests as rejected.
                     </ResText12Regular>
                 )}
