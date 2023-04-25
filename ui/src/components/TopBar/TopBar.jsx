@@ -10,6 +10,7 @@ import {logout} from "../../api/AuthApi";
 import {AlertType, openNotification} from "../../utils/Alert";
 import React from "react";
 import {setAuth} from "../../redux/auth/actions";
+import {isLoggedModerator} from "../../utils/AuthUtils";
 
 const Wrapper = styled.div`
   line-height: inherit;
@@ -72,11 +73,13 @@ const TopBar = () => {
         </Menu>
     );
 
+    const titleClickUrl = isLoggedModerator(loggedUser) ? "/find-tutors" : "/";
+
     return (
         <Wrapper className={"h-justified-flex"}>
             {authenticated && (
                 <>
-                    <AppName onClick={() => navigate("/")}>
+                    <AppName onClick={() => navigate(titleClickUrl)}>
                         <ResText16SemiBold>Online Scheduler</ResText16SemiBold>
                     </AppName>
                     <UserInfo>

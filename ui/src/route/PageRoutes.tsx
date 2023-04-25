@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import MySchedule from "../containers/Schedule/MySchedule";
 import FindTutors from "../containers/Tutor/FindTutors";
 import ScheduleView from "../containers/Schedule/ScheduleView";
@@ -8,70 +8,72 @@ import TutorProfile from "../containers/Tutor/TutorProfile";
 import Chat from "../containers/Chat/Chat";
 import ChatConversation from "../containers/Chat/ChatConversation";
 import LoginPage from "../containers/Auth/LoginPage";
-import { useSelector } from "react-redux";
-import { selectAppointment } from "../redux/appointment/reducer";
+import {useSelector} from "react-redux";
+import {selectAuth} from "../redux/auth/reducer";
+import {isLoggedModerator} from "../utils/AuthUtils";
 
-const pages = numNotifications => [
+const pages = (isModerator = false) => [
     {
         path: "/find-tutors",
-        component: <FindTutors />,
+        component: <FindTutors/>,
     },
     {
         path: "/schedules",
-        component: <MySchedule />,
+        component: <MySchedule/>,
     },
     {
         path: "/schedules/:id",
-        component: <ScheduleView />,
+        component: <ScheduleView/>,
     },
     {
         path: "/schedules/:id/rate-tutor",
-        component: <ScheduleView />,
+        component: <ScheduleView/>,
     },
     {
         path: "/chat",
-        component: <Chat />,
+        component: <Chat/>,
     },
     {
         path: "/chat/:sender_id",
-        component: <ChatConversation />,
+        component: <ChatConversation/>,
     },
     {
         path: "/notifications",
-        component: <NotificationsPage />,
+        component: <NotificationsPage/>,
     },
     {
         path: "/find-tutors/profile/:id",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/find-tutors/profile/:id/details",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/find-tutors/profile/:id/request-tutoring",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/find-tutors/profile/:id/view-tutor-ratings",
-        component: <TutorProfile />,
+        component: <TutorProfile/>,
     },
     {
         path: "/login",
-        component: <LoginPage />,
+        component: <LoginPage/>,
     },
     {
         path: "/",
-        component: <MySchedule />,
+        component: isModerator ? <FindTutors/> : <MySchedule/>,
     },
 ];
 
 export default function PageRoutes() {
-    const { notifications } = useSelector(selectAppointment);
+    const {loggedUser} = useSelector(selectAuth);
+    const isModerator = isLoggedModerator(loggedUser);
 
     return (
         <Routes>
-            {pages(notifications.length).map((item, index) => (
+            {pages(isModerator).map((item, index) => (
                 <Route
                     key={"inside-route" + index}
                     path={item.path}
