@@ -6,9 +6,10 @@ import {
     ResText14Regular,
     ResText16Regular,
     ResText16SemiBold,
+    ResText20Regular,
 } from "../../utils/TextUtils";
 import MyButton from "../../components/Button/MyButton";
-import { Form, Input, Modal } from "antd";
+import { Checkbox, Form, Input, Modal, Select } from "antd";
 import { capitalize } from "../../utils/StringUtils";
 import { authenticate, login, signup } from "../../api/AuthApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,6 +39,7 @@ const LandingCard = styled.div`
 `;
 
 export default function LoginPage() {
+    const [signupAsStudent, setSignupAsStudent] = useState(true);
     const [modals, setModalOpen] = useState({ login: false, signup: false });
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -88,8 +90,23 @@ export default function LoginPage() {
                         );
                     });
                 break;
-            case "signup":
-                signup(formInput)
+            case "signup": {
+                const hasSpecializations =
+                    Object.keys(formInput).includes("specializations") &&
+                    formInput["specializations"].length > 0;
+                delete formInput["signupAsStudent"]; // delete checkbox input to check if student or tutor
+                delete formInput["confirm"]; // delete confirm password
+                let signupRequest = {
+                    ...formInput,
+                    isTutor: hasSpecializations,
+                };
+                if (hasSpecializations) {
+                    signupRequest["tutor"] = {
+                        expertiseList: formInput["specializations"],
+                    };
+                }
+                delete signupRequest["specializations"]; // remove specializations from forminput
+                signup(signupRequest)
                     .then(res => {
                         authenticate()
                             .then(res1 => handleProfile(res1))
@@ -97,6 +114,7 @@ export default function LoginPage() {
                     })
                     .catch(err => handleErr("signup", err));
                 break;
+            }
             default:
                 alert("Invalid actions.");
         }
@@ -110,23 +128,25 @@ export default function LoginPage() {
                 <Header4 className={"text-white"}>
                     Online Tutor Scheduler
                 </Header4>
-                <ResText16Regular>
+                <ResText20Regular>
                     <u>Find</u> Tutors of your <u>choice</u>
-                </ResText16Regular>
+                </ResText20Regular>
 
                 <MyButton
-                    style={{ marginTop: 32 }}
+                    style={{ marginTop: 32, borderRadius: 4 }}
                     type={"secondary"}
+                    size={"large"}
                     onClick={() => handleModal("login", true)}
                 >
-                    <ResText16Regular>Login</ResText16Regular>
+                    <ResText16SemiBold>Login</ResText16SemiBold>
                 </MyButton>
                 <div
+                    className={"medium-vertical-margin"}
                     onClick={() => handleModal("signup", true)}
                     style={{ cursor: "pointer" }}
                 >
                     <ResText16Regular className={"text-underlined"}>
-                        New user? Sign up now
+                        New user ? Sign up now
                     </ResText16Regular>
                 </div>
             </LandingCard>
@@ -202,6 +222,83 @@ export default function LoginPage() {
                         >
                             <Input.Password />
                         </Form.Item>
+                        {item === "signup" && (
+                            <Form.Item
+                                name="confirm"
+                                label="Confirm Password"
+                                dependencies={["password"]}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message:
+                                            "Please confirm your password!",
+                                    },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            if (
+                                                !value ||
+                                                getFieldValue("password") ===
+                                                    value
+                                            ) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(
+                                                new Error(
+                                                    "The two passwords that you entered do not match!",
+                                                ),
+                                            );
+                                        },
+                                    }),
+                                ]}
+                            >
+                                <Input.Password />
+                            </Form.Item>
+                        )}
+
+                        {item === "signup" && (
+                            <Form.Item
+                                name="signupAsStudent"
+                                style={{ minHeight: "fit-content" }}
+                            >
+                                <Checkbox
+                                    value={signupAsStudent}
+                                    defaultChecked={signupAsStudent}
+                                    onChange={e => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setSignupAsStudent(e.target.checked);
+                                    }}
+                                >
+                                    <ResText14Regular className={"text-grey2"}>
+                                        Register as a student.
+                                    </ResText14Regular>
+                                </Checkbox>
+                            </Form.Item>
+                        )}
+
+                        {item === "signup" && !signupAsStudent && (
+                            <Form.Item
+                                label={
+                                    <ResText14Regular className={"text-grey2"}>
+                                        Specializations
+                                    </ResText14Regular>
+                                }
+                                name="specializations"
+                                rules={[
+                                    {
+                                        required: false,
+                                        message:
+                                            "Enter fields you specialize in!",
+                                    },
+                                ]}
+                            >
+                                <Select
+                                    mode="tags"
+                                    style={{ width: "100%" }}
+                                    tokenSeparators={[","]}
+                                />
+                            </Form.Item>
+                        )}
 
                         <Form.Item>
                             <div className={"h-end-flex full-width"}>

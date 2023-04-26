@@ -17,7 +17,6 @@ export const signup = data => {
         name: capitalize(
             data["name"] || data["email"]?.split("@")[0] || "no name",
         ),
-        isTutor: false,
         isCoordinator: false,
     };
     return Api.apiCall<UserMiniDetailsType>({
