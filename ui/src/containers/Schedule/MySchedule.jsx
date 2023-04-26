@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import ScheduleCard from "../../components/Card/ScheduleCard";
 import styled from "styled-components";
 import {
@@ -9,7 +9,7 @@ import {
 import { Col, Row, Spin } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { grey6 } from "../../utils/ShadesUtils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectAuth } from "../../redux/auth/reducer";
 import { isLoggedTutor } from "../../utils/AuthUtils";
 import { selectAppointment } from "../../redux/appointment/reducer";
@@ -17,6 +17,8 @@ import EmptyContent from "../../components/NoContent/EmptyContent";
 import MyButton from "../../components/Button/MyButton";
 import { selectAllLoading } from "../../redux/allLoadings/reducer";
 import { FETCH_APPOINTMENTS } from "../../redux/appointment/types";
+import { getAptParams } from "../../utils/ScheduleUtils";
+import { fetchAppointments } from "../../redux/appointment/actions";
 
 const Wrapper = styled.div`
     .schedules-upcoming {
@@ -53,6 +55,7 @@ const Content = styled.div`
 
 export default function MySchedule() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { loggedUser } = useSelector(selectAuth);
     const { upcomingAppointments, otherAppointments } =
         useSelector(selectAppointment);
@@ -66,6 +69,24 @@ export default function MySchedule() {
     const onEmptyNavigateToBtn = isTutor
         ? "Go to notifications"
         : "Find tutors";
+
+    /******************* use effects  ************************/
+
+    useEffect(() => {
+        if (loggedUser) dispatchFetchApts();
+    }, [loggedUser]);
+
+    /******************* dispatch ************************/
+
+    const dispatchFetchApts = useCallback(() => {
+        const upcomingParams = getAptParams(loggedUser, true);
+        const allParams = getAptParams(loggedUser);
+        // @ts-ignore
+        dispatch(fetchAppointments(upcomingParams));
+        // @ts-ignore
+        dispatch(fetchAppointments(allParams));
+    }, [loggedUser]);
+
     return (
         <Wrapper>
             <Header>

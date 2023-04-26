@@ -1,8 +1,9 @@
-import {UserDetailsType} from "../redux/user/types";
-import {capitalize} from "./StringUtils";
-import {AppointmentType} from "../redux/appointment/types";
+import { UserDetailsType } from "../redux/user/types";
+import { capitalize } from "./StringUtils";
+import { AppointmentParams, AppointmentType } from "../redux/appointment/types";
 import React from "react";
-import {AppointmentStatus} from "../enum/AppointmentEnum";
+import { AppointmentStatus } from "../enum/AppointmentEnum";
+import { isLoggedTutor } from "./AuthUtils";
 
 /******************* user details ************************/
 export const getUsername = (user: UserDetailsType) => {
@@ -110,7 +111,7 @@ export const getAvailableSlot = (
     const pendingAptsCreatedByLoggedUserOnDate = acceptedApts.filter(apt =>
         loggedUserId
             ? loggedUserId === apt.studentId &&
-            apt.status === AppointmentStatus.PENDING
+              apt.status === AppointmentStatus.PENDING
             : false,
     );
 
@@ -273,4 +274,26 @@ export const disabledScheduledSlotForReqCreate = (
         item.start,
     );
     return selectedSlotDate.getTime() - now.getTime() < 0 || !item.available;
+};
+
+/******************* parameters to fetch schedules ************************/
+
+export const getAptParams = (
+    loggedUser?: UserDetailsType,
+    upcoming?: boolean,
+): AppointmentParams => {
+    const today = new Date();
+    // const month = calendarIntToMonth[today.getMonth()];
+    const year = today.getFullYear();
+    const isTutor = isLoggedTutor(loggedUser);
+    return {
+        // apts requested by other users (as students) with this logged user
+        tutorId: !!loggedUser && isTutor ? loggedUser?.id : undefined,
+        // apts created by this logged user as a student
+        studentId: !!loggedUser && !isTutor ? loggedUser?.id : undefined,
+        // fetch all apt reqs for this year
+        year: `${year}`,
+        // filter if upcoming only (irrespective of status)
+        upcoming: upcoming,
+    };
 };
