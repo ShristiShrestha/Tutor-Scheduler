@@ -60,8 +60,8 @@ export default function MySchedule() {
     const loading = useSelector(selectAllLoading)[FETCH_APPOINTMENTS];
 
     const noAptsDesc = isTutor
-        ? "You have not accepted any appointments yet. \nCheck if you have any pending requests."
-        : "There are no appointments.\nFind tutors and request an appointment.";
+        ? "You have not accepted any scheduled requests yet. \nCheck if you have any pending requests."
+        : "There are no scheduled requests.\nFind tutors and request a schedule for tutoring.";
     const onEmptyNavigateTo = isTutor ? "/notifications" : "/find-tutors";
     const onEmptyNavigateToBtn = isTutor
         ? "Go to notifications"
@@ -70,15 +70,14 @@ export default function MySchedule() {
         <Wrapper>
             <Header>
                 <ResText14SemiBold className={"text-grey1"}>
-                    My Appointments
+                    My Schedules
                 </ResText14SemiBold>
             </Header>
             <Spin spinning={loading}>
                 <Content>
                     {upcomingAppointments.length > 0 && (
                         <ResText14Regular>
-                            Upcoming Appointments ({upcomingAppointments.length}
-                            )
+                            Upcoming Schedules ({upcomingAppointments.length})
                         </ResText14Regular>
                     )}
                     {upcomingAppointments.length > 0 ? (
@@ -127,8 +126,8 @@ export default function MySchedule() {
                     {otherAppointments.length > 0 && (
                         <ResText14Regular>
                             {upcomingAppointments.length === 0
-                                ? `All Appointments`
-                                : `Other Appointments`}{" "}
+                                ? `All Schedule Requests`
+                                : `Other Schedule Requests`}{" "}
                             ({otherAppointments.length})
                         </ResText14Regular>
                     )}
