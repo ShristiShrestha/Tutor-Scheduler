@@ -110,6 +110,7 @@ const TutorProfile = () => {
     const loggedUserIsAnyTutor = isLoggedTutor(loggedUser);
     const showOnlyViewRatings =
         isModerator || loggedUserIsTutor || loggedUserIsAnyTutor;
+    const canEditTutorProfile = isModerator || loggedUserIsTutor;
 
     /******************* handle events ************************/
     const handleSlotClick = (selected, item) => {
@@ -489,14 +490,14 @@ const TutorProfile = () => {
                             user,
                             "Tutor info",
                             loggedUser?.id,
-                            isModerator,
+                            canEditTutorProfile,
                         )}
                         {renderNeedsTutoring(
                             user?.expertise || [],
                             undefined,
                             "Specializations",
                             "",
-                            isModerator,
+                            canEditTutorProfile,
                         )}
                     </div>
 
